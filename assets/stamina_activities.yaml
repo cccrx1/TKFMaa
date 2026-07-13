@@ -1,0 +1,134 @@
+version: 1
+
+defaults:
+  activity_section:
+    expected: ["限时活动"]
+    roi: [480, 90, 150, 80]
+  activity_name_roi: [70, 770, 580, 60]
+  stage_roi: [0, 160, 720, 1000]
+  stamina_roi: [500, 0, 180, 45]
+  reserve: 0
+
+templates:
+  idol_live_normal_list:
+    route_type: normal_list
+    extra_overrides:
+      DailyStaminaPresetInnerRouteStart:
+        next: ["DailyStaminaRouteIdolLiveFirstPageStart"]
+      DailyStaminaPresetFirstPageMarker:
+        enabled: true
+        recognition:
+          type: OCR
+          param:
+            expected:
+              [
+                "话题-01",
+                "话题01",
+                "准备-01",
+                "准备01",
+                "装扮-01",
+                "装扮01",
+                "粉丝-01",
+                "粉丝01",
+                "互动-01",
+                "互动01",
+                "擦边-01",
+                "擦边01",
+              ]
+            roi: [0, 160, 720, 1000]
+    activity_name:
+      expected: ["Idol Live"]
+      roi: [70, 770, 580, 80]
+    stage:
+      any_selectable:
+        expected: ["Idol Live", "活动挑战还有", "斗内点数"]
+        roi: [0, 90, 720, 180]
+    stamina:
+      cost: 30
+
+  daily_affairs_war_drill:
+    route_type: daily_affairs
+    activity_section:
+      expected: ["目前活动"]
+      roi: [270, 90, 180, 80]
+    activity_name:
+      expected: ["日常政务"]
+      roi: [60, 740, 300, 110]
+    daily_affairs:
+      category:
+        expected: ["战争演习"]
+        roi: [350, 120, 300, 1120]
+    stage:
+      any_selectable:
+        expected: ["Lv.10", "Lv.15", "Lv.20", "Lv.30", "Lv.45", "Lv.60"]
+        roi: [70, 80, 120, 1080]
+    stamina:
+      cost: 4
+
+activities:
+  - name: "Idol Live - 擦边-01"
+    description: "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找擦边-01，刷取擦边-01。"
+    template: idol_live_normal_list
+    stage:
+      expected: ["擦边-01", "擦边01"]
+    stamina:
+      cost: 45
+
+  - name: "Idol Live - 话题-01"
+    description: "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找话题-01，刷取话题-01。"
+    template: idol_live_normal_list
+    stage:
+      expected: ["话题-01", "话题01"]
+    stamina:
+      cost: 25
+
+  - name: "Idol Live - 准备-01"
+    description: "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找准备-01，刷取准备-01。"
+    template: idol_live_normal_list
+    stage:
+      expected: ["准备-01", "准备01"]
+
+  - name: "Idol Live - 装扮-01"
+    description: "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找装扮-01，刷取装扮-01。"
+    template: idol_live_normal_list
+    stage:
+      expected: ["装扮-01", "装扮01"]
+
+  - name: "Idol Live - 粉丝-01"
+    description: "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找粉丝-01，刷取粉丝-01。"
+    template: idol_live_normal_list
+    stage:
+      expected: ["粉丝-01", "粉丝01"]
+
+  - name: "Idol Live - 互动-01"
+    description: "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找互动-01，刷取互动-01。"
+    template: idol_live_normal_list
+    stage:
+      expected: ["互动-01", "互动01"]
+
+  - name: "Idol Live - 自动通关"
+    description: "限时活动外部路线 + 常规活动通关：选择 Idol Live，按 NEW 标记推进未通关关卡，自动跳过剧情并手动完成战斗。"
+    template: idol_live_normal_list
+    stage:
+      expected: ["__REGULAR_ACTIVITY_CLEAR__"]
+    extra_overrides:
+      DailyStaminaPresetRouteStart:
+        next: ["RegularActivityStart"]
+      RegularActivityPresetActivityName:
+        recognition:
+          type: OCR
+          param:
+            expected: ["Idol Live"]
+            roi: [70, 770, 580, 80]
+      RegularActivityPresetStageListMarker:
+        recognition:
+          type: OCR
+          param:
+            expected: ["Idol Live", "活动挑战还有", "斗内点数"]
+            roi: [0, 90, 720, 180]
+
+  - name: "常驻关卡 - 战争演习-特IV"
+    description: "常驻路线：目前活动 → 日常政务 → 战争演习，进入纵向关卡列表后寻找战争演习-特IV。"
+    template: daily_affairs_war_drill
+    stage:
+      expected: ["战争演习-特IV", "战争演习-特Ⅳ"]

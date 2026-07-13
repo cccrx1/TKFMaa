@@ -1,0 +1,284 @@
+{
+    "DailyAlchemyOrdersStart": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyAlchemyOrdersOpenDrawer",
+            "[JumpBack]CommonCloseReward",
+            "[JumpBack]CommonEnsureMain"
+        ],
+        "timeout": 10000
+    },
+    "DailyAlchemyOrdersOpenDrawer": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CommonMainReady"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    35,
+                    630
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyAlchemyOrdersOpenAlchemy"
+        ]
+    },
+    "DailyAlchemyOrdersOpenAlchemy": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "派遣队1"
+                ],
+                "roi": [
+                    0,
+                    520,
+                    120,
+                    70
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    116,
+                    510
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyAlchemyOrdersCollect"
+        ]
+    },
+    "DailyAlchemyOrdersCollect": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "一键收取",
+                    "键收取"
+                ],
+                "roi": [
+                    390,
+                    750,
+                    210,
+                    90
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonCloseReward",
+            "DailyAlchemyOrdersScanOrder"
+        ]
+    },
+    "DailyAlchemyOrdersScanOrder": {
+        "next": [
+            "[JumpBack]CommonCloseReward",
+            "[JumpBack]CommonWaitLoading",
+            "DailyAlchemyOrdersDeliverVisibleOrder",
+            "DailyAlchemyOrdersReturnMain"
+        ],
+        "timeout": 5000
+    },
+    "DailyAlchemyOrdersDeliverVisibleOrder": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    25,
+                    940,
+                    670,
+                    70
+                ],
+                "method": 40,
+                "lower": [
+                    15,
+                    80,
+                    120
+                ],
+                "upper": [
+                    45,
+                    255,
+                    255
+                ],
+                "count": 120,
+                "connected": true,
+                "order_by": "Horizontal"
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    70,
+                    70,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonCloseReward",
+            "DailyAlchemyOrdersScanOrder"
+        ],
+        "max_hit": 7
+    },
+    "DailyAlchemyOrdersConfirmReward": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "获得奖励",
+                    "奖励已增加至仓库"
+                ],
+                "roi": [
+                    260,
+                    470,
+                    210,
+                    250
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    742
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "DailyAlchemyOrdersWaitLoading": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "LOADING",
+                    "LOAD ING"
+                ],
+                "roi": [
+                    250,
+                    1190,
+                    230,
+                    70
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyAlchemyOrdersWaitLoading"
+        ]
+    },
+    "DailyAlchemyOrdersReturnMain": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "炼金"
+                ],
+                "roi": [
+                    70,
+                    120,
+                    120,
+                    70
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyAlchemyOrdersDone"
+        ]
+    },
+    "DailyAlchemyOrdersDone": {
+        "next": [
+            "CommonStopOnMainWithRetries"
+        ]
+    }
+}

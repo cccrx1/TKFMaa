@@ -1,0 +1,240 @@
+{
+    "DailyStaminaPresetRouteStart": {
+        "next": [
+            "DailyStaminaRouteActivitySectionStart"
+        ]
+    },
+    "DailyStaminaPresetActivitySection": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "限时活动"
+                ],
+                "roi": [
+                    480,
+                    90,
+                    150,
+                    80
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetInnerRouteStart": {
+        "next": [
+            "DailyStaminaRouteInnerRerunUiStart"
+        ]
+    },
+    "DailyStaminaPresetInnerRouteChallengeExample": {
+        "enabled": false,
+        "next": [
+            "DailyStaminaRouteInnerChallengeUiStart"
+        ]
+    },
+    "DailyStaminaPresetRerunMapMarker": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "Story",
+                    "Free Quest"
+                ],
+                "roi": [
+                    0,
+                    160,
+                    720,
+                    1000
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetActivityName": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "传说中的魔法少女"
+                ],
+                "roi": [
+                    70,
+                    770,
+                    580,
+                    60
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetInnerUiTitle": {
+        "enabled": false,
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "__UNCONFIGURED_INNER_UI_TITLE__"
+                ],
+                "roi": [
+                    0,
+                    90,
+                    240,
+                    100
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetStageEntry": {
+        "enabled": false,
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "__UNCONFIGURED_STAGE_ENTRY__"
+                ],
+                "roi": [
+                    0,
+                    0,
+                    1,
+                    1
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetDailyAffairsCategory": {
+        "enabled": false,
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "__UNCONFIGURED_DAILY_AFFAIRS_CATEGORY__"
+                ],
+                "roi": [
+                    0,
+                    0,
+                    1,
+                    1
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetStageListTargetTitle": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "招募-02",
+                    "招募02"
+                ],
+                "roi": [
+                    0,
+                    160,
+                    720,
+                    1000
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetStageListTargetSubtitle": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "__UNCONFIGURED_STAGE_SUBTITLE__"
+                ],
+                "roi": [
+                    0,
+                    0,
+                    1,
+                    1
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetStageListTarget": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "招募-02",
+                    "招募02"
+                ],
+                "roi": [
+                    0,
+                    160,
+                    720,
+                    1000
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetStageListAnySelectable": {
+        "enabled": false,
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "__UNCONFIGURED_STAGE_LIST_MARKER__"
+                ],
+                "roi": [
+                    0,
+                    0,
+                    1,
+                    1
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetFirstPageMarker": {
+        "enabled": false,
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "__UNCONFIGURED_FIRST_PAGE__"
+                ],
+                "roi": [
+                    0,
+                    0,
+                    1,
+                    1
+                ]
+            }
+        }
+    },
+    "DailyStaminaPresetStaminaEnough": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyStaminaCompare",
+                "custom_recognition_param": {
+                    "mode": "enough",
+                    "cost": 50,
+                    "reserve": 0,
+                    "stamina_roi": [
+                        500,
+                        0,
+                        180,
+                        45
+                    ]
+                }
+            }
+        }
+    },
+    "DailyStaminaPresetStaminaLow": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyStaminaCompare",
+                "custom_recognition_param": {
+                    "mode": "low",
+                    "cost": 50,
+                    "reserve": 0,
+                    "stamina_roi": [
+                        500,
+                        0,
+                        180,
+                        45
+                    ]
+                }
+            }
+        }
+    }
+}

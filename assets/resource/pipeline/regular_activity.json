@@ -1,0 +1,942 @@
+{
+    "RegularActivityStart": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseReward",
+            "[JumpBack]RegularActivityConfirmSkipStory",
+            "[JumpBack]RegularActivitySkipStory",
+            "[JumpBack]RegularActivityCloseStaminaPurchasePopup",
+            "RegularActivityStageListDecision",
+            "RegularActivityEnterActivityFromSelection",
+            "RegularActivityOpenActivitySection",
+            "RegularActivityOpenExpeditionFromMain",
+            "RegularActivityDone"
+        ],
+        "timeout": 10000
+    },
+    "RegularActivityOpenExpeditionFromMain": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CommonMainReady"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    571,
+                    912
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityOpenActivitySection"
+        ]
+    },
+    "RegularActivityOpenActivitySection": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "限时活动"
+                ],
+                "roi": [
+                    450,
+                    90,
+                    210,
+                    90
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityEnterActivityFromSelection"
+        ]
+    },
+    "RegularActivityEnterActivityFromSelection": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__RegularActivitySelectionReady"
+                ]
+            }
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityEnterSelectedActivity",
+            "RegularActivitySelectActivitySlot1",
+            "RegularActivitySelectActivitySlot2",
+            "RegularActivitySelectActivitySlot3"
+        ],
+        "timeout": 8000
+    },
+    "RegularActivityEnterSelectedActivity": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "RegularActivityPresetActivityName"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1148
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 900,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityStageListDecision"
+        ]
+    },
+    "RegularActivitySelectActivitySlot1": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__RegularActivitySelectionReady"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    168,
+                    704
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityEnterSelectedActivity",
+            "RegularActivitySelectActivitySlot2"
+        ]
+    },
+    "RegularActivitySelectActivitySlot2": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__RegularActivitySelectionReady"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    704
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityEnterSelectedActivity",
+            "RegularActivitySelectActivitySlot3"
+        ]
+    },
+    "RegularActivitySelectActivitySlot3": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__RegularActivitySelectionReady"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    552,
+                    704
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityEnterSelectedActivity"
+        ]
+    },
+    "__RegularActivitySelectionReady": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "挑战期限"
+                ],
+                "roi": [
+                    50,
+                    170,
+                    450,
+                    100
+                ]
+            }
+        }
+    },
+    "RegularActivityStageListDecision": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "RegularActivityPresetStageListMarker"
+                ]
+            }
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseReward",
+            "[JumpBack]RegularActivityConfirmSkipStory",
+            "[JumpBack]RegularActivitySkipStory",
+            "[JumpBack]RegularActivityCloseStaminaPurchasePopup",
+            "RegularActivityOpenLatestStage",
+            "RegularActivityOpenNextPage",
+            "RegularActivityDone"
+        ],
+        "timeout": 10000
+    },
+    "RegularActivityOpenLatestStage": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__RegularActivityNewColorCandidate",
+                    "__RegularActivityNewText"
+                ],
+                "box_index": 0
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": "__RegularActivityNewColorCandidate",
+                "target_offset": [
+                    160,
+                    75,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityStageDetailOrStory",
+            "RegularActivityStageListDecision"
+        ],
+        "max_hit": 20
+    },
+    "__RegularActivityNewColorCandidate": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    150,
+                    300,
+                    55,
+                    800
+                ],
+                "method": 40,
+                "lower": [
+                    15,
+                    100,
+                    150
+                ],
+                "upper": [
+                    35,
+                    255,
+                    255
+                ],
+                "count": 100,
+                "connected": true,
+                "order_by": "Vertical"
+            }
+        }
+    },
+    "__RegularActivityNewText": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "NEW"
+                ],
+                "roi": "__RegularActivityNewColorCandidate",
+                "roi_offset": [
+                    -10,
+                    -8,
+                    70,
+                    16
+                ],
+                "only_rec": true
+            }
+        }
+    },
+    "RegularActivityOpenNextPage": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "RegularActivityPresetStageListMarker",
+                    "__RegularActivityNextPageButton"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    680,
+                    610
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityStageListDecision"
+        ]
+    },
+    "__RegularActivityNextPageButton": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "NEXT"
+                ],
+                "roi": [
+                    610,
+                    480,
+                    110,
+                    220
+                ]
+            }
+        }
+    },
+    "RegularActivityStageDetailOrStory": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]RegularActivityConfirmSkipStory",
+            "[JumpBack]RegularActivitySkipStory",
+            "[JumpBack]RegularActivityCloseStaminaPurchasePopup",
+            "RegularActivityStartManualBattle",
+            "RegularActivityStageListDecision"
+        ],
+        "timeout": 15000,
+        "on_error": [
+            "RegularActivityDone"
+        ]
+    },
+    "RegularActivityStartManualBattle": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "开始"
+                ],
+                "roi": [
+                    260,
+                    1040,
+                    210,
+                    170
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1200,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]RegularActivityCloseStaminaPurchasePopup",
+            "RegularActivityWaitBattleResult"
+        ]
+    },
+    "RegularActivityWaitBattleResult": {
+        "next": [
+            "RegularActivityReturnMapFromBattleResult",
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]RegularActivityBattleInProgress",
+            "[JumpBack]RegularActivityCloseStaminaPurchasePopup"
+        ],
+        "timeout": 300000,
+        "on_error": [
+            "RegularActivityDone"
+        ]
+    },
+    "RegularActivityReturnMapFromBattleResult": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__RegularActivityReturnMapButton"
+                ],
+                "box_index": 0
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": "__RegularActivityReturnMapButton"
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1200,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityStageDetailOrStory",
+            "RegularActivityStageListDecision",
+            "RegularActivityStart"
+        ]
+    },
+    "__RegularActivityReturnMapButton": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "返回地图",
+                    "返回"
+                ],
+                "roi": [
+                    300,
+                    1120,
+                    320,
+                    130
+                ]
+            }
+        }
+    },
+    "RegularActivityBattleInProgress": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "WAVE",
+                    "TURN"
+                ],
+                "roi": [
+                    0,
+                    40,
+                    180,
+                    120
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 3000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "RegularActivitySkipStory": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "__RegularActivityStoryRecMarker",
+                    "__RegularActivityStorySkipButton"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    527,
+                    1041
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "RegularActivityConfirmSkipStory"
+        ]
+    },
+    "__RegularActivityStoryRecMarker": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "REC"
+                ],
+                "roi": [
+                    500,
+                    40,
+                    120,
+                    110
+                ]
+            }
+        }
+    },
+    "__RegularActivityStorySkipButton": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "SKIP"
+                ],
+                "roi": [
+                    400,
+                    900,
+                    320,
+                    300
+                ]
+            }
+        }
+    },
+    "RegularActivityConfirmSkipStory": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "确定",
+                    "确认"
+                ],
+                "roi": [
+                    380,
+                    730,
+                    220,
+                    90
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "RegularActivityCloseStaminaPurchasePopup": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__RegularActivityPurchasePopupMarker",
+                    "__RegularActivityPurchasePopupCancel"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": "__RegularActivityPurchasePopupCancel"
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityDone"
+        ]
+    },
+    "__RegularActivityPurchasePopupMarker": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "__RegularActivityPurchasePopupCurrency",
+                    "__RegularActivityPurchasePopupMedicine"
+                ]
+            }
+        }
+    },
+    "__RegularActivityPurchasePopupCurrency": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__RegularActivityPurchasePopupCurrencyAsk",
+                    "__RegularActivityPurchasePopupCurrencyExchange"
+                ]
+            }
+        }
+    },
+    "__RegularActivityPurchasePopupCurrencyAsk": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "是否消耗"
+                ],
+                "roi": [
+                    100,
+                    550,
+                    520,
+                    380
+                ]
+            }
+        }
+    },
+    "__RegularActivityPurchasePopupCurrencyExchange": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "兑换",
+                    "兌換"
+                ],
+                "roi": [
+                    100,
+                    550,
+                    520,
+                    380
+                ]
+            }
+        }
+    },
+    "__RegularActivityPurchasePopupMedicine": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__RegularActivityPurchasePopupMedicineItem",
+                    "__RegularActivityPurchasePopupMedicineAction"
+                ]
+            }
+        }
+    },
+    "__RegularActivityPurchasePopupMedicineItem": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "体力药"
+                ],
+                "roi": [
+                    100,
+                    350,
+                    520,
+                    580
+                ]
+            }
+        }
+    },
+    "__RegularActivityPurchasePopupMedicineAction": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "使用",
+                    "回复",
+                    "恢復",
+                    "补充"
+                ],
+                "roi": [
+                    100,
+                    350,
+                    520,
+                    580
+                ]
+            }
+        }
+    },
+    "__RegularActivityPurchasePopupCancel": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "取消"
+                ],
+                "roi": [
+                    120,
+                    850,
+                    200,
+                    130
+                ]
+            }
+        }
+    },
+    "RegularActivityDone": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseReward",
+            "[JumpBack]RegularActivityConfirmSkipStory",
+            "[JumpBack]RegularActivitySkipStory",
+            "[JumpBack]RegularActivityCloseStaminaPurchasePopup",
+            "RegularActivityReturnMainFromStageDetail",
+            "RegularActivityReturnMainFromStageList",
+            "RegularActivityReturnMainFromSelection",
+            "CommonStopOnMainWithRetries"
+        ],
+        "timeout": 12000
+    },
+    "RegularActivityReturnMainFromStageDetail": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "stage",
+                    "出现敌人",
+                    "开始"
+                ],
+                "roi": [
+                    60,
+                    80,
+                    620,
+                    1140
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    162,
+                    74
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 900,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "RegularActivityDone"
+        ]
+    },
+    "RegularActivityReturnMainFromStageList": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "RegularActivityPresetStageListMarker"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    162,
+                    74
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 900,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "RegularActivityDone"
+        ]
+    },
+    "RegularActivityReturnMainFromSelection": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "世界征服",
+                    "目前活动",
+                    "限时活动",
+                    "进击"
+                ],
+                "roi": [
+                    0,
+                    90,
+                    720,
+                    1100
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 900,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "RegularActivityDone"
+        ]
+    },
+    "RegularActivityPresetActivityName": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "Idol Live"
+                ],
+                "roi": [
+                    70,
+                    770,
+                    580,
+                    80
+                ]
+            }
+        }
+    },
+    "RegularActivityPresetStageListMarker": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "Idol Live",
+                    "活动挑战还有",
+                    "斗内点数"
+                ],
+                "roi": [
+                    0,
+                    90,
+                    720,
+                    180
+                ]
+            }
+        }
+    }
+}

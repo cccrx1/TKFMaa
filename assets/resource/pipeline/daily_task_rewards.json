@@ -1,0 +1,576 @@
+{
+    "DailyTaskRewardsStart": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyTaskRewardsOpenFromMain",
+            "[JumpBack]CommonEnsureMain"
+        ],
+        "timeout": 10000
+    },
+    "DailyTaskRewardsOpenFromMain": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CommonMainReady"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    653,
+                    86
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsSelectDaily"
+        ]
+    },
+    "__DailyTaskRewardsPageTitle": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    260,
+                    140,
+                    200,
+                    90
+                ],
+                "expected": [
+                    "任务"
+                ]
+            }
+        }
+    },
+    "__DailyTaskRewardsClaimable": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    90,
+                    350,
+                    540,
+                    670
+                ],
+                "expected": [
+                    "可领取"
+                ]
+            }
+        }
+    },
+    "__DailyTaskRewardsOneClickClaimButton": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    250,
+                    1015,
+                    220,
+                    100
+                ],
+                "expected": [
+                    "一键领取",
+                    "键领取"
+                ]
+            }
+        }
+    },
+    "DailyTaskRewardsSelectDaily": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    91,
+                    224,
+                    174,
+                    42
+                ],
+                "expected": [
+                    "每日"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 350,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimDaily"
+        ]
+    },
+    "DailyTaskRewardsClaimDaily": {
+        "next": [
+            "[JumpBack]CommonCloseReward",
+            "DailyTaskRewardsClaimDailyAvailable",
+            "DailyTaskRewardsSelectWeekly"
+        ],
+        "timeout": 10000
+    },
+    "DailyTaskRewardsClaimDailyAvailable": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyTaskRewardsPageTitle",
+                    "__DailyTaskRewardsClaimable",
+                    "__DailyTaskRewardsOneClickClaimButton"
+                ],
+                "box_index": 2
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimDaily"
+        ],
+        "max_hit": 3
+    },
+    "DailyTaskRewardsSelectWeekly": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    274,
+                    219,
+                    175,
+                    54
+                ],
+                "expected": [
+                    "每周"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 350,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimWeekly"
+        ]
+    },
+    "DailyTaskRewardsClaimWeekly": {
+        "next": [
+            "[JumpBack]CommonCloseReward",
+            "DailyTaskRewardsClaimWeeklyAvailable",
+            "DailyTaskRewardsSelectMonthly"
+        ],
+        "timeout": 10000
+    },
+    "DailyTaskRewardsClaimWeeklyAvailable": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyTaskRewardsPageTitle",
+                    "__DailyTaskRewardsClaimable",
+                    "__DailyTaskRewardsOneClickClaimButton"
+                ],
+                "box_index": 2
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimWeekly"
+        ],
+        "max_hit": 3
+    },
+    "DailyTaskRewardsSelectMonthly": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    458,
+                    224,
+                    172,
+                    49
+                ],
+                "expected": [
+                    "每月"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 350,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimMonthly"
+        ]
+    },
+    "DailyTaskRewardsClaimMonthly": {
+        "next": [
+            "[JumpBack]CommonCloseReward",
+            "DailyTaskRewardsClaimMonthlyAvailable",
+            "DailyTaskRewardsSelectPersonal"
+        ],
+        "timeout": 10000
+    },
+    "DailyTaskRewardsClaimMonthlyAvailable": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyTaskRewardsPageTitle",
+                    "__DailyTaskRewardsClaimable",
+                    "__DailyTaskRewardsOneClickClaimButton"
+                ],
+                "box_index": 2
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimMonthly"
+        ],
+        "max_hit": 3
+    },
+    "DailyTaskRewardsSelectPersonal": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    87,
+                    280,
+                    180,
+                    56
+                ],
+                "expected": [
+                    "个人"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 350,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimPersonal"
+        ]
+    },
+    "DailyTaskRewardsClaimPersonal": {
+        "next": [
+            "[JumpBack]CommonCloseReward",
+            "DailyTaskRewardsClaimPersonalAvailable",
+            "DailyTaskRewardsSelectActivity"
+        ],
+        "timeout": 10000
+    },
+    "DailyTaskRewardsClaimPersonalAvailable": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyTaskRewardsPageTitle",
+                    "__DailyTaskRewardsClaimable",
+                    "__DailyTaskRewardsOneClickClaimButton"
+                ],
+                "box_index": 2
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimPersonal"
+        ],
+        "max_hit": 3
+    },
+    "DailyTaskRewardsSelectActivity": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    274,
+                    281,
+                    166,
+                    51
+                ],
+                "expected": [
+                    "活动"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 350,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimActivity"
+        ]
+    },
+    "DailyTaskRewardsClaimActivity": {
+        "next": [
+            "[JumpBack]CommonCloseReward",
+            "DailyTaskRewardsClaimActivityAvailable",
+            "DailyTaskRewardsSelectGuild"
+        ],
+        "timeout": 10000
+    },
+    "DailyTaskRewardsClaimActivityAvailable": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyTaskRewardsPageTitle",
+                    "__DailyTaskRewardsClaimable",
+                    "__DailyTaskRewardsOneClickClaimButton"
+                ],
+                "box_index": 2
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimActivity"
+        ],
+        "max_hit": 3
+    },
+    "DailyTaskRewardsSelectGuild": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    458,
+                    285,
+                    171,
+                    49
+                ],
+                "expected": [
+                    "协会"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 350,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimGuild"
+        ]
+    },
+    "DailyTaskRewardsClaimGuild": {
+        "next": [
+            "[JumpBack]CommonCloseReward",
+            "DailyTaskRewardsClaimGuildAvailable",
+            "DailyTaskRewardsReturnMainFromTaskPage"
+        ],
+        "timeout": 10000
+    },
+    "DailyTaskRewardsClaimGuildAvailable": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyTaskRewardsPageTitle",
+                    "__DailyTaskRewardsClaimable",
+                    "__DailyTaskRewardsOneClickClaimButton"
+                ],
+                "box_index": 2
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsClaimGuild"
+        ],
+        "max_hit": 3
+    },
+    "DailyTaskRewardsReturnMainFromTaskPage": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    260,
+                    140,
+                    200,
+                    90
+                ],
+                "expected": [
+                    "任务"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1187
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTaskRewardsDone"
+        ]
+    },
+    "DailyTaskRewardsDone": {
+        "next": [
+            "CommonStopOnMainWithRetries"
+        ]
+    }
+}

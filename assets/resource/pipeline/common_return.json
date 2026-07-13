@@ -1,0 +1,440 @@
+{
+    "CommonEnsureMain": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseReward",
+            "CommonReturnMainFromShop",
+            "CommonReturnMainFromTaskPage",
+            "CommonReturnMainFromProfile",
+            "CommonReturnMainFromAlchemy",
+            "CommonReturnMainFromRecruitOverview",
+            "CommonReturnMainFromSummon",
+            "CommonReturnMainFromTrainingDetail",
+            "CommonReturnMainFromTrainingRoomList",
+            "CommonReturnMainFromDispatchOverview",
+            "CommonReturnDispatchOverviewFromSelection",
+            "CommonReturnMainFromStaminaStageDetail",
+            "CommonReturnMainFromStaminaStageList"
+        ],
+        "timeout": 8000
+    },
+    "CommonReturnMainFromShop": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "城堡"
+                ],
+                "roi": [
+                    65,
+                    1160,
+                    120,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnMainFromTaskPage": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "任务"
+                ],
+                "roi": [
+                    260,
+                    140,
+                    200,
+                    90
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1187
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnMainFromProfile": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "好友清单",
+                    "玩家信息"
+                ],
+                "roi": [
+                    250,
+                    110,
+                    380,
+                    190
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1220
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnMainFromAlchemy": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "炼金"
+                ],
+                "roi": [
+                    70,
+                    120,
+                    120,
+                    70
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnMainFromRecruitOverview": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "全境征才"
+                ],
+                "roi": [
+                    80,
+                    90,
+                    160,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    75
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnMainFromSummon": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "常驻召唤",
+                    "全境征才",
+                    "心愿召唤"
+                ],
+                "roi": [
+                    0,
+                    1120,
+                    720,
+                    100
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    75
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnMainFromTrainingDetail": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "调教道具",
+                    "通用",
+                    "活动"
+                ],
+                "roi": [
+                    90,
+                    900,
+                    560,
+                    340
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    75
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnMainFromTrainingRoomList": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "稀有度",
+                    "等级",
+                    "必杀技Lv",
+                    "HP",
+                    "ATK",
+                    "进化",
+                    "潜力Lv",
+                    "调教房间",
+                    "必杀技CD",
+                    "CLEAR",
+                    "NEXT"
+                ],
+                "roi": [
+                    60,
+                    80,
+                    620,
+                    1120
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    75
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnMainFromDispatchOverview": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地城派遣"
+                ],
+                "roi": [
+                    90,
+                    780,
+                    170,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnDispatchOverviewFromSelection": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "请选择房间",
+                    "Bonus奖励条件",
+                    "地城派遣中"
+                ],
+                "roi": [
+                    60,
+                    250,
+                    620,
+                    930
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnMainFromStaminaStageDetail": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "stage",
+                    "出现敌人",
+                    "军团扫荡"
+                ],
+                "roi": [
+                    60,
+                    80,
+                    620,
+                    1140
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    162,
+                    74
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 900,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonReturnMainFromStaminaStageList": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "DailyStaminaPresetStageListAnySelectable",
+                    "DailyStaminaPresetRerunMapMarker"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    162,
+                    74
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 900,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    }
+}

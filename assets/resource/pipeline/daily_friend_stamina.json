@@ -1,0 +1,264 @@
+{
+    "DailyFriendStaminaStart": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyFriendStaminaOpenProfileFromMain",
+            "[JumpBack]DailyFriendStaminaWaitFriendListLoading",
+            "[JumpBack]DailyFriendStaminaCloseProfile",
+            "[JumpBack]CommonEnsureMain"
+        ],
+        "timeout": 10000
+    },
+    "DailyFriendStaminaOpenProfileFromMain": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CommonMainReady"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    150,
+                    105
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyFriendStaminaOpenFriendList"
+        ]
+    },
+    "DailyFriendStaminaOpenFriendList": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "玩家信息"
+                ],
+                "roi": [
+                    250,
+                    110,
+                    220,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    219
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyFriendStaminaReceive"
+        ]
+    },
+    "DailyFriendStaminaReceive": {
+        "next": [
+            "[JumpBack]DailyFriendStaminaWaitFriendListLoading",
+            "DailyFriendStaminaClickReceive",
+            "DailyFriendStaminaCloseProfile"
+        ],
+        "timeout": 5000
+    },
+    "DailyFriendStaminaWaitFriendListLoading": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "__DailyFriendStaminaFriendListLoadingText",
+                    "__DailyFriendStaminaFriendListLoadingEnergy"
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyFriendStaminaWaitFriendListLoading",
+            "DailyFriendStaminaCloseProfileForRetry"
+        ]
+    },
+    "__DailyFriendStaminaFriendListLoadingText": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "LOADING",
+                    "LOAD ING"
+                ],
+                "roi": [
+                    250,
+                    1190,
+                    230,
+                    70
+                ]
+            }
+        }
+    },
+    "__DailyFriendStaminaFriendListLoadingEnergy": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "能量获取：XX/YY",
+                    "能量獲取：XX/YY",
+                    "体力获取：XX/YY"
+                ],
+                "roi": [
+                    130,
+                    1080,
+                    240,
+                    70
+                ]
+            }
+        }
+    },
+    "DailyFriendStaminaClickReceive": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "一键领取",
+                    "键领取"
+                ],
+                "roi": [
+                    390,
+                    1050,
+                    230,
+                    90
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyFriendStaminaCloseProfile"
+        ],
+        "max_hit": 1
+    },
+    "DailyFriendStaminaCloseProfile": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "好友清单",
+                    "玩家信息"
+                ],
+                "roi": [
+                    250,
+                    110,
+                    380,
+                    190
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1220
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyFriendStaminaDone"
+        ]
+    },
+    "DailyFriendStaminaCloseProfileForRetry": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "好友清单",
+                    "玩家信息"
+                ],
+                "roi": [
+                    250,
+                    110,
+                    380,
+                    190
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1220
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyFriendStaminaOpenProfileFromMain"
+        ]
+    },
+    "DailyFriendStaminaDone": {
+        "next": [
+            "CommonStopOnMainWithRetries"
+        ]
+    }
+}

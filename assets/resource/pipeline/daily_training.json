@@ -1,0 +1,874 @@
+{
+    "DailyTrainingStart": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyTrainingOpenFromMain",
+            "DailyTrainingDoneNoCount",
+            "[JumpBack]CommonEnsureMain"
+        ],
+        "timeout": 10000
+    },
+    "DailyTrainingOpenFromMain": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CommonMainReady",
+                    "__DailyTrainingMainHasCount"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    640,
+                    1058
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingOpenFilter"
+        ]
+    },
+    "__DailyTrainingMainHasCount": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    595,
+                    1065,
+                    95,
+                    55
+                ],
+                "expected": [
+                    "/50"
+                ]
+            }
+        },
+        "inverse": false
+    },
+    "DailyTrainingDoneNoCount": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CommonMainReady",
+                    "__DailyTrainingMainZeroCount"
+                ]
+            }
+        },
+        "next": [
+            "DailyTrainingDone"
+        ]
+    },
+    "__DailyTrainingMainZeroCount": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    595,
+                    1065,
+                    95,
+                    55
+                ],
+                "expected": [
+                    "0/50",
+                    "00/50"
+                ]
+            }
+        }
+    },
+    "DailyTrainingOpenFilter": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "稀有度",
+                    "等级",
+                    "必杀技Lv",
+                    "HP",
+                    "ATK",
+                    "进化",
+                    "潜力Lv",
+                    "调教房间",
+                    "必杀技CD"
+                ],
+                "roi": [
+                    470,
+                    635,
+                    120,
+                    85
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    536,
+                    680
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingFilterPanelTop"
+        ]
+    },
+    "DailyTrainingFilterPanelTop": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "筛选排序"
+                ],
+                "roi": [
+                    250,
+                    45,
+                    220,
+                    90
+                ]
+            }
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    357,
+                    925
+                ],
+                "end": [
+                    357,
+                    500
+                ],
+                "duration": 1600
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingSetProgressFilter"
+        ]
+    },
+    "DailyTrainingSetProgressFilter": {
+        "next": [
+            "DailyTrainingConfirmProgressFilter",
+            "[JumpBack]DailyTrainingCycleProgressFilter",
+            "[JumpBack]DailyTrainingSwipeFilterToProgress"
+        ],
+        "timeout": 10000
+    },
+    "DailyTrainingConfirmProgressFilter": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyTrainingProgressLabel",
+                    "__DailyTrainingProgressCanTrain"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    489,
+                    1085
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingEnterNextRoom"
+        ]
+    },
+    "__DailyTrainingProgressLabel": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "调教进度"
+                ],
+                "roi": [
+                    90,
+                    790,
+                    150,
+                    80
+                ]
+            }
+        }
+    },
+    "__DailyTrainingProgressCanTrain": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "可调教"
+                ],
+                "roi": [
+                    450,
+                    790,
+                    150,
+                    80
+                ]
+            }
+        }
+    },
+    "DailyTrainingCycleProgressFilter": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "调教进度"
+                ],
+                "roi": [
+                    90,
+                    790,
+                    150,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    585,
+                    828
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "max_hit": 4
+    },
+    "DailyTrainingSwipeFilterToProgress": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    357,
+                    925
+                ],
+                "end": [
+                    357,
+                    500
+                ],
+                "duration": 1600
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "max_hit": 2
+    },
+    "DailyTrainingEnterNextRoom": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "NEXT"
+                ],
+                "roi": [
+                    90,
+                    80,
+                    560,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    170,
+                    50,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 900,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingSelectConfiguredItem"
+        ],
+        "on_error": [
+            "DailyTrainingReturnMainFromRoomList"
+        ]
+    },
+    "DailyTrainingSelectConfiguredItem": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "调教道具",
+                    "通用",
+                    "活动"
+                ],
+                "roi": [
+                    90,
+                    900,
+                    560,
+                    340
+                ]
+            }
+        },
+        "next": [
+            "DailyTrainingSelectCommonTab"
+        ],
+        "on_error": [
+            "DailyTrainingReturnRoomListFromDetailFallback"
+        ]
+    },
+    "DailyTrainingClickCenterSlow": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "调教道具",
+                    "通用",
+                    "活动"
+                ],
+                "roi": [
+                    90,
+                    900,
+                    560,
+                    340
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    640
+                ]
+            }
+        },
+        "repeat": 3,
+        "repeat_delay": 2000,
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingCloseEnergyPrompt",
+            "DailyTrainingCloseShortagePopup",
+            "CommonStopOnMain",
+            "DailyTrainingReturnRoomListFromDetail"
+        ]
+    },
+    "DailyTrainingCloseEnergyPrompt": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "提示",
+                    "调教点不足",
+                    "禁忌果实",
+                    "补充能量",
+                    "购买"
+                ],
+                "roi": [
+                    80,
+                    500,
+                    560,
+                    310
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    840
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "CommonStopOnMain",
+            "DailyTrainingReturnRoomListFromDetail",
+            "DailyTrainingReturnRoomListFromDetailFallback"
+        ]
+    },
+    "DailyTrainingCloseShortagePopup": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "道具不足",
+                    "点数不足",
+                    "购买",
+                    "取消"
+                ],
+                "roi": [
+                    130,
+                    500,
+                    460,
+                    420
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    250,
+                    840
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "CommonStopOnMain",
+            "DailyTrainingReturnRoomListFromDetail",
+            "DailyTrainingReturnRoomListFromDetailFallback"
+        ]
+    },
+    "DailyTrainingReturnRoomListFromDetailFallback": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    75
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "CommonStopOnMain",
+            "DailyTrainingReturnMainFromRoomList"
+        ]
+    },
+    "DailyTrainingReturnRoomListFromDetail": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "调教道具",
+                    "通用",
+                    "活动"
+                ],
+                "roi": [
+                    90,
+                    900,
+                    560,
+                    340
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    75
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingReturnMainFromRoomList"
+        ]
+    },
+    "DailyTrainingReturnMainFromRoomList": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "稀有度",
+                    "等级",
+                    "必杀技Lv",
+                    "HP",
+                    "ATK",
+                    "进化",
+                    "潜力Lv",
+                    "调教房间",
+                    "必杀技CD",
+                    "CLEAR",
+                    "NEXT"
+                ],
+                "roi": [
+                    60,
+                    80,
+                    620,
+                    1120
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    75
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingDone"
+        ]
+    },
+    "DailyTrainingWaitLoading": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "LOADING",
+                    "LOAD ING"
+                ],
+                "roi": [
+                    250,
+                    1190,
+                    230,
+                    70
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "DailyTrainingConfigMode": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "指定次数"
+                ]
+            }
+        }
+    },
+    "DailyTrainingConfigCount": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    640
+                ]
+            }
+        },
+        "repeat": 3
+    },
+    "DailyTrainingConfigItemScope": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "优先通用道具"
+                ]
+            }
+        }
+    },
+    "DailyTrainingConfigAllowRare": {
+        "enabled": false
+    },
+    "DailyTrainingDone": {
+        "next": [
+            "CommonStopOnMainWithRetries"
+        ]
+    },
+    "DailyTrainingSelectCommonTab": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "通用"
+                ],
+                "roi": [
+                    390,
+                    930,
+                    130,
+                    85
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 350,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingChooseCommonItem"
+        ]
+    },
+    "DailyTrainingSelectEventTab": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "活动"
+                ],
+                "roi": [
+                    520,
+                    930,
+                    130,
+                    85
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 350,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingChooseEventItem"
+        ]
+    },
+    "DailyTrainingChooseCommonItem": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyTrainingChooseItem",
+                "custom_recognition_param": {
+                    "tab": "common"
+                }
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 350,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingClickCenterStart"
+        ],
+        "on_error": [
+            "DailyTrainingReturnRoomListFromDetailFallback"
+        ]
+    },
+    "DailyTrainingChooseEventItem": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyTrainingChooseItem",
+                "custom_recognition_param": {
+                    "tab": "event"
+                }
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 350,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingClickCenterStart"
+        ],
+        "on_error": [
+            "DailyTrainingReturnRoomListFromDetailFallback"
+        ]
+    },
+    "DailyTrainingClickCenterStart": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "next": [
+            "DailyTrainingClickCenterSlow"
+        ]
+    },
+    "DailyTrainingClickCenterAllPoints": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "调教道具",
+                    "通用",
+                    "活动"
+                ],
+                "roi": [
+                    90,
+                    900,
+                    560,
+                    340
+                ]
+            }
+        },
+        "action": {
+            "type": "LongPress",
+            "param": {
+                "target": [
+                    360,
+                    640
+                ],
+                "duration": 3000
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyTrainingCloseEnergyPrompt",
+            "DailyTrainingCloseShortagePopup",
+            "CommonStopOnMain",
+            "DailyTrainingClickCenterAllPoints",
+            "DailyTrainingReturnRoomListFromDetail"
+        ],
+        "max_hit": 12
+    }
+}

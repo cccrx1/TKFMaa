@@ -1,0 +1,179 @@
+{
+    "__CommonMainExpeditionButton": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    450,
+                    820,
+                    230,
+                    160
+                ],
+                "expected": [
+                    "出征"
+                ]
+            }
+        }
+    },
+    "__CommonMainTrainingButton": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    570,
+                    1000,
+                    120,
+                    110
+                ],
+                "expected": [
+                    "调教"
+                ]
+            }
+        }
+    },
+    "CommonMainReady": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__CommonMainExpeditionButton",
+                    "__CommonMainTrainingButton"
+                ]
+            }
+        }
+    },
+    "CommonStopOnMain": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__CommonMainExpeditionButton",
+                    "__CommonMainTrainingButton"
+                ]
+            }
+        },
+        "action": {
+            "type": "StopTask"
+        }
+    },
+    "CommonStopOnMainWithRetries": {
+        "next": [
+            "CommonStopOnMain",
+            "CommonStopOnMainWait1"
+        ],
+        "timeout": 10000
+    },
+    "CommonStopOnMainWait1": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "CommonStopOnMain",
+            "CommonStopOnMainWait2"
+        ]
+    },
+    "CommonStopOnMainWait2": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "CommonStopOnMain",
+            "CommonStopOnMainWait3"
+        ]
+    },
+    "CommonStopOnMainWait3": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "CommonStopOnMain"
+        ]
+    },
+    "CommonWaitLoading": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "LOADING",
+                    "LOAD ING",
+                    "CONNECTING",
+                    "CONNECT ING"
+                ],
+                "roi": [
+                    218,
+                    1158,
+                    268,
+                    92
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "CommonCloseReward": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    300,
+                    700,
+                    120,
+                    80
+                ],
+                "expected": [
+                    "确定",
+                    "确认"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    }
+}

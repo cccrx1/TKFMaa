@@ -1,0 +1,2497 @@
+{
+    "DailyDispatchStart": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyDispatchOpenDrawerFromMain",
+            "DailyDispatchScanOverview",
+            "[JumpBack]DailyDispatchCloseReturnPopup",
+            "[JumpBack]CommonEnsureMain"
+        ],
+        "timeout": 10000
+    },
+    "DailyDispatchOpenDrawerFromMain": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CommonMainReady"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    35,
+                    630
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchEnterFromDrawer"
+        ]
+    },
+    "DailyDispatchEnterFromDrawer": {
+        "next": [
+            "DailyDispatchClickActionableDrawerSlot",
+            "DailyDispatchOpenBusyDrawerSlot",
+            "DailyDispatchCloseDrawerDone"
+        ],
+        "timeout": 5000
+    },
+    "DailyDispatchClickActionableDrawerSlot": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "派遣完成",
+                    "闲置中"
+                ],
+                "roi": [
+                    0,
+                    520,
+                    175,
+                    280
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchScanOverview"
+        ]
+    },
+    "DailyDispatchOpenBusyDrawerSlot": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyDispatchDrawerTeamLabel",
+                    "__DailyDispatchDrawerBusyTimer"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    75,
+                    595
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchScanOverview"
+        ]
+    },
+    "__DailyDispatchDrawerTeamLabel": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "派遣队1"
+                ],
+                "roi": [
+                    0,
+                    520,
+                    120,
+                    70
+                ]
+            }
+        }
+    },
+    "__DailyDispatchDrawerBusyTimer": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    ":"
+                ],
+                "roi": [
+                    10,
+                    570,
+                    150,
+                    190
+                ]
+            }
+        }
+    },
+    "DailyDispatchCloseDrawerDone": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CommonMainReady"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    35,
+                    630
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchDone"
+        ]
+    },
+    "DailyDispatchScanOverview": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地城派遣"
+                ],
+                "roi": [
+                    90,
+                    780,
+                    170,
+                    80
+                ]
+            }
+        },
+        "next": [
+            "[JumpBack]DailyDispatchCloseReturnPopup",
+            "[JumpBack]CommonWaitLoading",
+            "DailyDispatchOpenCompletedSlot",
+            "DailyDispatchOpenIdleSlot",
+            "DailyDispatchReturnMainWhenAllBusy"
+        ],
+        "timeout": 6000
+    },
+    "DailyDispatchOpenCompletedSlot": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "派遣完成"
+                ],
+                "roi": [
+                    150,
+                    840,
+                    500,
+                    390
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchCloseReturnPopup",
+            "DailyDispatchReturnCompletedTeam"
+        ]
+    },
+    "DailyDispatchReturnCompletedTeam": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "队伍归来",
+                    "隊伍歸來"
+                ],
+                "roi": [
+                    480,
+                    880,
+                    190,
+                    250
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchCloseReturnPopup",
+            "[JumpBack]CommonWaitLoading"
+        ]
+    },
+    "DailyDispatchCloseReturnPopup": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "派遣队归来",
+                    "派遣隊歸來",
+                    "获得道具一览",
+                    "獲得道具一覽",
+                    "关闭",
+                    "關閉"
+                ],
+                "roi": [
+                    230,
+                    160,
+                    270,
+                    960
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1065
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchScanOverview"
+        ]
+    },
+    "DailyDispatchOpenIdleSlot": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "闲置中"
+                ],
+                "roi": [
+                    150,
+                    840,
+                    500,
+                    390
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchPrepareIdleSlot"
+        ]
+    },
+    "DailyDispatchPrepareIdleSlot": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyDispatchNeedSelectRoom",
+            "DailyDispatchLaunchReady",
+            "DailyDispatchOpenTeamFormation",
+            "DailyDispatchSelectLocationStart"
+        ],
+        "timeout": 8000
+    },
+    "DailyDispatchNeedSelectRoom": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "请选择房间"
+                ],
+                "roi": [
+                    250,
+                    790,
+                    220,
+                    90
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectLocationStart"
+        ]
+    },
+    "DailyDispatchLaunchReady": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyDispatchStartButton",
+                    "__DailyDispatchTeamFilledColor"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1145
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 900,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyDispatchReturnOverviewFromBusySelection",
+            "DailyDispatchScanOverview"
+        ]
+    },
+    "__DailyDispatchStartButton": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "出发"
+                ],
+                "roi": [
+                    270,
+                    1080,
+                    180,
+                    130
+                ]
+            }
+        }
+    },
+    "__DailyDispatchTeamFilledColor": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    95,
+                    915,
+                    540,
+                    170
+                ],
+                "method": 40,
+                "lower": [
+                    0,
+                    70,
+                    80
+                ],
+                "upper": [
+                    179,
+                    255,
+                    255
+                ],
+                "count": 9000
+            }
+        }
+    },
+    "DailyDispatchSelectLocationStart": {
+        "next": [
+            "DailyDispatchSelectBedroom",
+            "DailyDispatchSelectDungeon",
+            "DailyDispatchSelectTraining",
+            "DailyDispatchSelectTreasureVault",
+            "DailyDispatchSelectSealRoom",
+            "DailyDispatchSwipeLocationListDown",
+            "DailyDispatchSelectBedroomAfterSwipe",
+            "DailyDispatchSelectDungeonAfterSwipe",
+            "DailyDispatchSelectTrainingAfterSwipe",
+            "DailyDispatchSelectTreasureVaultAfterSwipe",
+            "DailyDispatchSelectSealRoomAfterSwipe"
+        ],
+        "timeout": 8000,
+        "on_error": [
+            "DailyDispatchReturnOverviewFromSelection"
+        ]
+    },
+    "DailyDispatchSelectBedroom": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "魔王寝室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectBedroomTime1",
+            "DailyDispatchSelectBedroomTime2",
+            "DailyDispatchSelectBedroomTime3",
+            "DailyDispatchSelectBedroomTime4"
+        ]
+    },
+    "DailyDispatchSelectDungeon": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地牢"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectDungeonTime1",
+            "DailyDispatchSelectDungeonTime2",
+            "DailyDispatchSelectDungeonTime3",
+            "DailyDispatchSelectDungeonTime4"
+        ]
+    },
+    "DailyDispatchSelectTraining": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "训练所"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectTrainingTime1",
+            "DailyDispatchSelectTrainingTime2",
+            "DailyDispatchSelectTrainingTime3",
+            "DailyDispatchSelectTrainingTime4"
+        ]
+    },
+    "DailyDispatchSelectTreasureVault": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "宝藏库"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectTreasureVaultTime1",
+            "DailyDispatchSelectTreasureVaultTime2",
+            "DailyDispatchSelectTreasureVaultTime3",
+            "DailyDispatchSelectTreasureVaultTime4"
+        ]
+    },
+    "DailyDispatchSelectSealRoom": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "封印密室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectSealRoomTime1",
+            "DailyDispatchSelectSealRoomTime2",
+            "DailyDispatchSelectSealRoomTime3",
+            "DailyDispatchSelectSealRoomTime4"
+        ]
+    },
+    "DailyDispatchSelectBedroomAfterSwipe": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "魔王寝室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectBedroomTime1",
+            "DailyDispatchSelectBedroomTime2",
+            "DailyDispatchSelectBedroomTime3",
+            "DailyDispatchSelectBedroomTime4"
+        ]
+    },
+    "DailyDispatchSelectDungeonAfterSwipe": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地牢"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectDungeonTime1",
+            "DailyDispatchSelectDungeonTime2",
+            "DailyDispatchSelectDungeonTime3",
+            "DailyDispatchSelectDungeonTime4"
+        ]
+    },
+    "DailyDispatchSelectTrainingAfterSwipe": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "训练所"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectTrainingTime1",
+            "DailyDispatchSelectTrainingTime2",
+            "DailyDispatchSelectTrainingTime3",
+            "DailyDispatchSelectTrainingTime4"
+        ]
+    },
+    "DailyDispatchSelectTreasureVaultAfterSwipe": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "宝藏库"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectTreasureVaultTime1",
+            "DailyDispatchSelectTreasureVaultTime2",
+            "DailyDispatchSelectTreasureVaultTime3",
+            "DailyDispatchSelectTreasureVaultTime4"
+        ]
+    },
+    "DailyDispatchSelectSealRoomAfterSwipe": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "封印密室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchSelectSealRoomTime1",
+            "DailyDispatchSelectSealRoomTime2",
+            "DailyDispatchSelectSealRoomTime3",
+            "DailyDispatchSelectSealRoomTime4"
+        ]
+    },
+    "DailyDispatchSelectBedroomTime1": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "魔王寝室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    -155,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectBedroomTime2": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "魔王寝室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    -50,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectBedroomTime3": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "魔王寝室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    55,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectBedroomTime4": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "魔王寝室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    160,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectDungeonTime1": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地牢"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    -155,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectDungeonTime2": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地牢"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    -50,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectDungeonTime3": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地牢"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    55,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectDungeonTime4": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地牢"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    160,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectTrainingTime1": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "训练所"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    -155,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation",
+            "DailyDispatchSelectTrainingTime2"
+        ]
+    },
+    "DailyDispatchSelectTrainingTime2": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "训练所"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    -50,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation",
+            "DailyDispatchSelectTrainingTime3"
+        ]
+    },
+    "DailyDispatchSelectTrainingTime3": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "训练所"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    55,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation",
+            "DailyDispatchSelectTrainingTime4"
+        ]
+    },
+    "DailyDispatchSelectTrainingTime4": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "训练所"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    160,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation",
+            "DailyDispatchReturnOverviewFromSelection"
+        ]
+    },
+    "DailyDispatchSelectTreasureVaultTime1": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "宝藏库"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    -155,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectTreasureVaultTime2": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "宝藏库"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    -50,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectTreasureVaultTime3": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "宝藏库"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    55,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectTreasureVaultTime4": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "宝藏库"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    160,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectSealRoomTime1": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "封印密室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    -155,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectSealRoomTime2": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "封印密室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    -50,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectSealRoomTime3": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "封印密室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    55,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSelectSealRoomTime4": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "封印密室"
+                ],
+                "roi": [
+                    130,
+                    200,
+                    470,
+                    560
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    160,
+                    125,
+                    0,
+                    0
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchOpenTeamFormation"
+        ]
+    },
+    "DailyDispatchSwipeLocationListDown": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    625,
+                    490
+                ],
+                "end": [
+                    625,
+                    220
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchSelectBedroomAfterSwipe",
+            "DailyDispatchSelectDungeonAfterSwipe",
+            "DailyDispatchSelectTrainingAfterSwipe",
+            "DailyDispatchSelectTreasureVaultAfterSwipe",
+            "DailyDispatchSelectSealRoomAfterSwipe"
+        ]
+    },
+    "DailyDispatchOpenTeamFormation": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "Bonus奖励条件",
+                    "Bonus獎勵條件"
+                ],
+                "roi": [
+                    80,
+                    760,
+                    560,
+                    270
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    155,
+                    980
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchAutoFormation"
+        ],
+        "on_error": [
+            "DailyDispatchSelectLocationStart"
+        ]
+    },
+    "DailyDispatchAutoFormation": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "条件推荐",
+                    "條件推薦"
+                ],
+                "roi": [
+                    500,
+                    450,
+                    180,
+                    100
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchConfirmNoRecommendedTeam",
+            "DailyDispatchClickPersonnelSupplement",
+            "DailyDispatchManualFillTeam"
+        ]
+    },
+    "DailyDispatchConfirmNoRecommendedTeam": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "没有满足需求的编队",
+                    "沒有滿足需求的編隊",
+                    "确定"
+                ],
+                "roi": [
+                    170,
+                    470,
+                    380,
+                    300
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    742
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillTeam"
+        ]
+    },
+    "DailyDispatchClickPersonnelSupplement": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "人员补充",
+                    "人員補充"
+                ],
+                "roi": [
+                    500,
+                    450,
+                    180,
+                    100
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchFormationReturn"
+        ],
+        "on_error": [
+            "DailyDispatchManualFillTeam"
+        ]
+    },
+    "DailyDispatchManualFillTeam": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "奖励条件",
+                    "獎勵條件"
+                ],
+                "roi": [
+                    90,
+                    450,
+                    220,
+                    120
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe1"
+        ]
+    },
+    "DailyDispatchManualFillSwipe1": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    155,
+                    760
+                ],
+                "end": [
+                    155,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe2"
+        ]
+    },
+    "DailyDispatchManualFillSwipe2": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    260,
+                    760
+                ],
+                "end": [
+                    260,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe3"
+        ]
+    },
+    "DailyDispatchManualFillSwipe3": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    365,
+                    760
+                ],
+                "end": [
+                    365,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe4"
+        ]
+    },
+    "DailyDispatchManualFillSwipe4": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    470,
+                    760
+                ],
+                "end": [
+                    470,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe5"
+        ]
+    },
+    "DailyDispatchManualFillSwipe5": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    575,
+                    760
+                ],
+                "end": [
+                    575,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSlideList1"
+        ]
+    },
+    "DailyDispatchManualFillSlideList1": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    620,
+                    760
+                ],
+                "end": [
+                    200,
+                    760
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe6"
+        ]
+    },
+    "DailyDispatchManualFillSwipe6": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    155,
+                    760
+                ],
+                "end": [
+                    155,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe7"
+        ]
+    },
+    "DailyDispatchManualFillSwipe7": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    260,
+                    760
+                ],
+                "end": [
+                    260,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe8"
+        ]
+    },
+    "DailyDispatchManualFillSwipe8": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    365,
+                    760
+                ],
+                "end": [
+                    365,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe9"
+        ]
+    },
+    "DailyDispatchManualFillSwipe9": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    470,
+                    760
+                ],
+                "end": [
+                    470,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe10"
+        ]
+    },
+    "DailyDispatchManualFillSwipe10": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    575,
+                    760
+                ],
+                "end": [
+                    575,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSlideList2"
+        ]
+    },
+    "DailyDispatchManualFillSlideList2": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    620,
+                    760
+                ],
+                "end": [
+                    200,
+                    760
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe11"
+        ]
+    },
+    "DailyDispatchManualFillSwipe11": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    155,
+                    760
+                ],
+                "end": [
+                    155,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe12"
+        ]
+    },
+    "DailyDispatchManualFillSwipe12": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    260,
+                    760
+                ],
+                "end": [
+                    260,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe13"
+        ]
+    },
+    "DailyDispatchManualFillSwipe13": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    365,
+                    760
+                ],
+                "end": [
+                    365,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe14"
+        ]
+    },
+    "DailyDispatchManualFillSwipe14": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    470,
+                    760
+                ],
+                "end": [
+                    470,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchManualFillSwipe15"
+        ]
+    },
+    "DailyDispatchManualFillSwipe15": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    575,
+                    760
+                ],
+                "end": [
+                    575,
+                    320
+                ],
+                "duration": 1500
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchFormationReturnAfterManual"
+        ]
+    },
+    "DailyDispatchFormationReturnAfterManual": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "条件推荐",
+                    "條件推薦",
+                    "奖励条件",
+                    "獎勵條件"
+                ],
+                "roi": [
+                    80,
+                    450,
+                    600,
+                    120
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchLaunchReady",
+            "DailyDispatchReturnOverviewFromSelection"
+        ]
+    },
+    "DailyDispatchFormationReturn": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "条件推荐",
+                    "條件推薦",
+                    "奖励条件",
+                    "獎勵條件"
+                ],
+                "roi": [
+                    80,
+                    450,
+                    600,
+                    120
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchPrepareIdleSlot"
+        ]
+    },
+    "DailyDispatchReturnOverviewFromSelection": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "出发",
+                    "请选择房间",
+                    "Bonus奖励条件",
+                    "Bonus獎勵條件"
+                ],
+                "roi": [
+                    80,
+                    760,
+                    560,
+                    470
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchScanOverview"
+        ]
+    },
+    "DailyDispatchReturnOverviewFromBusySelection": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "派遣中",
+                    "正在派遣中",
+                    "地城派遣中",
+                    "请选择房间"
+                ],
+                "roi": [
+                    80,
+                    430,
+                    560,
+                    470
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchScanOverview"
+        ]
+    },
+    "DailyDispatchReturnMainWhenAllBusy": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyDispatchOverviewTitle",
+                    "__DailyDispatchOverviewBusySlot"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchDone"
+        ]
+    },
+    "__DailyDispatchOverviewTitle": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地城派遣"
+                ],
+                "roi": [
+                    90,
+                    780,
+                    170,
+                    80
+                ]
+            }
+        }
+    },
+    "__DailyDispatchOverviewBusySlot": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "派遣中",
+                    "正在派遣中",
+                    "地城派遣中"
+                ],
+                "roi": [
+                    150,
+                    860,
+                    500,
+                    390
+                ]
+            }
+        }
+    },
+    "DailyDispatchWaitLoading": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "LOADING",
+                    "LOAD ING"
+                ],
+                "roi": [
+                    250,
+                    1190,
+                    230,
+                    70
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchWaitLoading"
+        ]
+    },
+    "DailyDispatchDone": {
+        "next": [
+            "CommonStopOnMainWithRetries"
+        ]
+    }
+}
