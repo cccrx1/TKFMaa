@@ -29,6 +29,20 @@
 5. 先验证独立识别节点和动作，再运行完整任务。
 6. 执行 `maa-tools check`、JSON Schema 校验，并在 PR 中写明实机验证范围和结果。
 
+## 生成配置同步
+
+体力活动采用源配置与派生产物分离的方式：维护者编辑 `assets/stamina_activities.yaml`，再由 `tools/build_stamina_activities.py` 更新 `assets/interface.json` 中“体力消耗关卡”的 `default_case` 和 `cases`。不要直接编辑这些生成字段，否则下次运行脚本时会被覆盖。
+
+按以下顺序操作：
+
+1. 运行 `python tools/build_stamina_activities.py --check` 判断当前是否同步。
+2. 修改 YAML 或影响生成结果的脚本逻辑后，运行 `python tools/build_stamina_activities.py`。
+3. 再次运行 `python tools/build_stamina_activities.py --check`，必须得到同步成功结果。
+4. 审查 `assets/interface.json` 差异，确认只包含预期 Case、默认项和 Override 变化。
+5. 执行 Prettier、`maa-tools check`、JSON Schema 校验和受影响路线的实机验证。
+
+源配置、生成脚本和对应派生产物必须在同一提交中保持可复现。只修改无关任务或文档时无需运行生成命令；无法判断时运行 `--check`，不要为了“保险”无条件重写文件。
+
 ## 流程记录模板
 
 ```markdown

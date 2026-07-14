@@ -8,6 +8,8 @@
 - 在“体力消耗关卡”中确认目标；活动名称、路线、关卡文本和体力消耗以 `assets/stamina_activities.yaml` 为源配置。
 - 确认“扫荡不足时手动补刷”“使用体力药”和“购买体力”开关。后两项会消耗资源，默认关闭。
 
+活动更新后运行 `python tools/build_stamina_activities.py` 生成 `assets/interface.json` 中的活动 Case，不要直接编辑生成字段。提交前使用 `python tools/build_stamina_activities.py --check` 确认源配置与派生产物同步；脚本通过只代表配置一致，新增或变化的活动路线仍须在模拟器中验证。
+
 ## 主流程
 
 1. 从主界面进入出征，由 `DailyStaminaPresetRouteStart` 选择限时活动、日常政务或自动通关路线。
