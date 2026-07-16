@@ -1,11 +1,11 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <p align="center">
-  <img alt="MaaMFKT" src="assets/logo.png" width="256" height="256" />
+  <img alt="TKFMaa" src="assets/logo.png" width="256" height="256" />
 </p>
 
 <div align="center">
 
-# MaaMFKT
+# TKFMaa
 
 基于 [MaaFramework](https://github.com/MaaXYZ/MaaFramework) 的「天下布魔」日常自动化助手
 

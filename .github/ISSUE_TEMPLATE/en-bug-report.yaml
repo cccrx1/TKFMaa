@@ -43,9 +43,9 @@ body:
     attributes:
       label: Version
       description: >-
-        Please provide the MXX version.
+        Please provide the TKFMaa version.
       placeholder: |
-        MXX Version:
+        TKFMaa Version:
     validations:
       required: true
   - type: textarea
@@ -53,15 +53,16 @@ body:
     attributes:
       label: Log and config files
       description: >-
-        **After closing MXX, upload the following 3 files:**
-          1. The `maa.log` and `maa.bak.log` log file in the `debug` folder, and indicate the approximate point in time when the problem occurred.
-          2. The `maa_pi_config.json`(MaaPiCli) config file in the `config` folder
+        **After closing TKFMaa, upload the following:**
+          1. The root `maafw.log` and any rotated logs, and indicate approximately when the problem occurred.
+          2. Relevant logs or recognition screenshots from `debug`.
+          3. Relevant files from `config`; remove account details, tokens, and other secrets first.
 
         If you are using MacBook, please click the "File" option in the top-left corner of the screen, then click "Open Log Folder".
         **Please drag and drop the full file in, not your own cuttings or copies;**
         **compress it before uploading if too large.**
       placeholder: |
-        Please confirm that MXX is not running before uploading files.
+        Please confirm that TKFMaa is not running before uploading files.
     validations:
       required: true
   - type: textarea
@@ -84,9 +85,9 @@ body:
         If related to this issue, please upload them together.
 
         If available, upload screenshots and recordings to help explain your problem,
-        including but not limited to screenshots of MXX software,
-        screenshots of game screens, MXX debug screenshots (`debug/vision` path pictures,
-        after modifying `save_draw` in `config/maa_option.json` to `true`, run MXX again to obtain)
+        including but not limited to screenshots of TKFMaa,
+        game screens, and TKFMaa debug screenshots obtained after setting
+        `save_draw` to `true` in `config/maa_option.json` and running the task again.
 
         If the problem is **recognition related**, please help by providing
         the **original image** taken by the emulator's own screenshot tool
@@ -96,14 +97,14 @@ body:
         and their aspect ratio and resolution are inconsistent,
         which makes it harder for us to debug.
 
-        If the file siz is too large, you may compress it before uploading.
+        If the file size is too large, you may compress it before uploading.
 
     validations:
       required: false
   - type: textarea
     id: others
     attributes:
-      label: Anthing else?
+      label: Anything else?
       description: |
         Anything that will give us more insight into the problem you are having.
     validations:
