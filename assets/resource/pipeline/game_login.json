@@ -44,7 +44,31 @@
             "[JumpBack]GameCloseGift",
             "[JumpBack]GameTapTitleScreen",
             "GameMainReady"
+        ],
+        "on_error": [
+            "GameLoginRestartOnce",
+            "GameLoginStopAfterTimeout"
         ]
+    },
+    "GameLoginRestartOnce": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "DoNothing"
+        },
+        "next": [
+            "GameLoginStart"
+        ],
+        "max_hit": 1
+    },
+    "GameLoginStopAfterTimeout": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "StopTask"
+        }
     },
     "GameTapTitleScreen": {
         "recognition": {
