@@ -29,6 +29,8 @@
 5. 先验证独立识别节点和动作，再运行完整任务。
 6. 执行 `maa-tools check`、JSON Schema 校验，并在 PR 中写明实机验证范围和结果。
 
+开始实机采集前，在 [`task_capture_plan.md`](./task_capture_plan.md) 选择一个任务，并复制其中的单任务采集表。只有实际保存截图并核对页面后才能更新采集状态；现有 Pipeline、旧文档或推测流程不能计为已采集。
+
 ## 生成配置同步
 
 体力活动采用源配置与派生产物分离的方式：维护者编辑 `assets/stamina_activities.yaml`，再由 `tools/build_stamina_activities.py` 更新 `assets/interface.json` 中“体力消耗关卡”的 `default_case` 和 `cases`。不要直接编辑这些生成字段，否则下次运行脚本时会被覆盖。
