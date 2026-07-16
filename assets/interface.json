@@ -1613,16 +1613,6 @@
                         "指定调教次数"
                     ],
                     "pipeline_override": {
-                        "DailyTrainingConfigMode": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "指定次数"
-                                    ]
-                                }
-                            }
-                        },
                         "DailyTrainingClickCenterStart": {
                             "next": [
                                 "DailyTrainingClickCenterSlow"
@@ -1634,16 +1624,6 @@
                     "name": "全部点数",
                     "description": "尽量消耗当前可用调教点数，道具或点数不足后停止。",
                     "pipeline_override": {
-                        "DailyTrainingConfigMode": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "全部点数"
-                                    ]
-                                }
-                            }
-                        },
                         "DailyTrainingClickCenterStart": {
                             "next": [
                                 "DailyTrainingClickCenterAllPoints"
