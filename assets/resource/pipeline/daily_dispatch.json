@@ -2460,35 +2460,6 @@
             }
         }
     },
-    "DailyDispatchWaitLoading": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "LOADING",
-                    "LOAD ING"
-                ],
-                "roi": [
-                    250,
-                    1190,
-                    230,
-                    70
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchWaitLoading"
-        ]
-    },
     "DailyDispatchDone": {
         "next": [
             "CommonStopOnMainWithRetries"
