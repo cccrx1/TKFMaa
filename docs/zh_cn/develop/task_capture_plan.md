@@ -12,17 +12,17 @@
 
 ## 任务总表
 
-| 顺序 | 任务     | 入口节点                  | 计划采集的关键状态                                             | 风险 | 截图状态   | 实机验证         | 流程文档                                                                     |
-| ---- | -------- | ------------------------- | -------------------------------------------------------------- | ---- | ---------- | ---------------- | ---------------------------------------------------------------------------- |
-| 1    | 启动游戏 | `GameLoginStart`          | 桌面、资源检查、首登公告/签到、标题页、礼包、主界面            | 低   | 主流程完成 | 修复后行为通过   | [`task_game_login.md`](../task_flows/task_game_login.md)                     |
-| 2    | 领取体力 | `DailyFriendStaminaStart` | 主界面、玩家信息、好友加载、有/无一键领取、返回主界面          | 低   | 未开始     | 未开始           | [`task_daily_friend_stamina.md`](../task_flows/task_daily_friend_stamina.md) |
-| 3    | 奖励领取 | `DailyTaskRewardsStart`   | 任务入口、六个页签、有/无可领取、奖励弹窗、返回主界面          | 低   | 未开始     | 未开始           | [`task_daily_task_rewards.md`](../task_flows/task_daily_task_rewards.md)     |
-| 4    | 炼金订单 | `DailyAlchemyOrdersStart` | 左侧抽屉、炼金页、一键收取、可交付订单、奖励弹窗、返回         | 中   | 未开始     | 未开始           | [`task_daily_alchemy_orders.md`](../task_flows/task_daily_alchemy_orders.md) |
-| 5    | 每日派遣 | `DailyDispatchStart`      | 抽屉栏位、总览、归来弹窗、地点/时间、自动/手动编队、出发       | 中   | 未开始     | 未开始           | [`task_daily_dispatch.md`](../task_flows/task_daily_dispatch.md)             |
-| 6    | 商城购买 | `DailyShopStart`          | 商城入口、交易所、协会商店、商品详情、购买确认、不足提示、奖励 | 高   | 未开始     | 未开始           | [`task_daily_shop.md`](../task_flows/task_daily_shop.md)                     |
-| 7    | 调教     | `DailyTrainingStart`      | 次数状态、筛选面板、可调教房间、道具栏、执行页、不足弹窗       | 高   | 未开始     | 未开始           | [`task_daily_training.md`](../task_flows/task_daily_training.md)             |
-| 8    | 全境征才 | `DailyRecruitmentStart`   | 召唤入口、四栏总览、词条、时间、开始招募、结果、立即招募       | 高   | 未开始     | 未开始           | [`task_daily_recruitment.md`](../task_flows/task_daily_recruitment.md)       |
-| 9    | 消耗体力 | `DailyStaminaStart`       | 出征、活动选择、关卡列表、详情、扫荡、补充体力、战斗、结算     | 高   | 采集中     | 常规活动部分通过 | [`task_daily_stamina.md`](../task_flows/task_daily_stamina.md)               |
+| 顺序 | 任务     | 入口节点                  | 计划采集的关键状态                                             | 风险 | 截图状态   | 实机验证           | 流程文档                                                                     |
+| ---- | -------- | ------------------------- | -------------------------------------------------------------- | ---- | ---------- | ------------------ | ---------------------------------------------------------------------------- |
+| 1    | 启动游戏 | `GameLoginStart`          | 桌面、资源检查、首登公告/签到、标题页、礼包、主界面            | 低   | 主流程完成 | 修复后行为通过     | [`task_game_login.md`](../task_flows/task_game_login.md)                     |
+| 2    | 领取体力 | `DailyFriendStaminaStart` | 主界面、玩家信息、好友加载、有/无一键领取、返回主界面          | 低   | 未开始     | 未开始             | [`task_daily_friend_stamina.md`](../task_flows/task_daily_friend_stamina.md) |
+| 3    | 奖励领取 | `DailyTaskRewardsStart`   | 任务入口、六个页签、有/无可领取、奖励弹窗、返回主界面          | 低   | 未开始     | 未开始             | [`task_daily_task_rewards.md`](../task_flows/task_daily_task_rewards.md)     |
+| 4    | 炼金订单 | `DailyAlchemyOrdersStart` | 左侧抽屉、炼金页、一键收取、可交付订单、奖励弹窗、返回         | 中   | 未开始     | 未开始             | [`task_daily_alchemy_orders.md`](../task_flows/task_daily_alchemy_orders.md) |
+| 5    | 每日派遣 | `DailyDispatchStart`      | 抽屉栏位、总览、归来弹窗、地点/时间、自动/手动编队、出发       | 中   | 采集中     | 闲置与全忙路径通过 | [`task_daily_dispatch.md`](../task_flows/task_daily_dispatch.md)             |
+| 6    | 商城购买 | `DailyShopStart`          | 商城入口、交易所、协会商店、商品详情、购买确认、不足提示、奖励 | 高   | 未开始     | 未开始             | [`task_daily_shop.md`](../task_flows/task_daily_shop.md)                     |
+| 7    | 调教     | `DailyTrainingStart`      | 次数状态、筛选面板、可调教房间、道具栏、执行页、不足弹窗       | 高   | 未开始     | 未开始             | [`task_daily_training.md`](../task_flows/task_daily_training.md)             |
+| 8    | 全境征才 | `DailyRecruitmentStart`   | 召唤入口、四栏总览、词条、时间、开始招募、结果、立即招募       | 高   | 未开始     | 未开始             | [`task_daily_recruitment.md`](../task_flows/task_daily_recruitment.md)       |
+| 9    | 消耗体力 | `DailyStaminaStart`       | 出征、活动选择、关卡列表、详情、扫荡、补充体力、战斗、结算     | 高   | 采集中     | 常规活动部分通过   | [`task_daily_stamina.md`](../task_flows/task_daily_stamina.md)               |
 
 风险为“高”的任务会消耗货币、体力、招募资源或珍贵道具。采集到最终确认页后必须暂停，由用户确认是否继续。
 

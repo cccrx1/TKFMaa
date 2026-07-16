@@ -200,7 +200,11 @@
             "DailyDispatchOpenIdleSlot",
             "DailyDispatchReturnMainWhenAllBusy"
         ],
-        "timeout": 6000
+        "timeout": 6000,
+        "on_error": [
+            "DailyDispatchReturnMainAfterOverviewTimeout",
+            "DailyDispatchStopAfterOverviewTimeout"
+        ]
     },
     "DailyDispatchOpenCompletedSlot": {
         "recognition": {
@@ -235,7 +239,8 @@
         "next": [
             "DailyDispatchCloseReturnPopup",
             "DailyDispatchReturnCompletedTeam"
-        ]
+        ],
+        "max_hit": 8
     },
     "DailyDispatchReturnCompletedTeam": {
         "recognition": {
@@ -347,7 +352,8 @@
         },
         "next": [
             "DailyDispatchPrepareIdleSlot"
-        ]
+        ],
+        "max_hit": 8
     },
     "DailyDispatchPrepareIdleSlot": {
         "next": [
@@ -2425,6 +2431,45 @@
         "next": [
             "DailyDispatchDone"
         ]
+    },
+    "DailyDispatchReturnMainAfterOverviewTimeout": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyDispatchOverviewTitle"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    72
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "DailyDispatchDone"
+        ]
+    },
+    "DailyDispatchStopAfterOverviewTimeout": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "StopTask"
+        }
     },
     "__DailyDispatchOverviewTitle": {
         "recognition": {
