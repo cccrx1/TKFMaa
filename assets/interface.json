@@ -1531,10 +1531,7 @@
                     "name": "Yes",
                     "description": "扫荡券不足或扫荡后仍有足够体力时，继续使用开始/再次挑战手动补刷。",
                     "pipeline_override": {
-                        "DailyStaminaManualStartWhenSweepUnavailable": {
-                            "enabled": true
-                        },
-                        "DailyStaminaManualStartAfterSweep": {
+                        "DailyStaminaManualStart": {
                             "enabled": true
                         }
                     }
@@ -1543,10 +1540,7 @@
                     "name": "No",
                     "description": "只使用军团扫荡；扫荡不可用或扫荡后仍有体力也返回主界面停止。",
                     "pipeline_override": {
-                        "DailyStaminaManualStartWhenSweepUnavailable": {
-                            "enabled": false
-                        },
-                        "DailyStaminaManualStartAfterSweep": {
+                        "DailyStaminaManualStart": {
                             "enabled": false
                         }
                     }
@@ -1573,6 +1567,9 @@
                         "RegularActivityUsePotionPopup": {
                             "enabled": true
                         },
+                        "RegularActivityRefillWithPotionWhenLow": {
+                            "enabled": true
+                        },
                         "RegularActivitySelectPotionTab": {
                             "enabled": true
                         }
@@ -1592,6 +1589,9 @@
                             "enabled": false
                         },
                         "RegularActivityUsePotionPopup": {
+                            "enabled": false
+                        },
+                        "RegularActivityRefillWithPotionWhenLow": {
                             "enabled": false
                         },
                         "RegularActivitySelectPotionTab": {
@@ -1621,6 +1621,9 @@
                         "RegularActivityBuyStaminaPopup": {
                             "enabled": true
                         },
+                        "RegularActivityRefillWithCurrencyWhenLow": {
+                            "enabled": true
+                        },
                         "RegularActivitySelectCurrencyTab": {
                             "enabled": true
                         }
@@ -1640,6 +1643,9 @@
                             "enabled": false
                         },
                         "RegularActivityBuyStaminaPopup": {
+                            "enabled": false
+                        },
+                        "RegularActivityRefillWithCurrencyWhenLow": {
                             "enabled": false
                         },
                         "RegularActivitySelectCurrencyTab": {

@@ -19,8 +19,8 @@
             "[JumpBack]RegularActivityConfirmSkipStory",
             "[JumpBack]RegularActivitySkipStory",
             "RegularActivityUsePotionPopup",
-            "RegularActivityBuyStaminaPopup",
             "RegularActivitySelectPotionTab",
+            "RegularActivityBuyStaminaPopup",
             "RegularActivitySelectCurrencyTab",
             "[JumpBack]RegularActivityCloseStaminaPurchasePopup",
             "RegularActivityAbortUnknownRefillPopup",
@@ -272,7 +272,7 @@
         "action": {
             "type": "Click",
             "param": {
-                "target": "__RegularActivityNewText",
+                "target": true,
                 "target_offset": [
                     160,
                     75,
@@ -372,11 +372,15 @@
             "[JumpBack]RegularActivityConfirmSkipStory",
             "[JumpBack]RegularActivitySkipStory",
             "RegularActivityUsePotionPopup",
-            "RegularActivityBuyStaminaPopup",
             "RegularActivitySelectPotionTab",
+            "RegularActivityBuyStaminaPopup",
             "RegularActivitySelectCurrencyTab",
             "[JumpBack]RegularActivityCloseStaminaPurchasePopup",
             "RegularActivityAbortUnknownRefillPopup",
+            "[Anchor]RegularActivityLowDecision",
+            "RegularActivityRefillWithPotionWhenLow",
+            "RegularActivityRefillWithCurrencyWhenLow",
+            "RegularActivityReturnWhenStaminaLow",
             "RegularActivityStartManualBattle",
             "RegularActivityStageListDecision"
         ],
@@ -385,25 +389,25 @@
             "RegularActivityDone"
         ]
     },
-    "RegularActivityStartManualBattle": {
+    "RegularActivityRefillWithPotionWhenLow": {
+        "enabled": false,
         "recognition": {
-            "type": "OCR",
+            "type": "And",
             "param": {
-                "expected": [
-                    "开始"
+                "all_of": [
+                    "DailyStaminaPresetStaminaLow",
+                    "__RegularActivityStartButton"
                 ],
-                "roi": [
-                    260,
-                    1040,
-                    210,
-                    170
-                ]
+                "box_index": 1
             }
         },
         "action": {
             "type": "Click",
             "param": {
-                "target": true
+                "target": [
+                    360,
+                    1143
+                ]
             }
         },
         "post_wait_freezes": {
@@ -418,13 +422,139 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "RegularActivityUsePotionPopup",
-            "RegularActivityBuyStaminaPopup",
             "RegularActivitySelectPotionTab",
+            "RegularActivityBuyStaminaPopup",
+            "RegularActivitySelectCurrencyTab",
+            "RegularActivityCloseStaminaPurchasePopup",
+            "RegularActivityAbortUnknownRefillPopup"
+        ]
+    },
+    "RegularActivityRefillWithCurrencyWhenLow": {
+        "enabled": false,
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetStaminaLow",
+                    "__RegularActivityStartButton"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1143
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1200,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityBuyStaminaPopup",
+            "RegularActivitySelectCurrencyTab",
+            "RegularActivityCloseStaminaPurchasePopup",
+            "RegularActivityAbortUnknownRefillPopup"
+        ]
+    },
+    "RegularActivityReturnWhenStaminaLow": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetStaminaLow",
+                    "__RegularActivityStartButton"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    162,
+                    74
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1200,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityDone"
+        ]
+    },
+    "RegularActivityStartManualBattle": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetStaminaEnough",
+                    "__RegularActivityStartButton"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1143
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1200,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityUsePotionPopup",
+            "RegularActivitySelectPotionTab",
+            "RegularActivityBuyStaminaPopup",
             "RegularActivitySelectCurrencyTab",
             "[JumpBack]RegularActivityCloseStaminaPurchasePopup",
             "RegularActivityAbortUnknownRefillPopup",
             "RegularActivityWaitBattleResult"
         ]
+    },
+    "__RegularActivityStartButton": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "开始"
+                ],
+                "roi": [
+                    260,
+                    1040,
+                    210,
+                    170
+                ]
+            }
+        }
     },
     "RegularActivityWaitBattleResult": {
         "next": [
@@ -433,8 +563,8 @@
             "[JumpBack]RegularActivityEnableAutoBattle",
             "[JumpBack]RegularActivityBattleInProgress",
             "RegularActivityUsePotionPopup",
-            "RegularActivityBuyStaminaPopup",
             "RegularActivitySelectPotionTab",
+            "RegularActivityBuyStaminaPopup",
             "RegularActivitySelectCurrencyTab",
             "[JumpBack]RegularActivityCloseStaminaPurchasePopup",
             "RegularActivityAbortUnknownRefillPopup"
@@ -458,7 +588,7 @@
         "action": {
             "type": "Click",
             "param": {
-                "target": "__RegularActivityAutoOffButton"
+                "target": true
             }
         },
         "post_wait_freezes": {
@@ -484,7 +614,7 @@
         "action": {
             "type": "Click",
             "param": {
-                "target": "__RegularActivityReturnMapButton"
+                "target": true
             }
         },
         "post_wait_freezes": {
@@ -675,7 +805,7 @@
         "action": {
             "type": "Click",
             "param": {
-                "target": "StaminaPurchasePopupConfirm"
+                "target": true
             }
         },
         "post_wait_freezes": {
@@ -689,6 +819,7 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "RegularActivityConfirmPotionUse",
             "RegularActivityCloseStaminaPurchasePopupAfterPurchase",
             "RegularActivityStageDetailOrStory"
         ],
@@ -709,7 +840,50 @@
         "action": {
             "type": "Click",
             "param": {
-                "target": "StaminaPurchasePopupConfirm"
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityCurrencyPurchasedState"
+        ],
+        "max_hit": 1
+    },
+    "RegularActivityCurrencyPurchasedState": {
+        "anchor": "RegularActivityLowDecision",
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityCloseStaminaPurchasePopupAfterPurchase",
+            "RegularActivityReturnWhenStaminaLow",
+            "RegularActivityStartManualBattle",
+            "RegularActivityStageDetailOrStory"
+        ],
+        "timeout": 15000
+    },
+    "RegularActivityConfirmPotionUse": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "StaminaPurchasePopupCancel",
+                    "StaminaPurchasePopupConfirm"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
             }
         },
         "post_wait_freezes": {
@@ -725,8 +899,7 @@
             "[JumpBack]CommonWaitLoading",
             "RegularActivityCloseStaminaPurchasePopupAfterPurchase",
             "RegularActivityStageDetailOrStory"
-        ],
-        "max_hit": 1
+        ]
     },
     "RegularActivitySelectPotionTab": {
         "enabled": false,
@@ -742,7 +915,7 @@
         "action": {
             "type": "Click",
             "param": {
-                "target": "StaminaPurchasePopupPotionTabLabel"
+                "target": true
             }
         },
         "post_wait_freezes": {
@@ -776,7 +949,7 @@
         "action": {
             "type": "Click",
             "param": {
-                "target": "StaminaPurchasePopupCurrencyTabLabel"
+                "target": true
             }
         },
         "post_wait_freezes": {
@@ -809,7 +982,7 @@
         "action": {
             "type": "Click",
             "param": {
-                "target": "StaminaPurchasePopupCancel"
+                "target": true
             }
         },
         "post_wait_freezes": {
@@ -840,7 +1013,7 @@
         "action": {
             "type": "Click",
             "param": {
-                "target": "StaminaPurchasePopupCancel"
+                "target": true
             }
         },
         "post_wait_freezes": {
@@ -870,7 +1043,7 @@
         "action": {
             "type": "Click",
             "param": {
-                "target": "StaminaPurchasePopupCancel"
+                "target": true
             }
         },
         "post_wait_freezes": {
@@ -889,11 +1062,11 @@
     },
     "__RegularActivityPurchasePopupMarker": {
         "recognition": {
-            "type": "Or",
+            "type": "And",
             "param": {
-                "any_of": [
-                    "__RegularActivityPurchasePopupCurrency",
-                    "__RegularActivityPurchasePopupMedicine"
+                "all_of": [
+                    "StaminaPurchasePopupPotionTabLabel",
+                    "StaminaPurchasePopupCurrencyTabLabel"
                 ]
             }
         }

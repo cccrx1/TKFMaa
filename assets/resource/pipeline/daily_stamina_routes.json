@@ -509,21 +509,6 @@
             "DailyStaminaStageNotFoundGiveUp"
         ]
     },
-    "DailyStaminaRouteIdolLiveFirstPageStart": {
-        "next": [
-            "DailyStaminaRouteRegularPagedFirstPageStart"
-        ]
-    },
-    "DailyStaminaRouteIdolLiveFirstPageReady": {
-        "next": [
-            "DailyStaminaRouteRegularPagedFirstPageReady"
-        ]
-    },
-    "DailyStaminaRouteIdolLivePreviousPage": {
-        "next": [
-            "DailyStaminaRouteRegularPagedPreviousPage"
-        ]
-    },
     "DailyStaminaRouteDailyAffairsStart": {
         "next": [
             "[JumpBack]CommonWaitLoading",
