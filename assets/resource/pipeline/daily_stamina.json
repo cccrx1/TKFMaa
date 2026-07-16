@@ -428,7 +428,34 @@
             "DailyStaminaAbortUnknownRefillPopup",
             "DailyStaminaConfirmSweepResult"
         ],
-        "timeout": 180000
+        "timeout": 180000,
+        "on_error": [
+            "DailyStaminaRecoverSweepTimeout"
+        ]
+    },
+    "DailyStaminaRecoverSweepTimeout": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyStaminaUsePotionPopup",
+            "DailyStaminaBuyStaminaPopup",
+            "DailyStaminaSelectPotionTab",
+            "DailyStaminaSelectCurrencyTab",
+            "DailyStaminaCloseStaminaPurchasePopup",
+            "DailyStaminaAbortUnknownRefillPopup",
+            "DailyStaminaConfirmSweepResult",
+            "DailyStaminaReturnMainFromStageDetail",
+            "DailyStaminaReturnMainFromStageList",
+            "CommonStopOnMain",
+            "DailyStaminaStopAfterSweepTimeout"
+        ]
+    },
+    "DailyStaminaStopAfterSweepTimeout": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "StopTask"
+        }
     },
     "DailyStaminaConfirmSweepResult": {
         "recognition": {
