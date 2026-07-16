@@ -1,55 +1,70 @@
 {
     "GameLoginStart": {
+        "recognition": {
+            "type": "DirectHit"
+        },
         "action": {
             "type": "StopApp",
             "param": {
                 "package": "com.pinkcore.tkfm"
             }
         },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "GameLoginLaunch"
         ]
     },
     "GameLoginLaunch": {
+        "recognition": {
+            "type": "DirectHit"
+        },
         "action": {
             "type": "StartApp",
             "param": {
                 "package": "com.pinkcore.tkfm"
             }
         },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+        "next": [
+            "GameLoginDispatch"
+        ]
+    },
+    "GameLoginDispatch": {
+        "recognition": {
+            "type": "DirectHit"
         },
-        "timeout": 180000,
+        "action": {
+            "type": "DoNothing"
+        },
+        "timeout": 360000,
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "[JumpBack]GameWaitResourceCheck",
             "[JumpBack]GameCloseAnnouncement",
             "[JumpBack]GameCloseEventSignIn",
-            "GameTapTitleScreen"
+            "[JumpBack]GameCloseSignIn",
+            "[JumpBack]GameCloseGift",
+            "[JumpBack]GameTapTitleScreen",
+            "GameMainReady"
         ]
     },
     "GameTapTitleScreen": {
         "recognition": {
-            "type": "Or",
+            "type": "OCR",
             "param": {
-                "any_of": [
-                    "__GameTitleTapToStartOcr",
-                    "__GameTitleVersionOcr"
+                "expected": [
+                    "TAPTO START",
+                    "TAP TO START",
+                    "TAPTOSTART",
+                    "TAPTOSTAR",
+                    "Ver",
+                    "Ver.",
+                    "Ver.2.2.1"
+                ],
+                "threshold": 0.3,
+                "roi": [
+                    180,
+                    1060,
+                    540,
+                    220
                 ]
             }
         },
@@ -62,93 +77,27 @@
                 ]
             }
         },
-        "pre_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "[JumpBack]CommonWaitLoading",
-            "[JumpBack]GameCloseEventSignIn",
-            "[JumpBack]GameTapTitleScreen",
-            "GameAwaitGiftAfterTitle"
-        ],
-        "max_hit": 10
+        "rate_limit": 2000,
+        "max_hit": 5
     },
-    "GameAwaitGiftAfterTitle": {
-        "timeout": 120000,
-        "next": [
-            "[JumpBack]CommonWaitLoading",
-            "[JumpBack]GameCloseAnnouncement",
-            "[JumpBack]GameCloseEventSignIn",
-            "[JumpBack]GameCloseSignIn",
-            "GameCloseGift",
-            "GameMainReady"
-        ]
-    },
-    "GameCloseEventSignIn": {
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    "GameEventSignInName",
-                    "__GameEventSignInRewardMarker"
-                ],
-                "box_index": 1
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    624,
-                    664
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 800,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "max_hit": 2
-    },
-    "GameEventSignInName": {
+    "GameWaitResourceCheck": {
         "recognition": {
             "type": "OCR",
             "param": {
-                "roi": [
-                    80,
-                    500,
-                    560,
-                    260
-                ],
-                "threshold": 0.25,
                 "expected": [
-                    "耐久直播",
-                    "耐久世播"
+                    "资源检查中",
+                    "档案读取中"
+                ],
+                "roi": [
+                    180,
+                    1120,
+                    360,
+                    130
                 ]
             }
         }
     },
-    "__GameEventSignInRewardMarker": {
+    "GameCloseEventSignIn": {
         "recognition": {
             "type": "OCR",
             "param": {
@@ -165,7 +114,26 @@
                     "UTC+8"
                 ]
             }
-        }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    1135
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 800,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "max_hit": 2
     },
     "GameCloseAnnouncement": {
         "recognition": {
@@ -190,7 +158,7 @@
             "param": {
                 "target": [
                     360,
-                    1205
+                    1155
                 ]
             }
         },
@@ -205,46 +173,6 @@
         },
         "max_hit": 3
     },
-    "__GameTitleTapToStartOcr": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "TAPTO START",
-                    "TAP TO START",
-                    "TAPTOSTART",
-                    "TAPTOSTAR",
-                    "TOUCH SCREEN"
-                ],
-                "threshold": 0.3,
-                "roi": [
-                    180,
-                    1060,
-                    360,
-                    170
-                ]
-            }
-        }
-    },
-    "__GameTitleVersionOcr": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "Ver",
-                    "Ver.",
-                    "Ver.2.2.1"
-                ],
-                "threshold": 0.3,
-                "roi": [
-                    500,
-                    1200,
-                    220,
-                    80
-                ]
-            }
-        }
-    },
     "GameCloseSignIn": {
         "recognition": {
             "type": "OCR",
@@ -253,11 +181,10 @@
                     0,
                     0,
                     720,
-                    1280
+                    1080
                 ],
                 "threshold": 0.3,
                 "expected": [
-                    "6月",
                     "奖励已送至仓库",
                     "每日获得(连续30天)",
                     "每日获得(连续30 天)",
@@ -269,8 +196,8 @@
             "type": "Click",
             "param": {
                 "target": [
-                    40,
-                    60
+                    360,
+                    1135
                 ]
             }
         },
@@ -283,72 +210,9 @@
                 0
             ]
         },
-        "next": [
-            "[JumpBack]CommonWaitLoading",
-            "GameAwaitGiftAfterTitle"
-        ],
         "max_hit": 2
     },
     "GameCloseGift": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    0,
-                    0,
-                    720,
-                    1280
-                ],
-                "threshold": 0.3,
-                "expected": [
-                    "STEP",
-                    "限时",
-                    "精选",
-                    "月卡"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    40,
-                    60
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "[JumpBack]CommonWaitLoading",
-            "[JumpBack]GameCloseGift",
-            "GameMainReady"
-        ],
-        "max_hit": 2
-    },
-    "__GameGiftBackButton": {
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "template": "GameLogin/BackButton.png",
-                "roi": [
-                    0,
-                    30,
-                    150,
-                    90
-                ],
-                "threshold": 0.75
-            }
-        }
-    },
-    "__GameGiftTopTabsOcr": {
         "recognition": {
             "type": "OCR",
             "param": {
@@ -365,52 +229,38 @@
                     "月卡"
                 ]
             }
-        }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    75
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "max_hit": 3
     },
     "GameMainReady": {
         "recognition": {
             "type": "And",
             "param": {
                 "all_of": [
-                    "__GameMainExpeditionButton",
-                    "__GameMainTrainingButton"
+                    "CommonMainReady"
                 ]
             }
         },
         "action": {
             "type": "StopTask"
-        }
-    },
-    "__GameMainExpeditionButton": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    450,
-                    820,
-                    230,
-                    160
-                ],
-                "expected": [
-                    "出征"
-                ]
-            }
-        }
-    },
-    "__GameMainTrainingButton": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    570,
-                    1000,
-                    120,
-                    110
-                ],
-                "expected": [
-                    "调教"
-                ]
-            }
         }
     }
 }
