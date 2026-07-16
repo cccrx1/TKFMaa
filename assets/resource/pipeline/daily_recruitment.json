@@ -53,21 +53,6 @@
             "[JumpBack]DailyRecruitmentStart"
         ]
     },
-    "__DailyRecruitmentMainSummonButton": {
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "template": "DailyRecruitment/SummonText.png",
-                "roi": [
-                    390,
-                    980,
-                    170,
-                    130
-                ],
-                "threshold": 0.72
-            }
-        }
-    },
     "DailyRecruitmentOpenFullRegion": {
         "recognition": {
             "type": "OCR",
@@ -1995,71 +1980,6 @@
         "next": [
             "DailyRecruitmentDone"
         ]
-    },
-    "DailyRecruitmentReturnMainFromSummon": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    0,
-                    1120,
-                    720,
-                    100
-                ],
-                "expected": [
-                    "常驻召唤",
-                    "全境征才",
-                    "心愿召唤"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    40,
-                    75
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyRecruitmentDone"
-        ]
-    },
-    "DailyRecruitmentWaitLoading": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "LOADING",
-                    "LOAD ING"
-                ],
-                "roi": [
-                    250,
-                    1190,
-                    230,
-                    70
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        }
     },
     "DailyRecruitmentDone": {
         "recognition": {
