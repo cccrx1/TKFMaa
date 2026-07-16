@@ -107,7 +107,8 @@
         "next": [
             "DailyFriendStaminaWaitFriendListLoading",
             "DailyFriendStaminaCloseProfileForRetry"
-        ]
+        ],
+        "max_hit": 8
     },
     "__DailyFriendStaminaFriendListLoadingText": {
         "recognition": {
@@ -254,7 +255,8 @@
         },
         "next": [
             "DailyFriendStaminaOpenProfileFromMain"
-        ]
+        ],
+        "max_hit": 1
     },
     "DailyFriendStaminaDone": {
         "next": [
