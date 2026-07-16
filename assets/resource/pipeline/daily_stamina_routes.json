@@ -29,12 +29,18 @@
         ]
     },
     "DailyStaminaRouteActivityListFindSelected": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "DoNothing"
+        },
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaRouteActivityListEnterSelected",
             "DailyStaminaRouteActivityListSelectSlot2"
         ],
-        "timeout": 6000
+        "timeout": 12000
     },
     "DailyStaminaRouteActivityListEnterSelected": {
         "recognition": {
@@ -66,51 +72,14 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaPresetInnerRouteStart",
-            "DailyStaminaRouteActivityListEnterSelected"
+            "DailyStaminaRouteActivityListEnterSelected",
+            "DailyStaminaStageNotFoundGiveUp"
         ],
         "max_hit": 4
     },
-    "DailyStaminaRouteActivityListSelectSlot1": {
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    "__DailyStaminaActivitySelectionReady"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    168,
-                    704
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 800,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "[JumpBack]CommonWaitLoading",
-            "DailyStaminaRouteActivityListEnterSelected",
-            "DailyStaminaRouteActivityListSelectSlot2"
-        ]
-    },
     "DailyStaminaRouteActivityListSelectSlot2": {
         "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    "__DailyStaminaActivitySelectionReady"
-                ]
-            }
+            "type": "DirectHit"
         },
         "action": {
             "type": "Click",
@@ -138,12 +107,7 @@
     },
     "DailyStaminaRouteActivityListSelectSlot3": {
         "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    "__DailyStaminaActivitySelectionReady"
-                ]
-            }
+            "type": "DirectHit"
         },
         "action": {
             "type": "Click",
@@ -165,18 +129,9 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "DailyStaminaRouteActivityListEnterSelected"
+            "DailyStaminaRouteActivityListEnterSelected",
+            "DailyStaminaStageNotFoundGiveUp"
         ]
-    },
-    "__DailyStaminaActivitySelectionReady": {
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    "DailyStaminaPresetActivitySection"
-                ]
-            }
-        }
     },
     "DailyStaminaRouteInnerSpecialUiStart": {
         "recognition": {
@@ -489,7 +444,7 @@
             "DailyStaminaStageNotFoundGiveUp"
         ]
     },
-    "DailyStaminaRouteIdolLiveFirstPageStart": {
+    "DailyStaminaRouteRegularPagedFirstPageStart": {
         "recognition": {
             "type": "And",
             "param": {
@@ -499,13 +454,13 @@
             }
         },
         "next": [
-            "DailyStaminaRouteIdolLiveFirstPageReady",
-            "DailyStaminaRouteIdolLivePreviousPage",
+            "DailyStaminaRouteRegularPagedFirstPageReady",
+            "DailyStaminaRouteRegularPagedPreviousPage",
             "DailyStaminaStageNotFoundGiveUp"
         ],
         "timeout": 6000
     },
-    "DailyStaminaRouteIdolLiveFirstPageReady": {
+    "DailyStaminaRouteRegularPagedFirstPageReady": {
         "recognition": {
             "type": "And",
             "param": {
@@ -518,7 +473,7 @@
             "DailyStaminaRouteInnerNormalListStart"
         ]
     },
-    "DailyStaminaRouteIdolLivePreviousPage": {
+    "DailyStaminaRouteRegularPagedPreviousPage": {
         "recognition": {
             "type": "And",
             "param": {
@@ -547,11 +502,26 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "DailyStaminaRouteIdolLiveFirstPageStart"
+            "DailyStaminaRouteRegularPagedFirstPageStart"
         ],
         "max_hit": 4,
         "on_error": [
             "DailyStaminaStageNotFoundGiveUp"
+        ]
+    },
+    "DailyStaminaRouteIdolLiveFirstPageStart": {
+        "next": [
+            "DailyStaminaRouteRegularPagedFirstPageStart"
+        ]
+    },
+    "DailyStaminaRouteIdolLiveFirstPageReady": {
+        "next": [
+            "DailyStaminaRouteRegularPagedFirstPageReady"
+        ]
+    },
+    "DailyStaminaRouteIdolLivePreviousPage": {
+        "next": [
+            "DailyStaminaRouteRegularPagedPreviousPage"
         ]
     },
     "DailyStaminaRouteDailyAffairsStart": {

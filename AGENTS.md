@@ -21,6 +21,8 @@
 
 `assets/stamina_activities.yaml` 是“体力消耗关卡”选项的唯一源数据，`assets/interface.json` 中对应的 `default_case` 和 `cases` 由 `tools/build_stamina_activities.py` 生成，不应手工修改。修改 YAML，或修改生成脚本中会影响输出的模板、校验和 Override 逻辑后，必须运行生成命令，并将源文件、脚本改动和生成后的 `assets/interface.json` 放在同一提交中。
 
+同一活动包含多个关卡时使用 `activity_groups`：活动名称、页面 marker 和公共 Override 放入 `base`，各关卡差异放入 `cases`；`templates` 仅描述可跨活动复用的内部 UI 路线，不写具体活动名称。四类模板、字段要求和示例见 `docs/zh_cn/develop/stamina_activity_config.md`。
+
 不确定是否需要重新生成时，先运行 `python tools/build_stamina_activities.py --check`：退出码为 0 表示已同步，无需生成；提示 `is not in sync` 时运行不带 `--check` 的生成命令，再次执行 `--check`。仅修改其他任务、文档或不影响输出的脚本注释时不需要生成，但提交前仍建议执行检查。生成后还必须运行 Prettier、`maa-tools check` 和 JSON Schema 校验，生成成功不等于 Pipeline 行为已通过实机验证。
 
 ## 代码风格与命名约定

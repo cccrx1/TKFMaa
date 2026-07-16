@@ -35,10 +35,24 @@
 
 体力活动采用源配置与派生产物分离的方式：维护者编辑 `assets/stamina_activities.yaml`，再由 `tools/build_stamina_activities.py` 更新 `assets/interface.json` 中“体力消耗关卡”的 `default_case` 和 `cases`。不要直接编辑这些生成字段，否则下次运行脚本时会被覆盖。
 
+同一活动下有多个关卡时，优先使用 `activity_groups`：`base` 只写一次活动名称、活动内页面 marker 和公共 Override，`cases` 仅填写关卡后缀、关卡 OCR、特殊体力消耗以及自动通关等差异。`templates` 只描述可跨活动复用的 UI 路线，不应写入某一期活动名称。只有无法归入活动组的独立关卡才直接放入顶层 `activities`。字段说明和完整示例见 [`stamina_activity_config.md`](./stamina_activity_config.md)。
+
+当前按真实活动内部 UI 保留四类活动模板，并为日常政务保留一类通用列表模板：
+
+| 模板                          | 内部路线           | 活动组 `base` 还需填写                            |
+| ----------------------------- | ------------------ | ------------------------------------------------- |
+| `regular_paged_list`          | 常规活动分页列表   | 活动名、列表 marker、第一页 marker                |
+| `rerun_activity_map`          | 复刻活动二维地图   | 活动名、地图 marker、`rerun.column`、关卡 OCR     |
+| `large_activity_stage_icon`   | 大型活动关卡图标页 | 活动名、`inner_title`、`stage_entry`、列表 marker |
+| `large_activity_direct_stage` | 大型活动直接关卡页 | 活动名、`inner_title`、关卡 OCR                   |
+| `daily_affairs_list`          | 日常政务分类列表   | 活动区、活动名、分类、列表 marker、关卡 OCR       |
+
+`large_activity_direct_stage` 底层沿用历史节点名 `challenge_button`，表示大型活动内部的关卡按钮形态，不是活动开放数天后出现的“挑战活动”入口；后者仍不在自动通关范围内。
+
 按以下顺序操作：
 
 1. 运行 `python tools/build_stamina_activities.py --check` 判断当前是否同步。
-2. 修改 YAML 或影响生成结果的脚本逻辑后，运行 `python tools/build_stamina_activities.py`。
+2. 同 UI 活动换期时复制对应 `activity_groups`，修改 `case_prefix`、`activity_name`、第一页/列表 marker 和 `cases`；修改 YAML 或影响生成结果的脚本逻辑后，运行 `python tools/build_stamina_activities.py`。
 3. 再次运行 `python tools/build_stamina_activities.py --check`，必须得到同步成功结果。
 4. 审查 `assets/interface.json` 差异，确认只包含预期 Case、默认项和 Override 变化。
 5. 执行 Prettier、`maa-tools check`、JSON Schema 校验和受影响路线的实机验证。

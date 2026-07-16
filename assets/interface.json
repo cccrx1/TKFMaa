@@ -194,8 +194,16 @@
                             }
                         },
                         "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
                             "next": [
-                                "DailyStaminaRouteIdolLiveFirstPageStart"
+                                "DailyStaminaRouteRegularPagedFirstPageStart"
                             ]
                         },
                         "DailyStaminaPresetActivityName": {
@@ -354,8 +362,16 @@
                             }
                         },
                         "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
                             "next": [
-                                "DailyStaminaRouteIdolLiveFirstPageStart"
+                                "DailyStaminaRouteRegularPagedFirstPageStart"
                             ]
                         },
                         "DailyStaminaPresetActivityName": {
@@ -514,8 +530,16 @@
                             }
                         },
                         "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
                             "next": [
-                                "DailyStaminaRouteIdolLiveFirstPageStart"
+                                "DailyStaminaRouteRegularPagedFirstPageStart"
                             ]
                         },
                         "DailyStaminaPresetActivityName": {
@@ -674,8 +698,16 @@
                             }
                         },
                         "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
                             "next": [
-                                "DailyStaminaRouteIdolLiveFirstPageStart"
+                                "DailyStaminaRouteRegularPagedFirstPageStart"
                             ]
                         },
                         "DailyStaminaPresetActivityName": {
@@ -834,8 +866,16 @@
                             }
                         },
                         "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
                             "next": [
-                                "DailyStaminaRouteIdolLiveFirstPageStart"
+                                "DailyStaminaRouteRegularPagedFirstPageStart"
                             ]
                         },
                         "DailyStaminaPresetActivityName": {
@@ -994,8 +1034,16 @@
                             }
                         },
                         "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
                             "next": [
-                                "DailyStaminaRouteIdolLiveFirstPageStart"
+                                "DailyStaminaRouteRegularPagedFirstPageStart"
                             ]
                         },
                         "DailyStaminaPresetActivityName": {
@@ -1130,11 +1178,11 @@
                 },
                 {
                     "name": "Idol Live - 自动通关",
-                    "description": "限时活动外部路线 + 常规活动通关：选择 Idol Live，按 NEW 标记推进未通关关卡，自动跳过剧情并手动完成战斗。",
+                    "description": "复用统一活动外部寻路进入 Idol Live 本体，再按 NEW 标记推进未通关关卡，自动跳过剧情并完成战斗。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
-                                "RegularActivityStart"
+                                "DailyStaminaRouteActivitySectionStart"
                             ]
                         },
                         "DailyStaminaPresetActivitySection": {
@@ -1154,8 +1202,16 @@
                             }
                         },
                         "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
                             "next": [
-                                "DailyStaminaRouteIdolLiveFirstPageStart"
+                                "RegularActivityStageListDecision"
                             ]
                         },
                         "DailyStaminaPresetActivityName": {
@@ -1285,22 +1341,6 @@
                                 }
                             }
                         },
-                        "RegularActivityPresetActivityName": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "Idol Live"
-                                    ],
-                                    "roi": [
-                                        70,
-                                        770,
-                                        580,
-                                        80
-                                    ]
-                                }
-                            }
-                        },
                         "RegularActivityPresetStageListMarker": {
                             "recognition": {
                                 "type": "OCR",
@@ -1347,6 +1387,14 @@
                             }
                         },
                         "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetDailyAffairsCategory"
+                                    ]
+                                }
+                            },
                             "next": [
                                 "DailyStaminaRouteDailyAffairsStart"
                             ]
@@ -1511,12 +1559,21 @@
             "cases": [
                 {
                     "name": "Yes",
-                    "description": "体力不足时尝试打开扫荡并使用体力药，成功补充后继续扫荡。",
+                    "description": "体力不足时按临期顺序逐瓶使用体力药，补足后继续，单次任务最多使用 10 瓶。",
                     "pipeline_override": {
                         "DailyStaminaRefillWithPotionWhenLow": {
                             "enabled": true
                         },
                         "DailyStaminaUsePotionPopup": {
+                            "enabled": true
+                        },
+                        "DailyStaminaSelectPotionTab": {
+                            "enabled": true
+                        },
+                        "RegularActivityUsePotionPopup": {
+                            "enabled": true
+                        },
+                        "RegularActivitySelectPotionTab": {
                             "enabled": true
                         }
                     }
@@ -1530,6 +1587,15 @@
                         },
                         "DailyStaminaUsePotionPopup": {
                             "enabled": false
+                        },
+                        "DailyStaminaSelectPotionTab": {
+                            "enabled": false
+                        },
+                        "RegularActivityUsePotionPopup": {
+                            "enabled": false
+                        },
+                        "RegularActivitySelectPotionTab": {
+                            "enabled": false
                         }
                     }
                 }
@@ -1541,12 +1607,21 @@
             "cases": [
                 {
                     "name": "Yes",
-                    "description": "体力不足且出现魔晶石兑换提示时允许购买体力，购买后继续扫荡。",
+                    "description": "体力不足且出现魔晶石兑换提示时，按弹窗当前价格购买一次体力并继续当前流程。",
                     "pipeline_override": {
                         "DailyStaminaRefillWithCurrencyWhenLow": {
                             "enabled": true
                         },
                         "DailyStaminaBuyStaminaPopup": {
+                            "enabled": true
+                        },
+                        "DailyStaminaSelectCurrencyTab": {
+                            "enabled": true
+                        },
+                        "RegularActivityBuyStaminaPopup": {
+                            "enabled": true
+                        },
+                        "RegularActivitySelectCurrencyTab": {
                             "enabled": true
                         }
                     }
@@ -1559,6 +1634,15 @@
                             "enabled": false
                         },
                         "DailyStaminaBuyStaminaPopup": {
+                            "enabled": false
+                        },
+                        "DailyStaminaSelectCurrencyTab": {
+                            "enabled": false
+                        },
+                        "RegularActivityBuyStaminaPopup": {
+                            "enabled": false
+                        },
+                        "RegularActivitySelectCurrencyTab": {
                             "enabled": false
                         }
                     }

@@ -1,5 +1,11 @@
 {
     "DailyStaminaPresetRouteStart": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "DoNothing"
+        },
         "next": [
             "DailyStaminaRouteActivitySectionStart"
         ]
@@ -21,14 +27,19 @@
         }
     },
     "DailyStaminaPresetInnerRouteStart": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetRerunMapMarker"
+                ]
+            }
+        },
+        "action": {
+            "type": "DoNothing"
+        },
         "next": [
             "DailyStaminaRouteInnerRerunUiStart"
-        ]
-    },
-    "DailyStaminaPresetInnerRouteChallengeExample": {
-        "enabled": false,
-        "next": [
-            "DailyStaminaRouteInnerChallengeUiStart"
         ]
     },
     "DailyStaminaPresetRerunMapMarker": {
@@ -53,7 +64,7 @@
             "type": "OCR",
             "param": {
                 "expected": [
-                    "传说中的魔法少女"
+                    "__UNCONFIGURED_ACTIVITY_NAME__"
                 ],
                 "roi": [
                     70,
@@ -115,46 +126,12 @@
             }
         }
     },
-    "DailyStaminaPresetStageListTargetTitle": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "招募-02",
-                    "招募02"
-                ],
-                "roi": [
-                    0,
-                    160,
-                    720,
-                    1000
-                ]
-            }
-        }
-    },
-    "DailyStaminaPresetStageListTargetSubtitle": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "__UNCONFIGURED_STAGE_SUBTITLE__"
-                ],
-                "roi": [
-                    0,
-                    0,
-                    1,
-                    1
-                ]
-            }
-        }
-    },
     "DailyStaminaPresetStageListTarget": {
         "recognition": {
             "type": "OCR",
             "param": {
                 "expected": [
-                    "招募-02",
-                    "招募02"
+                    "__UNCONFIGURED_STAGE_TARGET__"
                 ],
                 "roi": [
                     0,

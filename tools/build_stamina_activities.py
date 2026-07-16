@@ -7,6 +7,8 @@ from pathlib import Path
 
 
 OPTION_NAME = "体力消耗关卡"
+REGULAR_AUTO_CLEAR_MODE = "regular_auto_clear"
+REGULAR_AUTO_CLEAR_SENTINEL = "__REGULAR_ACTIVITY_CLEAR__"
 
 RERUN_COLUMN_NODES = {
     "main": "DailyStaminaRerunMainColumnStart",
@@ -20,6 +22,14 @@ ROUTE_START_NODES = {
     "challenge_button": "DailyStaminaRouteInnerChallengeUiStart",
     "normal_list": "DailyStaminaRouteInnerNormalListStart",
     "daily_affairs": "DailyStaminaRouteDailyAffairsStart",
+}
+
+ROUTE_ENTRY_MARKER_NODES = {
+    "rerun_map": "DailyStaminaPresetRerunMapMarker",
+    "special_icon": "DailyStaminaPresetInnerUiTitle",
+    "challenge_button": "DailyStaminaPresetInnerUiTitle",
+    "normal_list": "DailyStaminaPresetStageListAnySelectable",
+    "daily_affairs": "DailyStaminaPresetDailyAffairsCategory",
 }
 
 
@@ -128,6 +138,69 @@ def deep_merge(*objects):
     return result
 
 
+def expand_activity_groups(config):
+    expanded = copy.deepcopy(config)
+    groups = expanded.get("activity_groups", {})
+    if not isinstance(groups, dict):
+        raise ValueError("activity_groups must be an object")
+
+    activities = []
+    for group_id, group in groups.items():
+        if not isinstance(group, dict):
+            raise ValueError(f"activity_groups.{group_id} must be an object")
+
+        base = group.get("base")
+        cases = group.get("cases")
+        case_prefix = group.get("case_prefix")
+        if not isinstance(base, dict):
+            raise ValueError(f"activity_groups.{group_id}.base must be an object")
+        if not isinstance(cases, list) or not cases:
+            raise ValueError(
+                f"activity_groups.{group_id}.cases must be a non-empty list"
+            )
+        if not case_prefix:
+            raise ValueError(f"activity_groups.{group_id}.case_prefix is required")
+
+        description_template = group.get("description_template", "")
+        for index, case in enumerate(cases):
+            if not isinstance(case, dict):
+                raise ValueError(
+                    f"activity_groups.{group_id}.cases[{index}] must be an object"
+                )
+
+            case_override = copy.deepcopy(case)
+            case_suffix = case_override.pop("case_suffix", None)
+            if not case_suffix and not case_override.get("name"):
+                raise ValueError(
+                    f"activity_groups.{group_id}.cases[{index}] requires "
+                    "case_suffix or name"
+                )
+
+            case_name = case_override.get("name") or f"{case_prefix} - {case_suffix}"
+            case_override["name"] = case_name
+            if case_override.get("mode") == REGULAR_AUTO_CLEAR_MODE:
+                case_override.setdefault("stage", {}).setdefault(
+                    "expected", [REGULAR_AUTO_CLEAR_SENTINEL]
+                )
+            if not case_override.get("description") and description_template:
+                case_override["description"] = description_template.format(
+                    activity=case_prefix,
+                    stage=case_suffix or case_name,
+                    case=case_name,
+                )
+
+            activities.append(deep_merge(base, case_override))
+
+    raw_activities = expanded.get("activities", [])
+    if raw_activities is not None:
+        if not isinstance(raw_activities, list):
+            raise ValueError("activities must be a list")
+        activities.extend(copy.deepcopy(raw_activities))
+
+    expanded["activities"] = activities
+    return expanded
+
+
 def ocr_recognition(config, fallback_roi=None):
     if not config or not config.get("expected"):
         raise ValueError("OCR recognition requires a non-empty expected list")
@@ -171,8 +244,15 @@ def validate_config(config):
 
         resolved = resolve_activity(config, activity)
         route_type = resolved.get("route_type")
+        mode = resolved.get("mode")
         if route_type not in ROUTE_START_NODES:
             raise ValueError(f"{name}: unsupported route_type {route_type}")
+        if mode and mode != REGULAR_AUTO_CLEAR_MODE:
+            raise ValueError(f"{name}: unsupported mode {mode}")
+        if mode == REGULAR_AUTO_CLEAR_MODE and route_type != "normal_list":
+            raise ValueError(
+                f"{name}: {REGULAR_AUTO_CLEAR_MODE} requires route_type normal_list"
+            )
         for field, roi in (
             ("activity_section.roi", resolved.get("activity_section", {}).get("roi")),
             ("activity_name.roi", resolved.get("activity_name", {}).get("roi")),
@@ -190,8 +270,16 @@ def validate_config(config):
         if resolved.get("stamina", {}).get("reserve", 0) < 0:
             raise ValueError(f"{name}: stamina.reserve must not be negative")
 
-        if route_type == "rerun_map" and resolved.get("rerun", {}).get("column") not in RERUN_COLUMN_NODES:
-            raise ValueError(f"{name}: rerun.column must be main, left, or right")
+        if route_type == "rerun_map":
+            if resolved.get("rerun", {}).get("column") not in RERUN_COLUMN_NODES:
+                raise ValueError(f"{name}: rerun.column must be main, left, or right")
+            rerun_marker = resolved.get("rerun", {}).get("marker") or resolved.get(
+                "inner_title"
+            )
+            if not rerun_marker or not rerun_marker.get("expected"):
+                raise ValueError(
+                    f"{name}: rerun.marker or inner_title.expected is required"
+                )
         if route_type in ("special_icon", "normal_list"):
             if not (
                 resolved.get("stage", {}).get("any_selectable")
@@ -256,6 +344,7 @@ def reference_recognition(node_name):
 
 def build_override(resolved):
     route_type = resolved["route_type"]
+    mode = resolved.get("mode")
     stage = resolved["stage"]
     stamina = resolved["stamina"]
     inner_title = resolved.get("inner_title")
@@ -268,6 +357,9 @@ def build_override(resolved):
             "recognition": ocr_recognition(resolved["activity_section"])
         },
         "DailyStaminaPresetInnerRouteStart": {
+            "recognition": reference_recognition(
+                ROUTE_ENTRY_MARKER_NODES[route_type]
+            ),
             "next": [ROUTE_START_NODES[route_type]]
         },
         "DailyStaminaPresetActivityName": {
@@ -331,10 +423,26 @@ def build_override(resolved):
                 )
             }
 
-    return deep_merge(override, resolved.get("extra_overrides", {}))
+    override = deep_merge(override, resolved.get("extra_overrides", {}))
+
+    if mode == REGULAR_AUTO_CLEAR_MODE:
+        if not any_selectable:
+            raise ValueError(
+                f"{REGULAR_AUTO_CLEAR_MODE} requires stage.any_selectable"
+            )
+        override["DailyStaminaPresetInnerRouteStart"] = deep_merge(
+            override["DailyStaminaPresetInnerRouteStart"],
+            {"next": ["RegularActivityStageListDecision"]},
+        )
+        override["RegularActivityPresetStageListMarker"] = {
+            "recognition": ocr_recognition(any_selectable)
+        }
+
+    return override
 
 
 def build_cases(config):
+    config = expand_activity_groups(config)
     validate_config(config)
     return [
         {
