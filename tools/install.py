@@ -117,6 +117,9 @@ def install_resource():
         interface = jsonc.load(f)
 
     interface["version"] = version
+    # The source interface lives under assets/, while the packaged interface
+    # and agent/ directory are siblings in the release root.
+    interface["agent"]["child_args"] = ["./agent/main.py"]
 
     with open(install_path / "interface.json", "w", encoding="utf-8") as f:
         jsonc.dump(interface, f, ensure_ascii=False, indent=4)

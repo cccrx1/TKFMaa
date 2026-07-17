@@ -87,6 +87,140 @@
             }
         }
     },
+    "DailyTaskRewardsCloseClaimPopup": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    260,
+                    680,
+                    200,
+                    200
+                ],
+                "expected": [
+                    "确定",
+                    "确认"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "DailyTaskRewardsCloseInventoryFullPopup": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    100,
+                    560,
+                    520,
+                    100
+                ],
+                "expected": [
+                    "可领取的物品已超过堆叠上限，请至仓库确认"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    720
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "DailyTaskRewardsCloseExpandedRewardPopup": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    250,
+                    720,
+                    220,
+                    70
+                ],
+                "expected": [
+                    "奖励已增加至仓库"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    810
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "DailyTaskRewardsCloseCompactRewardPopup": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    250,
+                    660,
+                    220,
+                    80
+                ],
+                "expected": [
+                    "奖励已增加至仓库"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    745
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
     "DailyTaskRewardsSelectDaily": {
         "recognition": {
             "type": "OCR",
@@ -123,7 +257,10 @@
     },
     "DailyTaskRewardsClaimDaily": {
         "next": [
-            "[JumpBack]CommonCloseReward",
+            "[JumpBack]DailyTaskRewardsCloseInventoryFullPopup",
+            "[JumpBack]DailyTaskRewardsCloseExpandedRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseCompactRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseClaimPopup",
             "DailyTaskRewardsClaimDailyAvailable",
             "DailyTaskRewardsSelectWeekly"
         ],
@@ -197,7 +334,10 @@
     },
     "DailyTaskRewardsClaimWeekly": {
         "next": [
-            "[JumpBack]CommonCloseReward",
+            "[JumpBack]DailyTaskRewardsCloseInventoryFullPopup",
+            "[JumpBack]DailyTaskRewardsCloseExpandedRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseCompactRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseClaimPopup",
             "DailyTaskRewardsClaimWeeklyAvailable",
             "DailyTaskRewardsSelectMonthly"
         ],
@@ -271,7 +411,10 @@
     },
     "DailyTaskRewardsClaimMonthly": {
         "next": [
-            "[JumpBack]CommonCloseReward",
+            "[JumpBack]DailyTaskRewardsCloseInventoryFullPopup",
+            "[JumpBack]DailyTaskRewardsCloseExpandedRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseCompactRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseClaimPopup",
             "DailyTaskRewardsClaimMonthlyAvailable",
             "DailyTaskRewardsSelectPersonal"
         ],
@@ -345,7 +488,10 @@
     },
     "DailyTaskRewardsClaimPersonal": {
         "next": [
-            "[JumpBack]CommonCloseReward",
+            "[JumpBack]DailyTaskRewardsCloseInventoryFullPopup",
+            "[JumpBack]DailyTaskRewardsCloseExpandedRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseCompactRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseClaimPopup",
             "DailyTaskRewardsClaimPersonalAvailable",
             "DailyTaskRewardsSelectActivity"
         ],
@@ -419,7 +565,10 @@
     },
     "DailyTaskRewardsClaimActivity": {
         "next": [
-            "[JumpBack]CommonCloseReward",
+            "[JumpBack]DailyTaskRewardsCloseInventoryFullPopup",
+            "[JumpBack]DailyTaskRewardsCloseExpandedRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseCompactRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseClaimPopup",
             "DailyTaskRewardsClaimActivityAvailable",
             "DailyTaskRewardsSelectGuild"
         ],
@@ -493,7 +642,10 @@
     },
     "DailyTaskRewardsClaimGuild": {
         "next": [
-            "[JumpBack]CommonCloseReward",
+            "[JumpBack]DailyTaskRewardsCloseInventoryFullPopup",
+            "[JumpBack]DailyTaskRewardsCloseExpandedRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseCompactRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseClaimPopup",
             "DailyTaskRewardsClaimGuildAvailable",
             "DailyTaskRewardsReturnMainFromTaskPage"
         ],
