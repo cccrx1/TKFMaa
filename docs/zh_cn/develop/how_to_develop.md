@@ -53,7 +53,11 @@ python tools/validate_schema.py --schema-dir deps/tools --resource-dirs assets/r
 
 ## 发布
 
-`.github/workflows/install.yml` 会在推送 `v1.2.3` 形式的标签时构建各平台发布包，并将 MFAAvalonia、MaaFramework 运行时、项目资源和 Agent 一起打包。
+`.github/workflows/install.yml` 会在推送 `v1.2.3` 形式的标签时构建各平台发布包。桌面平台包会将
+MFAAvalonia、MaaFramework 运行时、对应平台与架构的独立 CPython 3.12、Agent Python 依赖、项目资源
+和 Agent 一起打包；Android 包不包含桌面 Python 运行时。桌面包生成后的 Interface 会直接调用
+`python/` 中的解释器，用户无需另行安装 Python；Agent 与 MFAAvalonia 共用
+`runtimes/<平台>/native/` 中的 MaaFramework 原生运行库。
 
 发布属于维护操作。执行前应确认目标提交、工作区状态、完整验证结果和版本说明，再创建并推送标签：
 

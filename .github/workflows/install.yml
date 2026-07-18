@@ -6,6 +6,8 @@ env:
   # - 设置 VERSION 为具体版本号时（如 v1.2.3），下载指定版本
   MAAFW_VERSION: ""
   MFAA_VERSION: ""
+  PYTHON_VERSION: "3.12"
+  PYTHON_ABI: "cp312"
 
 on:
   push:
@@ -72,8 +74,53 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [win, macos, linux, android]
-        arch: [aarch64, x86_64]
+        include:
+          - os: win
+            arch: x86_64
+            python_platform: win_amd64
+            numpy_platform: win_amd64
+            python_target: x86_64-pc-windows-msvc
+            python_site_packages: install/python/Lib/site-packages
+            python_executable: install/python/python.exe
+          - os: win
+            arch: aarch64
+            python_platform: win_arm64
+            numpy_platform: win_arm64
+            python_target: aarch64-pc-windows-msvc
+            python_site_packages: install/python/Lib/site-packages
+            python_executable: install/python/python.exe
+          - os: macos
+            arch: x86_64
+            python_platform: macosx_13_0_x86_64
+            numpy_platform: macosx_13_0_x86_64
+            python_target: x86_64-apple-darwin
+            python_site_packages: install/python/lib/python3.12/site-packages
+            python_executable: install/python/bin/python3
+          - os: macos
+            arch: aarch64
+            python_platform: macosx_13_0_arm64
+            numpy_platform: macosx_13_0_arm64
+            python_target: aarch64-apple-darwin
+            python_site_packages: install/python/lib/python3.12/site-packages
+            python_executable: install/python/bin/python3
+          - os: linux
+            arch: x86_64
+            python_platform: manylinux2014_x86_64
+            numpy_platform: manylinux_2_27_x86_64
+            python_target: x86_64-unknown-linux-gnu
+            python_site_packages: install/python/lib/python3.12/site-packages
+            python_executable: install/python/bin/python3
+          - os: linux
+            arch: aarch64
+            python_platform: manylinux2014_aarch64
+            numpy_platform: manylinux_2_27_aarch64
+            python_target: aarch64-unknown-linux-gnu
+            python_site_packages: install/python/lib/python3.12/site-packages
+            python_executable: install/python/bin/python3
+          - os: android
+            arch: x86_64
+          - os: android
+            arch: aarch64
       fail-fast: false
 
     steps:
@@ -82,6 +129,7 @@ jobs:
           submodules: true
 
       - name: Download MaaFramework
+        id: download_maafw
         uses: robinraju/release-downloader@v1
         with:
           repository: MaaXYZ/MaaFramework
@@ -102,6 +150,22 @@ jobs:
           tag: ${{ env.MFAA_VERSION }}
           out-file-path: "MFA"
           extract: true
+
+      - name: Download portable Python
+        if: matrix.os != 'android'
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: astral-sh/python-build-standalone
+          fileName: "cpython-${{ env.PYTHON_VERSION }}.*-${{ matrix.python_target }}-install_only_stripped.tar.gz"
+          latest: true
+          out-file-path: "python-runtime"
+          extract: true
+          extract-path: "install"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
 
       - name: Clean up MFAAvalonia archive
         if: matrix.os != 'android'
@@ -137,6 +201,60 @@ jobs:
           python -m pip install -r ./requirements.txt
           python ./install.py ${{ needs.meta.outputs.tag }} ${{ matrix.os }} ${{ matrix.arch }}
           cd ..
+
+      - name: Bundle Python dependencies
+        if: matrix.os != 'android'
+        shell: bash
+        run: |
+          MAAFW_VERSION="${{ steps.download_maafw.outputs.tag_name }}"
+          MAAFW_VERSION="${MAAFW_VERSION#v}"
+          if [[ -z "${MAAFW_VERSION}" ]]; then
+            echo "The downloaded MaaFramework release did not provide a version tag."
+            exit 1
+          fi
+
+          # MaaFw wheels contain another copy of the native runtime. The Agent
+          # uses MAAFW_BINARY_PATH to share the runtime already bundled for MFA.
+          python -m pip install \
+            --target "${{ matrix.python_site_packages }}" \
+            --no-deps \
+            --only-binary=:all: \
+            --platform "${{ matrix.python_platform }}" \
+            --python-version "${{ env.PYTHON_VERSION }}" \
+            --implementation cp \
+            --abi "${{ env.PYTHON_ABI }}" \
+            "maafw==${MAAFW_VERSION}"
+
+          python -m pip install \
+            --target "${{ matrix.python_site_packages }}" \
+            --no-deps \
+            --only-binary=:all: \
+            --platform "${{ matrix.numpy_platform }}" \
+            --python-version "${{ env.PYTHON_VERSION }}" \
+            --implementation cp \
+            --abi "${{ env.PYTHON_ABI }}" \
+            numpy
+
+          python -m pip install \
+            --target "${{ matrix.python_site_packages }}" \
+            --no-deps \
+            --only-binary=:all: \
+            --platform any \
+            --python-version "${{ env.PYTHON_VERSION }}" \
+            maaagentbinary strenum
+
+          rm -rf "${{ matrix.python_site_packages }}/maa/bin"
+
+      - name: Verify packaged runtime
+        if: matrix.os != 'android'
+        shell: bash
+        run: |
+          test -f "${{ matrix.python_executable }}"
+          test -f "${{ matrix.python_site_packages }}/maa/__init__.py"
+          test -d "${{ matrix.python_site_packages }}/numpy"
+          test ! -d "${{ matrix.python_site_packages }}/maa/bin"
+          test -d "install/runtimes/${{ (matrix.os == 'win' && 'win') || (matrix.os == 'macos' && 'osx') || 'linux' }}-${{ (matrix.arch == 'x86_64' && 'x64') || 'arm64' }}/native"
+          grep -Fq '"child_exec": "./python/' install/interface.json
 
       - uses: actions/upload-artifact@v4
         with:

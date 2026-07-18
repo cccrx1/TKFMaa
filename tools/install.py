@@ -119,6 +119,10 @@ def install_resource():
     interface["version"] = version
     # The source interface lives under assets/, while the packaged interface
     # and agent/ directory are siblings in the release root.
+    if os_name == "win":
+        interface["agent"]["child_exec"] = "./python/python.exe"
+    elif os_name in {"macos", "linux"}:
+        interface["agent"]["child_exec"] = "./python/bin/python3"
     interface["agent"]["child_args"] = ["./agent/main.py"]
 
     with open(install_path / "interface.json", "w", encoding="utf-8") as f:

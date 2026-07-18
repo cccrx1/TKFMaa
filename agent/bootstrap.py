@@ -5,17 +5,12 @@ from pathlib import Path
 
 
 def configure_runtime() -> None:
-    """Configure bundled Python packages and the shared MaaFW native runtime."""
+    """Point MaaFw at the native runtime shared with the frontend."""
     project_root = Path(__file__).resolve().parent.parent
-    vendored_packages = project_root / "python_packages"
-    if not vendored_packages.is_dir():
-        return
-
-    if sys.version_info[:2] != (3, 14):
-        raise RuntimeError(
-            "This release requires Python 3.14 because its bundled NumPy "
-            f"is CPython 3.14-specific; current version is {sys.version.split()[0]}."
-        )
+    bundled_python_dir = project_root / "python"
+    using_bundled_python = bundled_python_dir.is_dir() and Path(
+        sys.executable
+    ).resolve().is_relative_to(bundled_python_dir.resolve())
 
     system = platform.system().lower()
     machine = platform.machine().lower()
@@ -35,12 +30,9 @@ def configure_runtime() -> None:
         raise RuntimeError(f"Unsupported release platform: {platform.system()}")
 
     native_dir = project_root / "runtimes" / f"{platform_prefix}-{arch}" / "native"
-    if not native_dir.is_dir():
+    if using_bundled_python and not native_dir.is_dir():
         raise RuntimeError(f"Bundled MaaFW runtime is missing: {native_dir}")
 
-    # A release must never pick up a stale global MaaFW installation.
-    os.environ["MAAFW_BINARY_PATH"] = str(native_dir)
-
-    vendored_path = str(vendored_packages)
-    if vendored_path not in sys.path:
-        sys.path.insert(0, vendored_path)
+    if native_dir.is_dir():
+        # Prefer the release runtime even when the user also installed MaaFw.
+        os.environ["MAAFW_BINARY_PATH"] = str(native_dir)
