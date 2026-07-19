@@ -107,10 +107,10 @@ def _tags_in_text(text):
     return [tag for _, tag in found]
 
 
-def _ocr_results(context, image, roi):
+def _ocr_results(context, image, roi, *, only_rec=True):
     detail = context.run_recognition_direct(
         "OCR",
-        JOCR(expected=[], roi=tuple(roi), threshold=0.3, only_rec=True),
+        JOCR(expected=[], roi=tuple(roi), threshold=0.3, only_rec=only_rec),
         image,
     )
     return list(getattr(detail, "all_results", []) or [])
@@ -157,13 +157,15 @@ def _read_tags_by_slots(context, image):
 def _read_tags_whole_roi(context, image, existing_tags):
     tags = list(existing_tags)
     known = {entry["tag"] for entry in tags}
-    for result in _ocr_results(context, image, TAG_ROI):
+    for result in _ocr_results(context, image, TAG_ROI, only_rec=False):
         box = getattr(result, "box", None)
-        found_tags = [tag for tag in _tags_in_text(getattr(result, "text", "")) if tag not in known]
-        if not found_tags or not box:
+        result_tags = _tags_in_text(getattr(result, "text", ""))
+        if not result_tags or not box:
             continue
-        tag_boxes = _slot_boxes_for_result(box, len(found_tags))
-        for index, tag in enumerate(found_tags):
+        tag_boxes = _slot_boxes_for_result(box, len(result_tags))
+        for index, tag in enumerate(result_tags):
+            if tag in known:
+                continue
             tag_box = tag_boxes[min(index, len(tag_boxes) - 1)]
             _append_tag(tags, tag, tag_box)
             known.add(tag)
