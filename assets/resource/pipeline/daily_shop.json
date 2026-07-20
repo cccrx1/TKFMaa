@@ -58,7 +58,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopOpenDailyExchange"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyShopOpenDailyExchange": {
         "recognition": {
@@ -96,7 +97,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopOpenExchangeTab"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyShopOpenExchangeTab": {
         "recognition": {
@@ -131,7 +133,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopExchangeScanTop"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyShopExchangeScanTop": {
         "next": [
@@ -179,7 +182,8 @@
             "[JumpBack]DailyShopClosePurchaseDetail",
             "DailyShopExchangeScanTop"
         ],
-        "max_hit": 10
+        "max_hit": 10,
+        "pre_wait_freezes": 300
     },
     "DailyShopExchangeSwipe1": {
         "recognition": {
@@ -294,7 +298,8 @@
             "[JumpBack]CommonWaitLoading",
             "DailyShopPurchaseCurrencyInsufficient",
             "DailyShopMarkTargetPurchased"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyShopPurchaseGuildItem": {
         "recognition": {
@@ -330,7 +335,8 @@
             "[JumpBack]CommonWaitLoading",
             "DailyShopPurchaseCurrencyInsufficient",
             "DailyShopMarkGuildTargetPurchased"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyShopPurchaseDetailInsufficient": {
         "recognition": {
@@ -365,7 +371,8 @@
             "DailyShopReturnMain",
             "[JumpBack]CommonEnsureMain",
             "DailyShopDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__DailyShopPurchaseDetailCurrentOwnedText": {
         "recognition": {
@@ -432,7 +439,8 @@
             "DailyShopReturnMain",
             "[JumpBack]CommonEnsureMain",
             "DailyShopDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__DailyShopPurchaseCurrencyInsufficientText": {
         "recognition": {
@@ -501,7 +509,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "DailyShopMarkTargetPurchased": {
         "recognition": {
@@ -648,7 +657,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopGuildScanTop"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyShopGuildScanTop": {
         "next": [
@@ -773,7 +783,8 @@
             "[JumpBack]DailyShopClosePurchaseDetail",
             "DailyShopGuildScanTop"
         ],
-        "max_hit": 10
+        "max_hit": 10,
+        "pre_wait_freezes": 300
     },
     "DailyShopReturnMain": {
         "recognition": {
@@ -808,7 +819,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyShopDone": {
         "next": [

@@ -38,7 +38,8 @@
         },
         "next": [
             "DailyTrainingOpenFilter"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__DailyTrainingMainHasCount": {
         "recognition": {
@@ -131,7 +132,8 @@
         },
         "next": [
             "DailyTrainingFilterPanelTop"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingFilterPanelTop": {
         "recognition": {
@@ -173,7 +175,8 @@
         },
         "next": [
             "DailyTrainingSetProgressFilter"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingSetProgressFilter": {
         "next": [
@@ -213,7 +216,8 @@
         },
         "next": [
             "DailyTrainingEnterNextRoom"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__DailyTrainingProgressLabel": {
         "recognition": {
@@ -280,7 +284,8 @@
                 0
             ]
         },
-        "max_hit": 4
+        "max_hit": 4,
+        "pre_wait_freezes": 300
     },
     "DailyTrainingSwipeFilterToProgress": {
         "recognition": {
@@ -352,7 +357,8 @@
         ],
         "on_error": [
             "DailyTrainingReturnMainFromRoomList"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingSelectConfiguredItem": {
         "recognition": {
@@ -420,7 +426,8 @@
             "DailyTrainingCloseShortagePopup",
             "CommonStopOnMain",
             "DailyTrainingReturnRoomListFromDetail"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingCloseEnergyPrompt": {
         "recognition": {
@@ -463,7 +470,8 @@
             "CommonStopOnMain",
             "DailyTrainingReturnRoomListFromDetail",
             "DailyTrainingReturnRoomListFromDetailFallback"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingCloseShortagePopup": {
         "recognition": {
@@ -505,7 +513,8 @@
             "CommonStopOnMain",
             "DailyTrainingReturnRoomListFromDetail",
             "DailyTrainingReturnRoomListFromDetailFallback"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingReturnRoomListFromDetailFallback": {
         "recognition": {
@@ -571,7 +580,8 @@
         },
         "next": [
             "DailyTrainingReturnMainFromRoomList"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingReturnMainFromRoomList": {
         "recognition": {
@@ -618,7 +628,8 @@
         },
         "next": [
             "DailyTrainingDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingConfigItemScope": {
         "recognition": {
@@ -670,7 +681,8 @@
         },
         "next": [
             "DailyTrainingChooseCommonItem"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingSelectEventTab": {
         "recognition": {
@@ -704,7 +716,8 @@
         },
         "next": [
             "DailyTrainingChooseEventItem"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingChooseCommonItem": {
         "recognition": {
@@ -736,7 +749,8 @@
         ],
         "on_error": [
             "DailyTrainingReturnRoomListFromDetailFallback"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingChooseEventItem": {
         "recognition": {
@@ -768,7 +782,8 @@
         ],
         "on_error": [
             "DailyTrainingReturnRoomListFromDetailFallback"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTrainingClickCenterStart": {
         "recognition": {
@@ -821,6 +836,7 @@
             "DailyTrainingClickCenterAllPoints",
             "DailyTrainingReturnRoomListFromDetail"
         ],
-        "max_hit": 12
+        "max_hit": 12,
+        "pre_wait_freezes": 300
     }
 }

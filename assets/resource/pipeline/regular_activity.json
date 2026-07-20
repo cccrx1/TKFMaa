@@ -66,7 +66,8 @@
             "[JumpBack]CommonWaitLoading",
             "RegularActivityOpenLatestStage",
             "RegularActivityScanStageListDown2"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityScanStageListDown2": {
         "recognition": {
@@ -104,7 +105,8 @@
             "[JumpBack]CommonWaitLoading",
             "RegularActivityOpenLatestStage",
             "RegularActivityScanStageListDown3"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityScanStageListDown3": {
         "recognition": {
@@ -142,7 +144,8 @@
             "[JumpBack]CommonWaitLoading",
             "RegularActivityOpenLatestStage",
             "RegularActivityScanStageListUp1"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityScanStageListUp1": {
         "recognition": {
@@ -180,7 +183,8 @@
             "[JumpBack]CommonWaitLoading",
             "RegularActivityOpenLatestStage",
             "RegularActivityScanStageListUp2"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityScanStageListUp2": {
         "recognition": {
@@ -218,7 +222,8 @@
             "[JumpBack]CommonWaitLoading",
             "RegularActivityOpenLatestStage",
             "RegularActivityScanStageListUp3"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityScanStageListUp3": {
         "recognition": {
@@ -257,7 +262,8 @@
             "RegularActivityOpenLatestStage",
             "RegularActivityOpenNextPage",
             "RegularActivityDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityOpenLatestStage": {
         "recognition": {
@@ -295,7 +301,8 @@
             "RegularActivityStageDetailOrStory",
             "RegularActivityStageListDecision"
         ],
-        "max_hit": 20
+        "max_hit": 20,
+        "pre_wait_freezes": 300
     },
     "__RegularActivityNewText": {
         "recognition": {
@@ -348,7 +355,8 @@
             "[JumpBack]CommonWaitLoading",
             "RegularActivityStageListDecision"
         ],
-        "max_hit": 8
+        "max_hit": 8,
+        "pre_wait_freezes": 300
     },
     "__RegularActivityNextPageButton": {
         "recognition": {
@@ -427,7 +435,8 @@
             "RegularActivitySelectCurrencyTab",
             "RegularActivityCloseStaminaPurchasePopup",
             "RegularActivityAbortUnknownRefillPopup"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityRefillWithCurrencyWhenLow": {
         "enabled": false,
@@ -465,7 +474,8 @@
             "RegularActivitySelectCurrencyTab",
             "RegularActivityCloseStaminaPurchasePopup",
             "RegularActivityAbortUnknownRefillPopup"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityReturnWhenStaminaLow": {
         "recognition": {
@@ -498,7 +508,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "RegularActivityDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityStartManualBattle": {
         "recognition": {
@@ -538,7 +549,8 @@
             "[JumpBack]RegularActivityCloseStaminaPurchasePopup",
             "RegularActivityAbortUnknownRefillPopup",
             "RegularActivityWaitBattleResult"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__RegularActivityStartButton": {
         "recognition": {
@@ -599,7 +611,8 @@
                 180,
                 110
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "RegularActivityReturnMapFromBattleResult": {
         "recognition": {
@@ -631,7 +644,8 @@
             "RegularActivityStageDetailOrStory",
             "RegularActivityStageListDecision",
             "RegularActivityStart"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__RegularActivityReturnMapButton": {
         "recognition": {
@@ -723,7 +737,8 @@
         },
         "next": [
             "RegularActivityConfirmSkipStory"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__RegularActivityStoryRecMarker": {
         "recognition": {
@@ -787,7 +802,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "RegularActivityUsePotionPopup": {
         "enabled": false,
@@ -823,7 +839,8 @@
             "RegularActivityCloseStaminaPurchasePopupAfterPurchase",
             "RegularActivityStageDetailOrStory"
         ],
-        "max_hit": 10
+        "max_hit": 10,
+        "pre_wait_freezes": 300
     },
     "RegularActivityBuyStaminaPopup": {
         "enabled": false,
@@ -856,7 +873,8 @@
             "[JumpBack]CommonWaitLoading",
             "RegularActivityCurrencyPurchasedState"
         ],
-        "max_hit": 1
+        "max_hit": 1,
+        "pre_wait_freezes": 300
     },
     "RegularActivityCurrencyPurchasedState": {
         "anchor": "RegularActivityLowDecision",
@@ -899,7 +917,8 @@
             "[JumpBack]CommonWaitLoading",
             "RegularActivityCloseStaminaPurchasePopupAfterPurchase",
             "RegularActivityStageDetailOrStory"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivitySelectPotionTab": {
         "enabled": false,
@@ -933,7 +952,8 @@
             "RegularActivitySelectCurrencyTab",
             "RegularActivityCloseStaminaPurchasePopup",
             "RegularActivityAbortUnknownRefillPopup"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivitySelectCurrencyTab": {
         "enabled": false,
@@ -966,7 +986,8 @@
             "RegularActivityBuyStaminaPopup",
             "RegularActivityCloseStaminaPurchasePopup",
             "RegularActivityAbortUnknownRefillPopup"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityCloseStaminaPurchasePopupAfterPurchase": {
         "recognition": {
@@ -997,7 +1018,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "RegularActivityStageDetailOrStory"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityCloseStaminaPurchasePopup": {
         "recognition": {
@@ -1028,7 +1050,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "RegularActivityDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityAbortUnknownRefillPopup": {
         "recognition": {
@@ -1058,7 +1081,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "RegularActivityDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__RegularActivityPurchasePopupMarker": {
         "recognition": {
@@ -1213,7 +1237,8 @@
         },
         "next": [
             "RegularActivityDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityReturnMainFromStageList": {
         "recognition": {
@@ -1244,7 +1269,8 @@
         },
         "next": [
             "RegularActivityDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityReturnMainFromSelection": {
         "recognition": {
@@ -1284,7 +1310,8 @@
         },
         "next": [
             "RegularActivityDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "RegularActivityPresetStageListMarker": {
         "recognition": {

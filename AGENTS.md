@@ -14,6 +14,7 @@
 - `python tools/validate_schema.py --schema-dir deps/tools --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json`：执行与 CI 相同的 JSON Schema 校验。
 - `python tools/build_stamina_activities.py`：修改 `assets/stamina_activities.yaml` 后重新生成体力活动配置。
 - `python tools/build_stamina_activities.py --check`：只检查体力活动配置与 `assets/interface.json` 是否同步，不写文件。
+- `python tools/add_interaction_stability.py --check`：检查带识别结果的交互动作是否配置点击前稳定等待。
 
 `.github/workflows/install.yml` 会为 `v1.2.3` 等版本标签构建发布包。本地打包需要预先下载 MaaFramework 运行时，不属于常规开发验证流程。
 
@@ -35,6 +36,7 @@
 - `next` 按命中优先级覆盖成功、加载、弹窗和异常页面；可恢复的中断使用 `[JumpBack]` 返回父节点继续判断。滚动或重试节点应设置 `max_hit`，避免无限循环和重复点击。
 - 跨页面流程优先用 `next` 与 `[JumpBack]` 组成 JSON 状态机。只有复杂运行时计算或 Pipeline 难以表达的识别决策才放入 `agent/`，不要用 Python `for`/`while` 串行调用任务来模拟页面状态机。
 - 不滥用 `pre_delay`、`post_delay` 和长 `timeout`。确需等待动画或加载稳定时使用 `pre_wait_freezes`/`post_wait_freezes`，动作后仍须识别目标状态。
+- 带明确识别结果的 `Click`、`Swipe`、`LongPress` 等交互动作默认配置 `pre_wait_freezes: 300`，确认识别区域连续稳定后再操作。只在控件仅短暂出现或页面持续动画时豁免，并在 `tools/add_interaction_stability.py` 中记录原因。
 - 坐标、ROI 和模板统一基于 720x1280 竖屏基准。ROI 应尽量缩小但完整包围目标；OCR 的 `expected` 优先填写完整界面文本，需要兼容误识别时显式列出变体。OCR 不稳定时先调整 ROI 并多次验证，不要立即改用图片匹配。
 - 新增 TemplateMatch 素材时使用无损原图裁剪，路径相对 `assets/resource/image/`。提交前检查图片、节点引用及大小写完全一致。
 

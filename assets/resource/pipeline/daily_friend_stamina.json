@@ -38,7 +38,8 @@
         },
         "next": [
             "DailyFriendStaminaOpenFriendList"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyFriendStaminaOpenFriendList": {
         "recognition": {
@@ -75,7 +76,8 @@
         },
         "next": [
             "DailyFriendStaminaReceive"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyFriendStaminaReceive": {
         "next": [
@@ -179,7 +181,8 @@
         "next": [
             "DailyFriendStaminaCloseProfile"
         ],
-        "max_hit": 1
+        "max_hit": 1,
+        "pre_wait_freezes": 300
     },
     "DailyFriendStaminaCloseProfile": {
         "recognition": {
@@ -217,7 +220,8 @@
         },
         "next": [
             "DailyFriendStaminaDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyFriendStaminaCloseProfileForRetry": {
         "recognition": {
@@ -256,7 +260,8 @@
         "next": [
             "DailyFriendStaminaOpenProfileFromMain"
         ],
-        "max_hit": 1
+        "max_hit": 1,
+        "pre_wait_freezes": 300
     },
     "DailyFriendStaminaDone": {
         "next": [

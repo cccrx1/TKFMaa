@@ -35,6 +35,9 @@ jobs:
           npm ci
           npx @nekosu/maa-tools check
 
+      - name: Check interaction stability
+        run: python tools/add_interaction_stability.py --check
+
       - name: Install maafw
         run: |
           python -m pip install --upgrade pip

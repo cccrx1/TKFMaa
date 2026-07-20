@@ -47,7 +47,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnMainFromTaskPage": {
         "recognition": {
@@ -81,7 +82,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnMainFromProfile": {
         "recognition": {
@@ -116,7 +118,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnMainFromAlchemy": {
         "recognition": {
@@ -150,7 +153,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnMainFromRecruitOverview": {
         "recognition": {
@@ -184,7 +188,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnMainFromSummon": {
         "recognition": {
@@ -220,7 +225,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnMainFromTrainingDetail": {
         "recognition": {
@@ -256,7 +262,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnMainFromTrainingRoomList": {
         "recognition": {
@@ -300,7 +307,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnMainFromDispatchOverview": {
         "recognition": {
@@ -334,7 +342,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnDispatchOverviewFromSelection": {
         "recognition": {
@@ -370,7 +379,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnMainFromStaminaStageDetail": {
         "recognition": {
@@ -406,7 +416,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "CommonReturnMainFromStaminaStageList": {
         "recognition": {
@@ -435,6 +446,7 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     }
 }

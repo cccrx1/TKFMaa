@@ -111,3 +111,10 @@
 - 2026-07-16：为扫荡开始的 180 秒超时增加已知页面恢复分发器和未知页面停止节点。正常扫荡链
   不变；从主界面直接运行 `DailyStaminaRecoverSweepTimeout` 时命中 `CommonStopOnMain` 并立即结束，
   画面和体力保持不变。真正的超时恢复仍待通过可控的网络异常或活动结束页面完成实机触发验证。
+- 2026-07-19，客户端 `Ver.2.2.1`、MuMuPlayer v5+、官服：在常驻关卡“战争演习-特IV”定向复测
+  `RegularActivityEnableAutoBattle`。第一场进入战斗时 AUTO 已开启，仅用于确认页面状态；第二场在
+  `WAVE`/`TURN` 持续动画中主动切为 1x 并关闭 AUTO，再单独运行目标节点。节点成功匹配灰色
+  `RegularActivity/AutoOffButton.png`，全屏 `pre_wait_freezes: 300` 未阻塞动作，AUTO 被重新开启并完成
+  至 `CLEAR!`。本轮共消耗 2 次战争演习每日次数，结束时剩余 `1/3`，未继续消耗最后一次，也未使用
+  体力药或魔晶石。MaaMCP 返回层仍因缺少结构化输出报校验错误，未取得可用 TaskDetail；结论依据
+  AUTO 前后画面和最终结算页，仅覆盖该动态战斗节点，不代表完整体力任务入口回归。

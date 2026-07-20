@@ -37,7 +37,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaPresetRouteStart"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaOpenTargetStage": {
         "recognition": {
@@ -75,7 +76,8 @@
             "DailyStaminaStageDetailInitialDecision",
             "DailyStaminaScanStageListUp"
         ],
-        "max_hit": 4
+        "max_hit": 4,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaScanStageListDown": {
         "recognition": {
@@ -115,7 +117,8 @@
             "DailyStaminaScanStageListUp",
             "DailyStaminaStageNotFoundGiveUp"
         ],
-        "max_hit": 3
+        "max_hit": 3,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaScanStageListUp": {
         "recognition": {
@@ -155,7 +158,8 @@
             "DailyStaminaScanStageListDown",
             "DailyStaminaStageNotFoundGiveUp"
         ],
-        "max_hit": 3
+        "max_hit": 3,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaStageDetailInitialDecision": {
         "next": [
@@ -209,7 +213,8 @@
             "DailyStaminaSweepDialog",
             "DailyStaminaCloseStaminaPurchasePopup",
             "DailyStaminaAbortUnknownRefillPopup"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRefillWithCurrencyWhenLow": {
         "enabled": false,
@@ -248,7 +253,8 @@
             "DailyStaminaSweepDialog",
             "DailyStaminaCloseStaminaPurchasePopup",
             "DailyStaminaAbortUnknownRefillPopup"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaReturnMainWhenLow": {
         "recognition": {
@@ -281,7 +287,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaOpenSweep": {
         "recognition": {
@@ -321,7 +328,8 @@
             "DailyStaminaCloseStaminaPurchasePopup",
             "DailyStaminaSweepDialog",
             "DailyStaminaAbortUnknownRefillPopup"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__DailyStaminaSweepButton": {
         "recognition": {
@@ -398,7 +406,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaStartSweep"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaStartSweep": {
         "recognition": {
@@ -440,7 +449,8 @@
         "timeout": 180000,
         "on_error": [
             "DailyStaminaRecoverSweepTimeout"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRecoverSweepTimeout": {
         "next": [
@@ -595,7 +605,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaSweepResultDispatch"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaStageDetailAfterSweep": {
         "recognition": {
@@ -658,7 +669,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaWaitBattleResult"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaWaitBattleResult": {
         "next": [
@@ -702,7 +714,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaWaitBattleResult"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaBattleReturnMapWhenLow": {
         "recognition": {
@@ -734,7 +747,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaReturnMainFromStageList"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__DailyStaminaBattleResultClear": {
         "recognition": {
@@ -869,7 +883,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaReturnMainFromStageList": {
         "recognition": {
@@ -901,7 +916,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaDone": {
         "next": [
@@ -958,7 +974,8 @@
             "DailyStaminaOpenSweep",
             "DailyStaminaStageDetailInitialDecision"
         ],
-        "max_hit": 10
+        "max_hit": 10,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaBuyStaminaPopup": {
         "enabled": false,
@@ -991,7 +1008,8 @@
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaCurrencyPurchasedState"
         ],
-        "max_hit": 1
+        "max_hit": 1,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaCurrencyPurchasedState": {
         "anchor": "DailyStaminaLowDecision",
@@ -1041,7 +1059,8 @@
             "DailyStaminaSweepDialog",
             "DailyStaminaOpenSweep",
             "DailyStaminaStageDetailInitialDecision"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaSelectPotionTab": {
         "enabled": false,
@@ -1075,7 +1094,8 @@
             "DailyStaminaSelectCurrencyTab",
             "DailyStaminaCloseStaminaPurchasePopup",
             "DailyStaminaAbortUnknownRefillPopup"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaSelectCurrencyTab": {
         "enabled": false,
@@ -1108,7 +1128,8 @@
             "DailyStaminaBuyStaminaPopup",
             "DailyStaminaCloseStaminaPurchasePopup",
             "DailyStaminaAbortUnknownRefillPopup"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaCloseStaminaPurchasePopupAfterRefill": {
         "recognition": {
@@ -1145,7 +1166,8 @@
             "DailyStaminaSweepDialog",
             "DailyStaminaOpenSweep",
             "DailyStaminaStageDetailInitialDecision"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaCloseStaminaPurchasePopup": {
         "recognition": {
@@ -1177,7 +1199,8 @@
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaReturnMainFromStageDetail",
             "DailyStaminaDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaAbortUnknownRefillPopup": {
         "recognition": {
@@ -1213,7 +1236,8 @@
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaReturnMainFromStageDetail",
             "DailyStaminaDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "StaminaPurchasePopupPotionTabLabel": {
         "recognition": {

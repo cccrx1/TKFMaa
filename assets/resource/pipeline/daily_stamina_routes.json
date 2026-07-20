@@ -26,7 +26,8 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaRouteActivityListFindSelected"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRouteActivityListFindSelected": {
         "recognition": {
@@ -75,7 +76,8 @@
             "DailyStaminaRouteActivityListEnterSelected",
             "DailyStaminaStageNotFoundGiveUp"
         ],
-        "max_hit": 4
+        "max_hit": 4,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRouteActivityListSelectSlot2": {
         "recognition": {
@@ -170,7 +172,8 @@
             "DailyStaminaOpenTargetStage",
             "DailyStaminaRouteInnerSpecialUiStart"
         ],
-        "max_hit": 4
+        "max_hit": 4,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRouteInnerChallengeUiStart": {
         "recognition": {
@@ -209,7 +212,8 @@
             "DailyStaminaStageDetailInitialDecision",
             "DailyStaminaRouteInnerChallengeUiStart"
         ],
-        "max_hit": 4
+        "max_hit": 4,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRouteInnerRerunUiStart": {
         "next": [
@@ -247,7 +251,8 @@
             "DailyStaminaStageDetailInitialDecision",
             "DailyStaminaRerunClickTarget"
         ],
-        "max_hit": 4
+        "max_hit": 4,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRerunMainColumnStart": {
         "next": [
@@ -296,7 +301,8 @@
         "max_hit": 4,
         "on_error": [
             "DailyStaminaRerunGiveUp"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRerunRightColumnStart": {
         "recognition": {
@@ -339,7 +345,8 @@
         "max_hit": 4,
         "on_error": [
             "DailyStaminaRerunGiveUp"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRerunScanUp": {
         "recognition": {
@@ -382,7 +389,8 @@
         "max_hit": 10,
         "on_error": [
             "DailyStaminaRerunGiveUp"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRerunScanDown": {
         "recognition": {
@@ -422,7 +430,8 @@
             "DailyStaminaRerunScanDown",
             "DailyStaminaRerunGiveUp"
         ],
-        "max_hit": 18
+        "max_hit": 18,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRerunGiveUp": {
         "next": [
@@ -507,7 +516,8 @@
         "max_hit": 4,
         "on_error": [
             "DailyStaminaStageNotFoundGiveUp"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRouteDailyAffairsStart": {
         "next": [
@@ -545,6 +555,7 @@
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaRouteInnerNormalListStart"
         ],
-        "max_hit": 2
+        "max_hit": 2,
+        "pre_wait_freezes": 300
     }
 }

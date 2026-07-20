@@ -36,7 +36,8 @@
         },
         "next": [
             "DailyTaskRewardsSelectDaily"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__DailyTaskRewardsPageTitle": {
         "recognition": {
@@ -117,7 +118,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsCloseInventoryFullPopup": {
         "recognition": {
@@ -151,7 +153,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsCloseExpandedRewardPopup": {
         "recognition": {
@@ -185,7 +188,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsCloseCompactRewardPopup": {
         "recognition": {
@@ -219,7 +223,8 @@
                 0,
                 0
             ]
-        }
+        },
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsSelectDaily": {
         "recognition": {
@@ -253,7 +258,8 @@
         },
         "next": [
             "DailyTaskRewardsClaimDaily"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsClaimDaily": {
         "next": [
@@ -296,7 +302,8 @@
         "next": [
             "DailyTaskRewardsClaimDaily"
         ],
-        "max_hit": 3
+        "max_hit": 3,
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsSelectWeekly": {
         "recognition": {
@@ -330,7 +337,8 @@
         },
         "next": [
             "DailyTaskRewardsClaimWeekly"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsClaimWeekly": {
         "next": [
@@ -373,7 +381,8 @@
         "next": [
             "DailyTaskRewardsClaimWeekly"
         ],
-        "max_hit": 3
+        "max_hit": 3,
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsSelectMonthly": {
         "recognition": {
@@ -407,7 +416,8 @@
         },
         "next": [
             "DailyTaskRewardsClaimMonthly"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsClaimMonthly": {
         "next": [
@@ -450,7 +460,8 @@
         "next": [
             "DailyTaskRewardsClaimMonthly"
         ],
-        "max_hit": 3
+        "max_hit": 3,
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsSelectPersonal": {
         "recognition": {
@@ -484,7 +495,8 @@
         },
         "next": [
             "DailyTaskRewardsClaimPersonal"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsClaimPersonal": {
         "next": [
@@ -527,7 +539,8 @@
         "next": [
             "DailyTaskRewardsClaimPersonal"
         ],
-        "max_hit": 3
+        "max_hit": 3,
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsSelectActivity": {
         "recognition": {
@@ -561,7 +574,8 @@
         },
         "next": [
             "DailyTaskRewardsClaimActivity"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsClaimActivity": {
         "next": [
@@ -604,7 +618,8 @@
         "next": [
             "DailyTaskRewardsClaimActivity"
         ],
-        "max_hit": 3
+        "max_hit": 3,
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsSelectGuild": {
         "recognition": {
@@ -638,7 +653,8 @@
         },
         "next": [
             "DailyTaskRewardsClaimGuild"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsClaimGuild": {
         "next": [
@@ -681,7 +697,8 @@
         "next": [
             "DailyTaskRewardsClaimGuild"
         ],
-        "max_hit": 3
+        "max_hit": 3,
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsReturnMainFromTaskPage": {
         "recognition": {
@@ -718,7 +735,8 @@
         },
         "next": [
             "DailyTaskRewardsDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyTaskRewardsDone": {
         "next": [
