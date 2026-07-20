@@ -38,7 +38,8 @@
         },
         "next": [
             "DailyDispatchEnterFromDrawer"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchEnterFromDrawer": {
         "next": [
@@ -81,7 +82,8 @@
         },
         "next": [
             "DailyDispatchScanOverview"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchOpenBusyDrawerSlot": {
         "recognition": {
@@ -113,7 +115,8 @@
         },
         "next": [
             "DailyDispatchScanOverview"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__DailyDispatchDrawerTeamLabel": {
         "recognition": {
@@ -176,7 +179,8 @@
         },
         "next": [
             "DailyDispatchDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchScanOverview": {
         "recognition": {
@@ -240,7 +244,8 @@
             "DailyDispatchCloseReturnPopup",
             "DailyDispatchReturnCompletedTeam"
         ],
-        "max_hit": 8
+        "max_hit": 8,
+        "pre_wait_freezes": 300
     },
     "DailyDispatchReturnCompletedTeam": {
         "recognition": {
@@ -276,7 +281,8 @@
         "next": [
             "DailyDispatchCloseReturnPopup",
             "[JumpBack]CommonWaitLoading"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchCloseReturnPopup": {
         "recognition": {
@@ -318,7 +324,8 @@
         },
         "next": [
             "DailyDispatchScanOverview"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchOpenIdleSlot": {
         "recognition": {
@@ -353,14 +360,15 @@
         "next": [
             "DailyDispatchPrepareIdleSlot"
         ],
-        "max_hit": 8
+        "max_hit": 8,
+        "pre_wait_freezes": 300
     },
     "DailyDispatchPrepareIdleSlot": {
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyDispatchNeedSelectRoom",
             "DailyDispatchLaunchReady",
-            "DailyDispatchOpenTeamFormation",
+            "DailyDispatchCheckPreconfiguredTeam",
             "DailyDispatchSelectLocationStart"
         ],
         "timeout": 8000
@@ -416,7 +424,8 @@
             "[JumpBack]CommonWaitLoading",
             "DailyDispatchReturnOverviewFromBusySelection",
             "DailyDispatchScanOverview"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "__DailyDispatchStartButton": {
         "recognition": {
@@ -735,8 +744,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectBedroomTime2": {
         "recognition": {
@@ -775,8 +785,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectBedroomTime3": {
         "recognition": {
@@ -815,8 +826,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectBedroomTime4": {
         "recognition": {
@@ -855,8 +867,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectDungeonTime1": {
         "recognition": {
@@ -895,8 +908,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectDungeonTime2": {
         "recognition": {
@@ -935,8 +949,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectDungeonTime3": {
         "recognition": {
@@ -975,8 +990,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectDungeonTime4": {
         "recognition": {
@@ -1015,8 +1031,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectTrainingTime1": {
         "recognition": {
@@ -1055,9 +1072,10 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation",
+            "DailyDispatchCheckPreconfiguredTeam",
             "DailyDispatchSelectTrainingTime2"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectTrainingTime2": {
         "recognition": {
@@ -1096,9 +1114,10 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation",
+            "DailyDispatchCheckPreconfiguredTeam",
             "DailyDispatchSelectTrainingTime3"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectTrainingTime3": {
         "recognition": {
@@ -1137,9 +1156,10 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation",
+            "DailyDispatchCheckPreconfiguredTeam",
             "DailyDispatchSelectTrainingTime4"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectTrainingTime4": {
         "recognition": {
@@ -1178,9 +1198,10 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation",
+            "DailyDispatchCheckPreconfiguredTeam",
             "DailyDispatchReturnOverviewFromSelection"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectTreasureVaultTime1": {
         "recognition": {
@@ -1219,8 +1240,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectTreasureVaultTime2": {
         "recognition": {
@@ -1259,8 +1281,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectTreasureVaultTime3": {
         "recognition": {
@@ -1299,8 +1322,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectTreasureVaultTime4": {
         "recognition": {
@@ -1339,8 +1363,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectSealRoomTime1": {
         "recognition": {
@@ -1379,8 +1404,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectSealRoomTime2": {
         "recognition": {
@@ -1419,8 +1445,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectSealRoomTime3": {
         "recognition": {
@@ -1459,8 +1486,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSelectSealRoomTime4": {
         "recognition": {
@@ -1499,8 +1527,9 @@
             ]
         },
         "next": [
-            "DailyDispatchOpenTeamFormation"
-        ]
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchSwipeLocationListDown": {
         "recognition": {
@@ -1537,764 +1566,25 @@
             "DailyDispatchSelectSealRoomAfterSwipe"
         ]
     },
-    "DailyDispatchOpenTeamFormation": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "Bonus奖励条件",
-                    "Bonus獎勵條件"
-                ],
-                "roi": [
-                    80,
-                    760,
-                    560,
-                    270
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    155,
-                    980
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 800,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchAutoFormation"
-        ],
-        "on_error": [
-            "DailyDispatchSelectLocationStart"
-        ]
-    },
-    "DailyDispatchAutoFormation": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "条件推荐",
-                    "條件推薦"
-                ],
-                "roi": [
-                    500,
-                    450,
-                    180,
-                    100
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true
-            }
-        },
-        "post_wait_freezes": {
-            "time": 800,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchConfirmNoRecommendedTeam",
-            "DailyDispatchClickPersonnelSupplement",
-            "DailyDispatchManualFillTeam"
-        ]
-    },
-    "DailyDispatchConfirmNoRecommendedTeam": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "没有满足需求的编队",
-                    "沒有滿足需求的編隊",
-                    "确定"
-                ],
-                "roi": [
-                    170,
-                    470,
-                    380,
-                    300
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    360,
-                    742
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 800,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillTeam"
-        ]
-    },
-    "DailyDispatchClickPersonnelSupplement": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "人员补充",
-                    "人員補充"
-                ],
-                "roi": [
-                    500,
-                    450,
-                    180,
-                    100
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true
-            }
-        },
-        "post_wait_freezes": {
-            "time": 800,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchFormationReturn"
-        ],
-        "on_error": [
-            "DailyDispatchManualFillTeam"
-        ]
-    },
-    "DailyDispatchManualFillTeam": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "奖励条件",
-                    "獎勵條件"
-                ],
-                "roi": [
-                    90,
-                    450,
-                    220,
-                    120
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe1"
-        ]
-    },
-    "DailyDispatchManualFillSwipe1": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    155,
-                    760
-                ],
-                "end": [
-                    155,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe2"
-        ]
-    },
-    "DailyDispatchManualFillSwipe2": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    260,
-                    760
-                ],
-                "end": [
-                    260,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe3"
-        ]
-    },
-    "DailyDispatchManualFillSwipe3": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    365,
-                    760
-                ],
-                "end": [
-                    365,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe4"
-        ]
-    },
-    "DailyDispatchManualFillSwipe4": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    470,
-                    760
-                ],
-                "end": [
-                    470,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe5"
-        ]
-    },
-    "DailyDispatchManualFillSwipe5": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    575,
-                    760
-                ],
-                "end": [
-                    575,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSlideList1"
-        ]
-    },
-    "DailyDispatchManualFillSlideList1": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    620,
-                    760
-                ],
-                "end": [
-                    200,
-                    760
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe6"
-        ]
-    },
-    "DailyDispatchManualFillSwipe6": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    155,
-                    760
-                ],
-                "end": [
-                    155,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe7"
-        ]
-    },
-    "DailyDispatchManualFillSwipe7": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    260,
-                    760
-                ],
-                "end": [
-                    260,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe8"
-        ]
-    },
-    "DailyDispatchManualFillSwipe8": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    365,
-                    760
-                ],
-                "end": [
-                    365,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe9"
-        ]
-    },
-    "DailyDispatchManualFillSwipe9": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    470,
-                    760
-                ],
-                "end": [
-                    470,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe10"
-        ]
-    },
-    "DailyDispatchManualFillSwipe10": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    575,
-                    760
-                ],
-                "end": [
-                    575,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSlideList2"
-        ]
-    },
-    "DailyDispatchManualFillSlideList2": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    620,
-                    760
-                ],
-                "end": [
-                    200,
-                    760
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe11"
-        ]
-    },
-    "DailyDispatchManualFillSwipe11": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    155,
-                    760
-                ],
-                "end": [
-                    155,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe12"
-        ]
-    },
-    "DailyDispatchManualFillSwipe12": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    260,
-                    760
-                ],
-                "end": [
-                    260,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe13"
-        ]
-    },
-    "DailyDispatchManualFillSwipe13": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    365,
-                    760
-                ],
-                "end": [
-                    365,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe14"
-        ]
-    },
-    "DailyDispatchManualFillSwipe14": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    470,
-                    760
-                ],
-                "end": [
-                    470,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 300,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchManualFillSwipe15"
-        ]
-    },
-    "DailyDispatchManualFillSwipe15": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    575,
-                    760
-                ],
-                "end": [
-                    575,
-                    320
-                ],
-                "duration": 1500
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchFormationReturnAfterManual"
-        ]
-    },
-    "DailyDispatchFormationReturnAfterManual": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "条件推荐",
-                    "條件推薦",
-                    "奖励条件",
-                    "獎勵條件"
-                ],
-                "roi": [
-                    80,
-                    450,
-                    600,
-                    120
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    40,
-                    72
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 800,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
+    "DailyDispatchCheckPreconfiguredTeam": {
         "next": [
             "DailyDispatchLaunchReady",
-            "DailyDispatchReturnOverviewFromSelection"
-        ]
+            "DailyDispatchAbortWhenTeamNotReady"
+        ],
+        "timeout": 8000
     },
-    "DailyDispatchFormationReturn": {
+    "DailyDispatchAbortWhenTeamNotReady": {
         "recognition": {
             "type": "OCR",
             "param": {
                 "expected": [
-                    "条件推荐",
-                    "條件推薦",
-                    "奖励条件",
-                    "獎勵條件"
+                    "出发"
                 ],
                 "roi": [
-                    80,
-                    450,
-                    600,
-                    120
+                    270,
+                    1080,
+                    180,
+                    130
                 ]
             }
         },
@@ -2317,8 +1607,9 @@
             ]
         },
         "next": [
-            "DailyDispatchPrepareIdleSlot"
-        ]
+            "DailyDispatchReturnMainAfterOverviewTimeout"
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchReturnOverviewFromSelection": {
         "recognition": {
@@ -2358,7 +1649,8 @@
         },
         "next": [
             "DailyDispatchScanOverview"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchReturnOverviewFromBusySelection": {
         "recognition": {
@@ -2398,7 +1690,8 @@
         },
         "next": [
             "DailyDispatchScanOverview"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchReturnMainWhenAllBusy": {
         "recognition": {
@@ -2430,7 +1723,8 @@
         },
         "next": [
             "DailyDispatchDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchReturnMainAfterOverviewTimeout": {
         "recognition": {
@@ -2461,7 +1755,8 @@
         },
         "next": [
             "DailyDispatchDone"
-        ]
+        ],
+        "pre_wait_freezes": 300
     },
     "DailyDispatchStopAfterOverviewTimeout": {
         "recognition": {
