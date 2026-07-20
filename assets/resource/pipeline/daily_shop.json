@@ -213,17 +213,8 @@
             ]
         },
         "next": [
-            "DailyShopExchangeScanMiddle"
+            "DailyShopExchangeSwipe2"
         ]
-    },
-    "DailyShopExchangeScanMiddle": {
-        "next": [
-            "[JumpBack]CommonWaitLoading",
-            "DailyShopExchangeTargetItem",
-            "DailyShopExchangeSwipe2",
-            "DailyShopOpenGuildShop"
-        ],
-        "timeout": 5000
     },
     "DailyShopExchangeSwipe2": {
         "recognition": {
@@ -696,16 +687,8 @@
             ]
         },
         "next": [
-            "DailyShopGuildScanMiddle"
-        ]
-    },
-    "DailyShopGuildScanMiddle": {
-        "next": [
-            "[JumpBack]CommonWaitLoading",
-            "DailyShopGuildTargetItem",
             "DailyShopGuildSwipe2"
-        ],
-        "timeout": 5000
+        ]
     },
     "DailyShopGuildSwipe2": {
         "recognition": {

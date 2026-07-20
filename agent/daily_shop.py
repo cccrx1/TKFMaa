@@ -12,43 +12,36 @@ from maa.pipeline import JOCR
 from common import safe_json_loads
 
 
-SHOP_LIST_ROI = (60, 250, 600, 820)
 SHOP_SLOTS = [
     {
         "name": "top_left",
-        "name_roi": (75, 540, 165, 65),
-        "sold_out_roi": (70, 430, 180, 115),
-        "click_box": (75, 305, 170, 330),
+        "card_roi": (70, 280, 182, 365),
+        "click_box": (70, 280, 182, 365),
     },
     {
         "name": "top_middle",
-        "name_roi": (265, 540, 170, 65),
-        "sold_out_roi": (260, 430, 180, 115),
-        "click_box": (265, 305, 170, 330),
+        "card_roi": (255, 280, 180, 365),
+        "click_box": (255, 280, 180, 365),
     },
     {
         "name": "top_right",
-        "name_roi": (450, 540, 190, 65),
-        "sold_out_roi": (440, 430, 190, 115),
-        "click_box": (450, 305, 180, 330),
+        "card_roi": (435, 280, 180, 365),
+        "click_box": (435, 280, 180, 365),
     },
     {
         "name": "bottom_left",
-        "name_roi": (75, 905, 170, 65),
-        "sold_out_roi": (70, 800, 180, 115),
-        "click_box": (75, 675, 170, 330),
+        "card_roi": (70, 650, 182, 370),
+        "click_box": (70, 650, 182, 370),
     },
     {
         "name": "bottom_middle",
-        "name_roi": (265, 905, 170, 65),
-        "sold_out_roi": (260, 800, 180, 115),
-        "click_box": (265, 675, 170, 330),
+        "card_roi": (255, 650, 180, 370),
+        "click_box": (255, 650, 180, 370),
     },
     {
         "name": "bottom_right",
-        "name_roi": (450, 905, 190, 65),
-        "sold_out_roi": (440, 800, 190, 115),
-        "click_box": (450, 675, 180, 330),
+        "card_roi": (435, 650, 180, 370),
+        "click_box": (435, 650, 180, 370),
     },
 ]
 
@@ -126,10 +119,10 @@ def _reset_session(targets):
         _PENDING_TARGET = None
 
 
-def _ocr_results(context, image, roi, expected=None, threshold=0.3):
+def _ocr_results(context, image, roi, expected=None, threshold=0.3, *, only_rec=True):
     detail = context.run_recognition_direct(
         "OCR",
-        JOCR(expected=expected or [], roi=tuple(roi), threshold=threshold, only_rec=True),
+        JOCR(expected=expected or [], roi=tuple(roi), threshold=threshold, only_rec=only_rec),
         image,
     )
     return list(getattr(detail, "all_results", []) or [])
@@ -144,77 +137,42 @@ def _text_results(results):
     return texts
 
 
-def _white_pixel_count(image, roi):
-    x, y, w, h = [int(v) for v in roi]
-    height, width = image.shape[:2]
-    x1 = max(0, min(width, x))
-    y1 = max(0, min(height, y))
-    x2 = max(x1, min(width, x + w))
-    y2 = max(y1, min(height, y + h))
-    if x1 == x2 or y1 == y2:
-        return 0
-
-    region = image[y1:y2, x1:x2]
-    # argv.image is BGR. The sold-out banner has large high-contrast white
-    # letters; normal item cards only have small white quantity text here.
-    bright = (region[:, :, 0] > 210) & (region[:, :, 1] > 210) & (region[:, :, 2] > 210)
-    balanced = (region.max(axis=2) - region.min(axis=2)) < 45
-    return int((bright & balanced).sum())
+def _longest_ascii_letter_run(text):
+    longest = 0
+    current = 0
+    for ch in _normalize_text(text):
+        if "a" <= ch <= "z":
+            current += 1
+            longest = max(longest, current)
+        else:
+            current = 0
+    return longest
 
 
-def _magenta_pixel_count(image, roi):
-    x, y, w, h = [int(v) for v in roi]
-    height, width = image.shape[:2]
-    x1 = max(0, min(width, x))
-    y1 = max(0, min(height, y))
-    x2 = max(x1, min(width, x + w))
-    y2 = max(y1, min(height, y + h))
-    if x1 == x2 or y1 == y2:
-        return 0
-
-    region = image[y1:y2, x1:x2]
-    blue = region[:, :, 0]
-    green = region[:, :, 1]
-    red = region[:, :, 2]
-    magenta = (red > 90) & (blue > 70) & (green < 115) & (red > green + 25) & (blue > green + 5)
-    return int(magenta.sum())
-
-
-def _slot_texts(context, image, slot, expected):
-    # Read the card text without expected filtering first. Expected filtering can
-    # turn a small OCR error into an empty result before fuzzy matching sees it.
-    results = _ocr_results(context, image, slot["name_roi"], threshold=0.2)
-    if not results and expected:
-        results = _ocr_results(context, image, slot["name_roi"], expected, threshold=0.2)
-    return _text_results(results)
-
-
-def _slot_sold_out(context, image, slot):
-    texts = _text_results(
-        _ocr_results(
-            context,
-            image,
-            slot["sold_out_roi"],
-            expected=["SOLD OUT", "SOLDOUT"],
-            threshold=0.2,
-        )
-    )
+def _sold_out_texts(texts):
     normalized = _normalize_text("".join(texts))
-    white_count = _white_pixel_count(image, slot["sold_out_roi"])
-    magenta_count = _magenta_pixel_count(image, slot["sold_out_roi"])
-    # Color counts remain diagnostics only. Normal item cards can contain enough
-    # bright lettering to resemble the banner, so purchase blocking requires OCR.
-    return "soldout" in normalized, texts, white_count, magenta_count
+    if "soldout" not in normalized and "currently" not in normalized and _longest_ascii_letter_run(normalized) < 3:
+        return []
+
+    markers = [text for text in texts if _longest_ascii_letter_run(text) >= 3]
+    return markers or texts
+
+
+def _slot_texts(context, image, slot):
+    # One detection pass reads the item name and any sold-out banner from the
+    # whole card. The ROI includes the 13-15 px shift between list endpoints.
+    return _text_results(
+        _ocr_results(context, image, slot["card_roi"], threshold=0.2, only_rec=False)
+    )
 
 
 def _read_visible_items(context, image, targets):
-    expected = [target["raw"] for target in targets]
     visible = []
     for slot in SHOP_SLOTS:
-        texts = _slot_texts(context, image, slot, expected)
+        texts = _slot_texts(context, image, slot)
         normalized = _normalize_text("".join(texts))
-        sold_out, sold_out_texts, sold_out_white, sold_out_magenta = _slot_sold_out(context, image, slot)
-        if not normalized and not sold_out_texts:
+        sold_out_texts = _sold_out_texts(texts)
+        if not normalized:
             continue
         visible.append(
             {
@@ -222,10 +180,9 @@ def _read_visible_items(context, image, targets):
                 "texts": texts,
                 "text": "".join(texts),
                 "normalized": normalized,
-                "sold_out": sold_out,
+                "normalized_texts": [_normalize_text(text) for text in texts],
+                "sold_out": bool(sold_out_texts),
                 "sold_out_texts": sold_out_texts,
-                "sold_out_white": sold_out_white,
-                "sold_out_magenta": sold_out_magenta,
                 "box": slot["click_box"],
             }
         )
@@ -256,10 +213,10 @@ def _analyze_target_item(context, argv, default_shop_id):
     for target in targets:
         normalized_target = target["normalized"]
         for item in visible:
-            text = item["normalized"]
-            if not text:
+            texts = item["normalized_texts"]
+            if not texts:
                 continue
-            if _target_matches(normalized_target, text):
+            if any(_target_matches(normalized_target, text) for text in texts):
                 if item["sold_out"]:
                     skipped.append(
                         {
@@ -268,8 +225,6 @@ def _analyze_target_item(context, argv, default_shop_id):
                             "reason": "sold_out",
                             "texts": item["texts"],
                             "sold_out_texts": item["sold_out_texts"],
-                            "sold_out_white": item["sold_out_white"],
-                            "sold_out_magenta": item["sold_out_magenta"],
                         }
                     )
                     continue
@@ -299,8 +254,7 @@ def _analyze_target_item(context, argv, default_shop_id):
                                 "slot": entry["slot"],
                                 "text": entry["text"],
                                 "sold_out": entry["sold_out"],
-                                "sold_out_white": entry["sold_out_white"],
-                                "sold_out_magenta": entry["sold_out_magenta"],
+                                "sold_out_texts": entry["sold_out_texts"],
                             }
                             for entry in visible
                         ],
@@ -320,8 +274,7 @@ def _analyze_target_item(context, argv, default_shop_id):
                     "slot": entry["slot"],
                     "text": entry["text"],
                     "sold_out": entry["sold_out"],
-                    "sold_out_white": entry["sold_out_white"],
-                    "sold_out_magenta": entry["sold_out_magenta"],
+                    "sold_out_texts": entry["sold_out_texts"],
                 }
                 for entry in visible
             ],
