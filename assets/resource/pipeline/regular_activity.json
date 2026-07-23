@@ -397,6 +397,22 @@
             "RegularActivityDone"
         ]
     },
+    "RegularActivityConsumedState": {
+        "anchor": "RegularActivityLowDecision",
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseReward",
+            "[JumpBack]RegularActivityConfirmSkipStory",
+            "[JumpBack]RegularActivitySkipStory",
+            "RegularActivityReturnWhenStaminaLow",
+            "RegularActivityStartManualBattle",
+            "RegularActivityStageListDecision"
+        ],
+        "timeout": 15000,
+        "on_error": [
+            "RegularActivityDone"
+        ]
+    },
     "RegularActivityRefillWithPotionWhenLow": {
         "enabled": false,
         "recognition": {
@@ -641,9 +657,7 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "RegularActivityStageDetailOrStory",
-            "RegularActivityStageListDecision",
-            "RegularActivityStart"
+            "RegularActivityConsumedState"
         ],
         "pre_wait_freezes": 300
     },
@@ -871,9 +885,52 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "RegularActivityCancelMagicCrystalShortagePrompt",
             "RegularActivityCurrencyPurchasedState"
         ],
         "max_hit": 1,
+        "pre_wait_freezes": 300
+    },
+    "RegularActivityCancelMagicCrystalShortagePrompt": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "将以1魂晶购买200魔晶石。"
+                ],
+                "roi": [
+                    112,
+                    586,
+                    369,
+                    84
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    117,
+                    676,
+                    225,
+                    87
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "RegularActivityCloseStaminaPurchasePopup",
+            "RegularActivityAbortUnknownRefillPopup"
+        ],
         "pre_wait_freezes": 300
     },
     "RegularActivityCurrencyPurchasedState": {

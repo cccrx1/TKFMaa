@@ -6,7 +6,7 @@
     "license": "MIT",
     "welcome": "",
     "github": "https://github.com/cccrx1/TKFMaa",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "controller": [
         {
             "name": "安卓端",
@@ -1355,6 +1355,721 @@
                                         90,
                                         720,
                                         180
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "兽耳乡的传说 - 搜寻",
+                    "description": "限时活动外部路线 + 复刻活动地图：选择 兽耳乡的传说，进入活动地图右列寻找搜寻，刷取搜寻。",
+                    "pipeline_override": {
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteInnerRerunUiStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "兽耳乡的传说"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        770,
+                                        580,
+                                        60
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "搜寻-02"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 35,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 35,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunRightColumnStart"
+                            ]
+                        },
+                        "DailyStaminaPresetRerunMapMarker": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "Story",
+                                        "Free Quest"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "CommonReturnMainFromStaminaStageList": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "兽耳乡的传说 - 秘宝",
+                    "description": "限时活动外部路线 + 复刻活动地图：选择 兽耳乡的传说，进入活动地图右列寻找秘宝，刷取秘宝。",
+                    "pipeline_override": {
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteInnerRerunUiStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "兽耳乡的传说"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        770,
+                                        580,
+                                        60
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "秘宝-02"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 35,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 35,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunRightColumnStart"
+                            ]
+                        },
+                        "DailyStaminaPresetRerunMapMarker": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "Story",
+                                        "Free Quest"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "CommonReturnMainFromStaminaStageList": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "兽耳乡的传说 - 陷阱",
+                    "description": "限时活动外部路线 + 复刻活动地图：选择 兽耳乡的传说，进入活动地图右列寻找陷阱，刷取陷阱。",
+                    "pipeline_override": {
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteInnerRerunUiStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "兽耳乡的传说"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        770,
+                                        580,
+                                        60
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "陷阱-02"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 35,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 35,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunRightColumnStart"
+                            ]
+                        },
+                        "DailyStaminaPresetRerunMapMarker": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "Story",
+                                        "Free Quest"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "CommonReturnMainFromStaminaStageList": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "兽耳乡的传说 - 料理",
+                    "description": "限时活动外部路线 + 复刻活动地图：选择 兽耳乡的传说，进入活动地图右列寻找料理，刷取料理。",
+                    "pipeline_override": {
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteInnerRerunUiStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "兽耳乡的传说"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        770,
+                                        580,
+                                        60
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "料理-02"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 35,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 35,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunRightColumnStart"
+                            ]
+                        },
+                        "DailyStaminaPresetRerunMapMarker": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "Story",
+                                        "Free Quest"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "CommonReturnMainFromStaminaStageList": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "兽耳乡的传说 - 探险",
+                    "description": "限时活动外部路线 + 复刻活动地图：选择 兽耳乡的传说，进入活动地图右列寻找探险，刷取探险。",
+                    "pipeline_override": {
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteInnerRerunUiStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "兽耳乡的传说"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        770,
+                                        580,
+                                        60
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "探险-02"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 35,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 35,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunRightColumnStart"
+                            ]
+                        },
+                        "DailyStaminaPresetRerunMapMarker": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "Story",
+                                        "Free Quest"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "CommonReturnMainFromStaminaStageList": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
                                     ]
                                 }
                             }

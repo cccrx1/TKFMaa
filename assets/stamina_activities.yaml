@@ -92,6 +92,37 @@ activity_groups:
         description: "复用统一活动外部寻路进入 Idol Live 本体，再按 NEW 标记推进未通关关卡，自动跳过剧情并完成战斗。"
         mode: regular_auto_clear
 
+  beast_ear_village_legend:
+    case_prefix: "兽耳乡的传说"
+    description_template: "限时活动外部路线 + 复刻活动地图：选择 {activity}，进入活动地图右列寻找{stage}，刷取{stage}。"
+    base:
+      template: rerun_activity_map
+      stamina:
+        cost: 35
+      activity_name:
+        expected: ["兽耳乡的传说"]
+      rerun:
+        column: right
+        marker:
+          expected: ["Story", "Free Quest"]
+          roi: [0, 160, 720, 1000]
+    cases:
+      - case_suffix: "搜寻"
+        stage:
+          expected: ["搜寻-02"]
+      - case_suffix: "秘宝"
+        stage:
+          expected: ["秘宝-02"]
+      - case_suffix: "陷阱"
+        stage:
+          expected: ["陷阱-02"]
+      - case_suffix: "料理"
+        stage:
+          expected: ["料理-02"]
+      - case_suffix: "探险"
+        stage:
+          expected: ["探险-02"]
+
 activities:
   - name: "常驻关卡 - 战争演习-特IV"
     description: "常驻路线：目前活动 → 日常政务 → 战争演习，进入纵向关卡列表后寻找战争演习-特IV。"

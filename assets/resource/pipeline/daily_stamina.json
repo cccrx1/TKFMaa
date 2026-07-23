@@ -622,16 +622,9 @@
         ]
     },
     "DailyStaminaAfterSweepDecision": {
+        "anchor": "DailyStaminaLowDecision",
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "DailyStaminaUsePotionPopup",
-            "DailyStaminaSelectPotionTab",
-            "DailyStaminaBuyStaminaPopup",
-            "DailyStaminaSelectCurrencyTab",
-            "DailyStaminaCloseStaminaPurchasePopup",
-            "[Anchor]DailyStaminaLowDecision",
-            "DailyStaminaRefillWithPotionWhenLow",
-            "DailyStaminaRefillWithCurrencyWhenLow",
             "DailyStaminaReturnMainWhenLow",
             "DailyStaminaManualStart",
             "DailyStaminaReturnMainFromStageDetail"
@@ -1006,9 +999,52 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "DailyStaminaCancelMagicCrystalShortagePrompt",
             "DailyStaminaCurrencyPurchasedState"
         ],
         "max_hit": 1,
+        "pre_wait_freezes": 300
+    },
+    "DailyStaminaCancelMagicCrystalShortagePrompt": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "将以1魂晶购买200魔晶石。"
+                ],
+                "roi": [
+                    112,
+                    586,
+                    369,
+                    84
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    117,
+                    676,
+                    225,
+                    87
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyStaminaCloseStaminaPurchasePopup",
+            "DailyStaminaAbortUnknownRefillPopup"
+        ],
         "pre_wait_freezes": 300
     },
     "DailyStaminaCurrencyPurchasedState": {
