@@ -45,7 +45,7 @@ npx @nekosu/maa-tools check
 python tools/validate_schema.py --schema-dir deps/tools --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json
 ```
 
-修改识别、坐标、手势或资源消耗逻辑后，还要在 MFAAvalonia 中运行受影响任务，并把版本、设备和覆盖路径写入对应任务文档。
+修改识别、坐标、手势或资源消耗逻辑后，还要在当前开发环境中运行受影响任务。本地提供 MaaMCP 时，跨文件流程应一次加载全部 Pipeline 依赖、项目资源、对应 Case Override 和 Agent；把版本、设备和覆盖路径写入对应任务文档。
 
 ## 提交 Pull Request
 
@@ -58,6 +58,8 @@ MFAAvalonia、MaaFramework 运行时、对应平台与架构的独立 CPython 3.
 和 Agent 一起打包；Android 包不包含桌面 Python 运行时。桌面包生成后的 Interface 会直接调用
 `python/` 中的解释器，用户无需另行安装 Python；Agent 与 MFAAvalonia 共用
 `runtimes/<平台>/native/` 中的 MaaFramework 原生运行库。
+
+MFAAvalonia 是桌面发布包包含的运行客户端，不是本仓库开发环境的必需依赖。本地开发和实机调试按上文使用项目现有工具完成。
 
 发布属于维护操作。执行前应确认目标提交、工作区状态、完整验证结果和版本说明，再创建并推送标签：
 

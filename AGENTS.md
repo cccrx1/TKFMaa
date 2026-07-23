@@ -68,7 +68,7 @@
 
 `maa-mcp` 不是 TKFMaa 的运行依赖，仅在本地环境提供该工具时用于辅助采集和调试。使用时先通过 `find_adb_device_list` 与 `connect_adb_device` 明确连接设备；首次缺少模型时运行 `check_and_download_ocr`。`ocr` 已包含截图步骤，不要在调用前重复截图。通过 `load_pipeline`/`save_pipeline` 读写结构化 JSON，保留原有节点；遇到同名节点默认停止，只有明确确认后才覆盖。
 
-`run_pipeline` 适合验证无跨文件依赖的单节点或子流程，并应设置人工超时；长时间无返回时停止任务并截图确认实际页面。它只加载指定 Pipeline 文件，包含跨文件节点引用的完整流程必须使用 MaaFramework GUI/CLI 或 MFAAvalonia 集成测试。MCP 结果用于定位 ROI、识别文本和流程问题，不能替代 `maa-tools check`、Schema 校验及端到端验证。
+`run_pipeline` 应设置人工超时；长时间无返回时停止任务并截图确认实际页面。验证单节点或无跨文件依赖的子流程时可只加载目标文件；验证跨文件流程时必须按依赖顺序传入完整的 Pipeline 文件列表，并指定项目资源目录。切换测试集合前先执行 `stop_pipeline` 和 `clear_pipeline_resources`，避免已驻留节点污染结果。验证 Interface Case 时还须提供对应的 `pipeline_override`，涉及自定义逻辑时启动并绑定 Agent。MCP 结果用于定位 ROI、识别文本和流程问题，不能替代 `maa-tools check`、Schema 校验及端到端验证。
 
 ## Agent 技能使用指引
 
@@ -76,7 +76,7 @@
 
 ## 测试规范
 
-`maa-tools check` 与 JSON Schema 校验均为必做检查。修改识别或动作逻辑后，还应在 MFAAvalonia 中运行受影响任务，并记录相关日志、截图或修改前后行为。坐标、ROI 和模板须遵循 MaaFramework 的 720p 基准。不要提交运行日志、调试截图、缓存或下载的大型模型文件。
+`maa-tools check` 与 JSON Schema 校验均为必做检查。修改识别或动作逻辑后，还应在当前开发环境中运行受影响任务；本地提供 MaaMCP 时优先使用其多文件 `run_pipeline` 完成设备集成测试，并记录相关日志、截图或修改前后行为。坐标、ROI 和模板须遵循 MaaFramework 的 720p 基准。不要提交运行日志、调试截图、缓存或下载的大型模型文件。
 
 ## 提交与 Pull Request 规范
 
