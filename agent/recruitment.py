@@ -6,6 +6,7 @@ from bootstrap import configure_runtime
 configure_runtime()
 
 from maa.agent.agent_server import AgentServer
+from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.pipeline import JOCR
 
@@ -86,6 +87,26 @@ RECRUITMENT_POOL = [
 ]
 
 KNOWN_TAGS = sorted({tag for item in RECRUITMENT_POOL for tag in item["tags"]}, key=len, reverse=True)
+
+_CYCLE_HIT_COUNT_NODES = (
+    "DailyRecruitmentSlot1Open",
+    "DailyRecruitmentSlot1Refresh",
+    "DailyRecruitmentSlot1RecruitGuaranteed",
+    "DailyRecruitmentSlot1RecruitFallback",
+    "DailyRecruitmentSlot2Open",
+    "DailyRecruitmentSlot2Refresh",
+    "DailyRecruitmentSlot2RecruitGuaranteed",
+    "DailyRecruitmentSlot2RecruitFallback",
+    "DailyRecruitmentSlot3Open",
+    "DailyRecruitmentSlot3Refresh",
+    "DailyRecruitmentSlot3RecruitGuaranteed",
+    "DailyRecruitmentSlot3RecruitFallback",
+    "DailyRecruitmentSlot4Open",
+    "DailyRecruitmentSlot4Refresh",
+    "DailyRecruitmentSlot4RecruitGuaranteed",
+    "DailyRecruitmentSlot4RecruitFallback",
+    "DailyRecruitmentImmediateRecruitButton",
+)
 
 
 def _clean_text(text):
@@ -262,6 +283,15 @@ def _tag_box(decision, index):
         return None
     box = decision["tag_boxes"].get(choice["tags"][index])
     return tuple(box) if box else None
+
+
+@AgentServer.custom_action("DailyRecruitmentResetCycle")
+class DailyRecruitmentResetCycle(CustomAction):
+    def run(self, context, argv):
+        clear_hit_count = getattr(context, "clear_hit_count", None)
+        if clear_hit_count is None:
+            return False
+        return all(clear_hit_count(node_name) for node_name in _CYCLE_HIT_COUNT_NODES)
 
 
 @AgentServer.custom_recognition("DailyRecruitDecision")

@@ -6,6 +6,7 @@
             "[JumpBack]DailyRecruitmentCollectSkip",
             "[JumpBack]DailyRecruitmentCollectClose",
             "DailyRecruitmentCollectResults",
+            "DailyRecruitmentCycleEntry",
             "DailyRecruitmentSlot1Open",
             "DailyRecruitmentSlot2Open",
             "DailyRecruitmentSlot3Open",
@@ -173,7 +174,7 @@
             }
         },
         "next": [
-            "DailyRecruitmentOverviewRouter"
+            "DailyRecruitmentCycleRouter"
         ],
         "pre_wait_freezes": 300
     },
@@ -191,7 +192,7 @@
             }
         },
         "next": [
-            "DailyRecruitmentOverviewRouter"
+            "DailyRecruitmentCycleRouter"
         ]
     },
     "__DailyRecruitmentOverviewTitle": {
@@ -222,6 +223,51 @@
             "DailyRecruitmentOverviewComplete"
         ],
         "timeout": 10000
+    },
+    "DailyRecruitmentCycleEntry": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    80,
+                    90,
+                    160,
+                    80
+                ],
+                "expected": [
+                    "鍏ㄥ寰佹墠"
+                ]
+            }
+        },
+        "action": {
+            "type": "DoNothing"
+        },
+        "next": [
+            "DailyRecruitmentCycleRouter"
+        ]
+    },
+    "DailyRecruitmentCycleRouter": {
+        "next": [
+            "DailyRecruitmentCycleGate",
+            "DailyRecruitmentReturnFromOverview"
+        ],
+        "timeout": 10000
+    },
+    "DailyRecruitmentCycleGate": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "DailyRecruitmentResetCycle",
+                "custom_action_param": {}
+            }
+        },
+        "next": [
+            "DailyRecruitmentOverviewRouter"
+        ],
+        "max_hit": 1
     },
     "DailyRecruitmentOverviewComplete": {
         "recognition": {
@@ -1783,7 +1829,7 @@
             "[JumpBack]CommonCloseReward",
             "DailyRecruitmentImmediateRecruitButton",
             "DailyRecruitmentImmediateCollectResults",
-            "DailyRecruitmentReturnFromOverview"
+            "DailyRecruitmentCycleRouter"
         ],
         "timeout": 10000
     },
@@ -1957,7 +2003,7 @@
             }
         },
         "next": [
-            "DailyRecruitmentReturnFromOverview"
+            "DailyRecruitmentCycleRouter"
         ],
         "pre_wait_freezes": 300
     },
@@ -1975,7 +2021,7 @@
             }
         },
         "next": [
-            "DailyRecruitmentReturnFromOverview"
+            "DailyRecruitmentCycleRouter"
         ]
     },
     "DailyRecruitmentReturnFromOverview": {

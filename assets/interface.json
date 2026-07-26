@@ -2376,7 +2376,10 @@
             "cases": [
                 {
                     "name": "Yes",
-                    "description": "四个栏位处理完成后，先依次点击所有可见的立即招募/紧急征召，再一键录取结果并返回主界面。",
+                    "description": "四个栏位处理完成后，先依次点击所有可见的立即招募/紧急征召，再一键录取结果；循环次数用尽后返回主界面。",
+                    "option": [
+                        "全境征才循环次数"
+                    ],
                     "pipeline_override": {
                         "DailyRecruitmentAfterSlots": {
                             "next": [
@@ -2397,6 +2400,23 @@
                     }
                 }
             ]
+        },
+        "全境征才循环次数": {
+            "type": "input",
+            "inputs": [
+                {
+                    "name": "次数",
+                    "pipeline_type": "int",
+                    "default": "1",
+                    "verify": "^[1-9][0-9]?$|^100$",
+                    "pattern_msg": "请输入 1-100 的整数"
+                }
+            ],
+            "pipeline_override": {
+                "DailyRecruitmentCycleGate": {
+                    "max_hit": "{次数}"
+                }
+            }
         },
         "调教目标": {
             "type": "select",
