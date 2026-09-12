@@ -8,9 +8,8 @@
 
 - `git submodule update --init --recursive`：克隆后初始化 Maa 通用资源。
 - `npm ci`：安装 CI 使用的锁定版本 Node.js 工具。
-- `python -m pip install -r tools/requirements.txt`：安装打包和配置生成脚本依赖。
 - `npx @nekosu/maa-tools check`：校验 Maa Pipeline 与 Interface 资源。
-- `python -m pip install jsonschema==4.26.0 referencing==0.37.0`：安装 Schema 校验依赖。
+- `python -m pip install -r tools/requirements.txt`：安装 Maa Agent、配置生成和 Schema 校验所需的 Python 依赖。
 - `python tools/validate_schema.py --schema-dir deps/tools --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json`：执行与 CI 相同的 JSON Schema 校验。
 - `python tools/build_stamina_activities.py`：修改 `assets/stamina/active.yaml` 后重新生成体力活动配置。
 - `python tools/build_stamina_activities.py --check`：只检查体力活动配置与 `assets/interface.json` 是否同步，不写文件。
@@ -98,3 +97,4 @@
 - 提交前报告拟提交文件和验证结果；若发现同一文件含有无法安全拆分的用户改动，先停止并说明情况。
 - 未经明确许可，不得执行 `commit --amend`、交互式 rebase、`reset`、强制推送、删除标签或绕过提交钩子。禁止使用 `git reset --hard`、`git clean -fd` 等可能丢失工作区内容的命令。
 - 版本标签和 GitHub Release 视为发布操作。只有用户明确给出版本号并要求发布时才能执行，且发布前必须确认工作区、目标提交、验证结果和发布说明。
+
