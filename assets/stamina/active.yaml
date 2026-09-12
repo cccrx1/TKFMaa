@@ -71,19 +71,7 @@ activity_groups:
           recognition:
             type: OCR
             param:
-              expected:
-                [
-                  "觉醒-01",
-                  "觉醒01",
-                  "磨刀-01",
-                  "磨刀01",
-                  "保养-01",
-                  "保养01",
-                  "修行-01",
-                  "修行01",
-                  "刀剑-01",
-                  "刀剑01",
-                ]
+              expected: ["觉醒-01", "觉醒01", "磨刀-01", "磨刀01", "保养-01", "保养01", "修行-01", "修行01"]
               roi: [0, 160, 720, 1000]
     cases:
       - case_suffix: "觉醒-01"
@@ -102,12 +90,3 @@ activity_groups:
           expected: ["修行-01", "修行01"]
         stamina:
           cost: 45
-      - case_suffix: "刀剑-01"
-        stage:
-          expected: ["刀剑-01", "刀剑01"]
-      - case_suffix: "刀剑-02"
-        stage:
-          expected: ["刀剑-02", "刀剑02"]
-      - case_suffix: "刀剑-03"
-        stage:
-          expected: ["刀剑-03", "刀剑03"]
