@@ -2,7 +2,7 @@
 
 ## 项目结构与模块组织
 
-本仓库是基于 MaaFramework 的自动化助手。Python 自定义动作逻辑位于 `agent/`，其中 `agent/main.py` 负责注册处理器并启动 Maa Agent 服务。声明式自动化流程位于 `assets/resource/pipeline/`，识别模板应放入 `assets/resource/image/` 下对应的功能目录。面向用户的任务与选项在 `assets/interface.json` 中声明。通用 OCR 模型通过 `assets/MaaCommonAssets` 子模块管理。构建、Schema 校验和数据生成脚本位于 `tools/`，贡献者文档位于 `docs/zh_cn/develop/`。目前没有独立的单元测试目录。
+本仓库是基于 MaaFramework 的自动化助手。Python 自定义动作逻辑位于 `agent/`，其中 `agent/main.py` 负责注册处理器并启动 Maa Agent 服务。声明式自动化流程位于 `assets/resource/pipeline/`，识别模板应放入 `assets/resource/image/` 下对应的功能目录。面向用户的任务与选项在 `assets/interface.json` 中声明。通用 OCR 模型通过 `assets/MaaCommonAssets` 子模块管理。构建、Schema 校验和数据生成脚本位于 `tools/`，贡献者文档位于 `docs/zh_cn/develop/`，统一任务流程位于 `docs/zh_cn/tasks/`。公开文档总入口为 `docs/zh_cn/README.md`。目前没有独立的单元测试目录。
 
 ## 构建、测试与开发命令
 
@@ -12,7 +12,7 @@
 - `npx @nekosu/maa-tools check`：校验 Maa Pipeline 与 Interface 资源。
 - `python -m pip install jsonschema==4.26.0 referencing==0.37.0`：安装 Schema 校验依赖。
 - `python tools/validate_schema.py --schema-dir deps/tools --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json`：执行与 CI 相同的 JSON Schema 校验。
-- `python tools/build_stamina_activities.py`：修改 `assets/stamina_activities.yaml` 后重新生成体力活动配置。
+- `python tools/build_stamina_activities.py`：修改 `assets/stamina/active.yaml` 后重新生成体力活动配置。
 - `python tools/build_stamina_activities.py --check`：只检查体力活动配置与 `assets/interface.json` 是否同步，不写文件。
 - `python tools/add_interaction_stability.py --check`：检查带识别结果的交互动作是否配置点击前稳定等待。
 
@@ -20,7 +20,7 @@
 
 ## 生成配置与派生产物
 
-`assets/stamina_activities.yaml` 是“体力消耗关卡”选项的唯一源数据，`assets/interface.json` 中对应的 `default_case` 和 `cases` 由 `tools/build_stamina_activities.py` 生成，不应手工修改。修改 YAML，或修改生成脚本中会影响输出的模板、校验和 Override 逻辑后，必须运行生成命令，并将源文件、脚本改动和生成后的 `assets/interface.json` 放在同一提交中。
+`assets/stamina/active.yaml` 是“体力消耗关卡”选项的唯一源数据，`assets/interface.json` 中对应的 `default_case` 和 `cases` 由 `tools/build_stamina_activities.py` 生成，不应手工修改。修改 YAML，或修改生成脚本中会影响输出的模板、校验和 Override 逻辑后，必须运行生成命令，并将源文件、脚本改动和生成后的 `assets/interface.json` 放在同一提交中。
 
 同一活动包含多个关卡时使用 `activity_groups`：活动名称、页面 marker 和公共 Override 放入 `base`，各关卡差异放入 `cases`；`templates` 仅描述可跨活动复用的内部 UI 路线，不写具体活动名称。四类模板、字段要求和示例见 `docs/zh_cn/develop/stamina_activity_config.md`。
 
@@ -42,20 +42,20 @@
 
 ## 任务开发流程
 
-- 新增任务或重构跨页面主流程前，必须先在模拟器中观察实际游戏流程，并在 `docs/zh_cn/task_flows/` 建立流程记录。
+- 新增任务或重构跨页面主流程前，必须先在模拟器中观察实际游戏流程，并在 `docs/zh_cn/tasks/` 建立流程记录。
 - 流程记录至少包含前置状态、页面流转、识别依据、异常分支和完成状态；不能只按需求描述推测界面行为。
 - 局部识别或动作修复只需复现并验证受影响路径，可将截图、日志和结果记录在 Issue 或 PR 中；纯文档及非行为改动无需运行模拟器。
 - 涉及购买、资源消耗、账号操作等高风险行为时，合并前必须完成端到端实机验证。
 - 从其他项目或旧分支迁入的文档只能作为线索；必须核对本仓库路径、节点、选项和当前客户端，未经本项目复测的“已验证”记录统一标为待验证。
-- 具体分级、操作步骤、记录模板和验收要求见 `docs/zh_cn/develop/task_workflow.md`。
+- 具体分级、操作步骤、记录模板和验收要求见 `docs/zh_cn/develop/project_guide.md`。
 
 ## 文档同步时机
 
 - 仓库目录、必需命令、编码约定、验证门槛或协作规则改变时，必须在同一 PR 更新 `AGENTS.md`；具体功能实现变化不写入本文件。
-- 流程采集方法、变更分级、记录模板或验收标准改变时，更新 `docs/zh_cn/develop/task_workflow.md`。
-- 新增任务，或现有任务的页面顺序、识别依据、Option 行为、Agent 决策、异常恢复、资源消耗或结束条件改变时，更新对应的 `docs/zh_cn/task_flows/task_*.md`。
+- 流程采集方法、变更分级、记录模板或验收标准改变时，更新 `docs/zh_cn/develop/project_guide.md`。
+- 新增任务，或现有任务的页面顺序、识别依据、Option 行为、Agent 决策、异常恢复、资源消耗或结束条件改变时，更新对应的 `docs/zh_cn/tasks/task_*.md`。
 - ROI、OCR 文本或模板调整如果改变识别目标、适用页面或已知风险，需要同步任务文档；仅微调数值且流程含义不变时，在 PR 验证记录中说明即可。
-- 完成新的实机验证后，更新任务文档的“验证记录”，注明日期、客户端版本、设备和覆盖路径；未覆盖分支继续保留为待验证。
+- 完成新的实机验证后，更新任务文档的“当前状态”，注明日期、客户端版本、设备和覆盖路径；未覆盖分支继续保留为待验证。
 - 纯格式化、无行为重构或未被文档引用的内部节点重命名通常无需更新任务文档；若文档引用的路径、节点或命令发生变化，必须同步修正。
 
 ## Interface、Option 与 Agent 联动

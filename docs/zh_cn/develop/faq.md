@@ -20,7 +20,7 @@ MFAAvalonia 是桌面发布包中的运行客户端，不是参与本仓库开�
 
 ## 3. 我应该如何打包我的项目？
 
-你需要按照项目推荐的 [开发流程](./how_to_develop.md) 发布一个版本，[CI](/.github/workflows/install.yml) 会自动完成打包工作。具体的工作方式请参考 [GitHub Actions 文档](https://docs.github.com/zh/actions)。
+你需要按照项目推荐的 [开发流程](./project_guide.md) 发布一个版本，[CI](../../.github/workflows/install.yml) 会自动完成打包工作。具体的工作方式请参考 [GitHub Actions 文档](https://docs.github.com/zh/actions)。
 
 ## 4. 在哪里反馈问题？
 
@@ -39,5 +39,5 @@ TKFMaa 的任务识别、流程或发布包问题请在本仓库提交 Issue，�
 闭门造车大概率无法解决任何问题，你可以加入 [MaaFramework 开发交流群](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=9sleK6URhEG0v3QeTmpFueCjF26wibEH&authKey=LBZc5FxWa3M%2BiWj3rpBfRmqg9PD9jJNaxpp3xTqTcGxsp1Am3kd1uzxQXiP4w8w4&noverify=0&group_code=595990173) 以寻求帮助。
 
 > [!WARNING]
-> 在提问前，请完整阅读 [MaaFramework 开发文档](https://maafw.com/docs/1.1-QuickStarted) 以及 [如何开发](./how_to_develop.md)，通常情况下它们能解决大多数问题。
+> 在提问前，请完整阅读 [MaaFramework 开发文档](https://maafw.com/docs/1.1-QuickStarted) 以及 [如何开发](./project_guide.md)，通常情况下它们能解决大多数问题。
 > 在提问时，请 **具体指出文档中困惑的章节** / **分享你的项目文件中的具体内容** / **提供完整的报错信息**，不然你能得到的大概率只有类似 _“请先读文档”_ 这样的回答。

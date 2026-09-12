@@ -1,6 +1,6 @@
 # 体力活动配置维护指南
 
-本文说明如何在活动换期时维护 `assets/stamina_activities.yaml`。页面流转、异常分支和实机验证记录见 [`../task_flows/task_daily_stamina.md`](../task_flows/task_daily_stamina.md)。
+本文说明如何在活动换期时维护 `assets/stamina/active.yaml`，以及如何保存历史活动配置。页面流转、异常分支和实机验证记录见 [`../tasks/daily_stamina.md`](../tasks/daily_stamina.md)。
 
 ## 配置边界
 
@@ -8,7 +8,7 @@
 - `activity_groups.<id>.base` 描述一个活动共用的名称、页面 marker 和 Override。
 - `activity_groups.<id>.cases` 描述各关卡之间的差异，也可包含自动通关 Case。
 - 顶层 `activities` 只用于不值得建立活动组的独立关卡，例如常驻日常关卡。
-- `assets/interface.json` 中“体力消耗关卡”的 Case 是生成结果，不直接编辑。
+- `assets/stamina/archive/` 中的历史配置不参与生成；`assets/interface.json` 中的 Case 是生成结果，不直接编辑。
 
 生成器按以下顺序深度合并配置，右侧覆盖左侧：
 
@@ -79,7 +79,7 @@ activity_groups:
                   expected: ["关卡-01", "关卡01"]
 ```
 
-同 UI 常规活动换期时通常只需复制活动组，修改活动名、页面 marker、第一页 marker 和 `cases`。
+同 UI 常规活动换期时通常只需在 `active.yaml` 新增活动组，修改活动名、页面 marker、第一页 marker 和 `cases`。旧活动应整体移入 `assets/stamina/archive/`，不要继续留在启用配置中。
 
 常规活动自动通关 Case 使用 `regular_auto_clear`。生成器会复用活动组的 `stage.any_selectable` 作为列表 marker，并自动切换内部入口：
 
