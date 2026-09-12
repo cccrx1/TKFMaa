@@ -4,6 +4,11 @@
             "DailyStaminaStart"
         ]
     },
+    "AutoBattleStart": {
+        "next": [
+            "RegularActivityStageListDecision"
+        ]
+    },
     "RegularActivityStageListDecision": {
         "recognition": {
             "type": "And",
