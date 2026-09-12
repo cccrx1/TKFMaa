@@ -1375,7 +1375,6 @@
             "type": "OCR",
             "param": {
                 "expected": [
-                    "Idol Live",
                     "活动挑战还有",
                     "斗内点数"
                 ],

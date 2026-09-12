@@ -78,7 +78,7 @@
             "doc": [
                 "从主界面进入限时活动，按所选关卡配置寻找活动、入口图标和关卡名。",
                 "进入关卡详情后优先使用军团扫荡最大次数；扫荡券不足时可选是否手动补刷（没测试过）。",
-                "体力消耗关卡选择 Idol Live - 自动通关 时，会从主界面寻路到常规活动并按 NEW 标记推进未通关关卡。"
+                "体力消耗关卡选择常规活动自动通关时，会从主界面寻路到常规活动并按 NEW 标记推进未通关关卡。"
             ]
         },
         {
@@ -166,11 +166,11 @@
         },
         "体力消耗关卡": {
             "type": "select",
-            "default_case": "Idol Live - 擦边-01",
+            "default_case": "刀剑魔舞 - 觉醒-01",
             "cases": [
                 {
-                    "name": "Idol Live - 擦边-01",
-                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找擦边-01，刷取擦边-01。",
+                    "name": "刀剑魔舞 - 觉醒-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找觉醒-01，刷取觉醒-01。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
@@ -211,7 +211,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live"
+                                        "刀剑魔舞"
                                     ],
                                     "roi": [
                                         70,
@@ -227,176 +227,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "擦边-01",
-                                        "擦边01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaEnough": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "enough",
-                                        "cost": 45,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaLow": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "low",
-                                        "cost": 45,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStageListAnySelectable": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "Idol Live",
-                                        "活动挑战还有",
-                                        "斗内点数"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        90,
-                                        720,
-                                        180
-                                    ]
-                                }
-                            }
-                        },
-                        "CommonReturnMainFromStaminaStageList": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetStageListAnySelectable"
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "话题-01",
-                                        "话题01",
-                                        "准备-01",
-                                        "准备01",
-                                        "装扮-01",
-                                        "装扮01",
-                                        "粉丝-01",
-                                        "粉丝01",
-                                        "互动-01",
-                                        "互动01",
-                                        "擦边-01",
-                                        "擦边01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "name": "Idol Live - 话题-01",
-                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找话题-01，刷取话题-01。",
-                    "pipeline_override": {
-                        "DailyStaminaPresetRouteStart": {
-                            "next": [
-                                "DailyStaminaRouteActivitySectionStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivitySection": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "限时活动"
-                                    ],
-                                    "roi": [
-                                        480,
-                                        90,
-                                        150,
-                                        80
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetInnerRouteStart": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetStageListAnySelectable"
-                                    ]
-                                }
-                            },
-                            "next": [
-                                "DailyStaminaRouteRegularPagedFirstPageStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivityName": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "Idol Live"
-                                    ],
-                                    "roi": [
-                                        70,
-                                        770,
-                                        580,
-                                        80
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStageListTarget": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "话题-01",
-                                        "话题01"
+                                        "觉醒-01",
+                                        "觉醒01"
                                     ],
                                     "roi": [
                                         0,
@@ -451,9 +283,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live",
-                                        "活动挑战还有",
-                                        "斗内点数"
+                                        "刀剑魔舞",
+                                        "活动挑战还有"
                                     ],
                                     "roi": [
                                         0,
@@ -480,18 +311,16 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "话题-01",
-                                        "话题01",
-                                        "准备-01",
-                                        "准备01",
-                                        "装扮-01",
-                                        "装扮01",
-                                        "粉丝-01",
-                                        "粉丝01",
-                                        "互动-01",
-                                        "互动01",
-                                        "擦边-01",
-                                        "擦边01"
+                                        "觉醒-01",
+                                        "觉醒01",
+                                        "磨刀-01",
+                                        "磨刀01",
+                                        "保养-01",
+                                        "保养01",
+                                        "修行-01",
+                                        "修行01",
+                                        "刀剑-01",
+                                        "刀剑01"
                                     ],
                                     "roi": [
                                         0,
@@ -505,8 +334,8 @@
                     }
                 },
                 {
-                    "name": "Idol Live - 准备-01",
-                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找准备-01，刷取准备-01。",
+                    "name": "刀剑魔舞 - 磨刀-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找磨刀-01，刷取磨刀-01。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
@@ -547,7 +376,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live"
+                                        "刀剑魔舞"
                                     ],
                                     "roi": [
                                         70,
@@ -563,8 +392,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "准备-01",
-                                        "准备01"
+                                        "磨刀-01",
+                                        "磨刀01"
                                     ],
                                     "roi": [
                                         0,
@@ -619,9 +448,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live",
-                                        "活动挑战还有",
-                                        "斗内点数"
+                                        "刀剑魔舞",
+                                        "活动挑战还有"
                                     ],
                                     "roi": [
                                         0,
@@ -648,18 +476,16 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "话题-01",
-                                        "话题01",
-                                        "准备-01",
-                                        "准备01",
-                                        "装扮-01",
-                                        "装扮01",
-                                        "粉丝-01",
-                                        "粉丝01",
-                                        "互动-01",
-                                        "互动01",
-                                        "擦边-01",
-                                        "擦边01"
+                                        "觉醒-01",
+                                        "觉醒01",
+                                        "磨刀-01",
+                                        "磨刀01",
+                                        "保养-01",
+                                        "保养01",
+                                        "修行-01",
+                                        "修行01",
+                                        "刀剑-01",
+                                        "刀剑01"
                                     ],
                                     "roi": [
                                         0,
@@ -673,8 +499,8 @@
                     }
                 },
                 {
-                    "name": "Idol Live - 装扮-01",
-                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找装扮-01，刷取装扮-01。",
+                    "name": "刀剑魔舞 - 保养-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找保养-01，刷取保养-01。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
@@ -715,7 +541,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live"
+                                        "刀剑魔舞"
                                     ],
                                     "roi": [
                                         70,
@@ -731,8 +557,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "装扮-01",
-                                        "装扮01"
+                                        "保养-01",
+                                        "保养01"
                                     ],
                                     "roi": [
                                         0,
@@ -787,9 +613,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live",
-                                        "活动挑战还有",
-                                        "斗内点数"
+                                        "刀剑魔舞",
+                                        "活动挑战还有"
                                     ],
                                     "roi": [
                                         0,
@@ -816,18 +641,16 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "话题-01",
-                                        "话题01",
-                                        "准备-01",
-                                        "准备01",
-                                        "装扮-01",
-                                        "装扮01",
-                                        "粉丝-01",
-                                        "粉丝01",
-                                        "互动-01",
-                                        "互动01",
-                                        "擦边-01",
-                                        "擦边01"
+                                        "觉醒-01",
+                                        "觉醒01",
+                                        "磨刀-01",
+                                        "磨刀01",
+                                        "保养-01",
+                                        "保养01",
+                                        "修行-01",
+                                        "修行01",
+                                        "刀剑-01",
+                                        "刀剑01"
                                     ],
                                     "roi": [
                                         0,
@@ -841,8 +664,8 @@
                     }
                 },
                 {
-                    "name": "Idol Live - 粉丝-01",
-                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找粉丝-01，刷取粉丝-01。",
+                    "name": "刀剑魔舞 - 修行-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找修行-01，刷取修行-01。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
@@ -883,7 +706,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live"
+                                        "刀剑魔舞"
                                     ],
                                     "roi": [
                                         70,
@@ -899,8 +722,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "粉丝-01",
-                                        "粉丝01"
+                                        "修行-01",
+                                        "修行01"
                                     ],
                                     "roi": [
                                         0,
@@ -918,7 +741,7 @@
                                     "custom_recognition": "DailyStaminaCompare",
                                     "custom_recognition_param": {
                                         "mode": "enough",
-                                        "cost": 30,
+                                        "cost": 45,
                                         "reserve": 0,
                                         "stamina_roi": [
                                             500,
@@ -937,7 +760,7 @@
                                     "custom_recognition": "DailyStaminaCompare",
                                     "custom_recognition_param": {
                                         "mode": "low",
-                                        "cost": 30,
+                                        "cost": 45,
                                         "reserve": 0,
                                         "stamina_roi": [
                                             500,
@@ -955,9 +778,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live",
-                                        "活动挑战还有",
-                                        "斗内点数"
+                                        "刀剑魔舞",
+                                        "活动挑战还有"
                                     ],
                                     "roi": [
                                         0,
@@ -984,18 +806,16 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "话题-01",
-                                        "话题01",
-                                        "准备-01",
-                                        "准备01",
-                                        "装扮-01",
-                                        "装扮01",
-                                        "粉丝-01",
-                                        "粉丝01",
-                                        "互动-01",
-                                        "互动01",
-                                        "擦边-01",
-                                        "擦边01"
+                                        "觉醒-01",
+                                        "觉醒01",
+                                        "磨刀-01",
+                                        "磨刀01",
+                                        "保养-01",
+                                        "保养01",
+                                        "修行-01",
+                                        "修行01",
+                                        "刀剑-01",
+                                        "刀剑01"
                                     ],
                                     "roi": [
                                         0,
@@ -1009,8 +829,8 @@
                     }
                 },
                 {
-                    "name": "Idol Live - 互动-01",
-                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Idol Live，进入关卡列表后寻找互动-01，刷取互动-01。",
+                    "name": "刀剑魔舞 - 刀剑-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找刀剑-01，刷取刀剑-01。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
@@ -1051,7 +871,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live"
+                                        "刀剑魔舞"
                                     ],
                                     "roi": [
                                         70,
@@ -1067,8 +887,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "互动-01",
-                                        "互动01"
+                                        "刀剑-01",
+                                        "刀剑01"
                                     ],
                                     "roi": [
                                         0,
@@ -1123,9 +943,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live",
-                                        "活动挑战还有",
-                                        "斗内点数"
+                                        "刀剑魔舞",
+                                        "活动挑战还有"
                                     ],
                                     "roi": [
                                         0,
@@ -1152,18 +971,16 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "话题-01",
-                                        "话题01",
-                                        "准备-01",
-                                        "准备01",
-                                        "装扮-01",
-                                        "装扮01",
-                                        "粉丝-01",
-                                        "粉丝01",
-                                        "互动-01",
-                                        "互动01",
-                                        "擦边-01",
-                                        "擦边01"
+                                        "觉醒-01",
+                                        "觉醒01",
+                                        "磨刀-01",
+                                        "磨刀01",
+                                        "保养-01",
+                                        "保养01",
+                                        "修行-01",
+                                        "修行01",
+                                        "刀剑-01",
+                                        "刀剑01"
                                     ],
                                     "roi": [
                                         0,
@@ -1177,8 +994,8 @@
                     }
                 },
                 {
-                    "name": "Idol Live - 自动通关",
-                    "description": "复用统一活动外部寻路进入 Idol Live 本体，再按 NEW 标记推进未通关关卡，自动跳过剧情并完成战斗。",
+                    "name": "刀剑魔舞 - 刀剑-02",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找刀剑-02，刷取刀剑-02。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
@@ -1211,7 +1028,7 @@
                                 }
                             },
                             "next": [
-                                "RegularActivityStageListDecision"
+                                "DailyStaminaRouteRegularPagedFirstPageStart"
                             ]
                         },
                         "DailyStaminaPresetActivityName": {
@@ -1219,7 +1036,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live"
+                                        "刀剑魔舞"
                                     ],
                                     "roi": [
                                         70,
@@ -1235,7 +1052,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "__REGULAR_ACTIVITY_CLEAR__"
+                                        "刀剑-02",
+                                        "刀剑02"
                                     ],
                                     "roi": [
                                         0,
@@ -1290,9 +1108,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live",
-                                        "活动挑战还有",
-                                        "斗内点数"
+                                        "刀剑魔舞",
+                                        "活动挑战还有"
                                     ],
                                     "roi": [
                                         0,
@@ -1319,18 +1136,89 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "话题-01",
-                                        "话题01",
-                                        "准备-01",
-                                        "准备01",
-                                        "装扮-01",
-                                        "装扮01",
-                                        "粉丝-01",
-                                        "粉丝01",
-                                        "互动-01",
-                                        "互动01",
-                                        "擦边-01",
-                                        "擦边01"
+                                        "觉醒-01",
+                                        "觉醒01",
+                                        "磨刀-01",
+                                        "磨刀01",
+                                        "保养-01",
+                                        "保养01",
+                                        "修行-01",
+                                        "修行01",
+                                        "刀剑-01",
+                                        "刀剑01"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "刀剑魔舞 - 刀剑-03",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找刀剑-03，刷取刀剑-03。",
+                    "pipeline_override": {
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteRegularPagedFirstPageStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "刀剑魔舞"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        770,
+                                        580,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "刀剑-03",
+                                        "刀剑03"
                                     ],
                                     "roi": [
                                         0,
@@ -1341,14 +1229,52 @@
                                 }
                             }
                         },
-                        "RegularActivityPresetStageListMarker": {
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 30,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 30,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListAnySelectable": {
+                            "enabled": true,
                             "recognition": {
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "Idol Live",
-                                        "活动挑战还有",
-                                        "斗内点数"
+                                        "刀剑魔舞",
+                                        "活动挑战还有"
                                     ],
                                     "roi": [
                                         0,
@@ -1358,718 +1284,39 @@
                                     ]
                                 }
                             }
-                        }
-                    }
-                },
-                {
-                    "name": "兽耳乡的传说 - 搜寻",
-                    "description": "限时活动外部路线 + 复刻活动地图：选择 兽耳乡的传说，进入活动地图右列寻找搜寻，刷取搜寻。",
-                    "pipeline_override": {
-                        "DailyStaminaPresetRouteStart": {
-                            "next": [
-                                "DailyStaminaRouteActivitySectionStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivitySection": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "限时活动"
-                                    ],
-                                    "roi": [
-                                        480,
-                                        90,
-                                        150,
-                                        80
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetInnerRouteStart": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetRerunMapMarker"
-                                    ]
-                                }
-                            },
-                            "next": [
-                                "DailyStaminaRouteInnerRerunUiStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivityName": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "兽耳乡的传说"
-                                    ],
-                                    "roi": [
-                                        70,
-                                        770,
-                                        580,
-                                        60
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStageListTarget": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "搜寻-02"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaEnough": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "enough",
-                                        "cost": 35,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaLow": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "low",
-                                        "cost": 35,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaRouteInnerRerunUiStart": {
-                            "next": [
-                                "DailyStaminaRerunClickTarget",
-                                "DailyStaminaRerunRightColumnStart"
-                            ]
-                        },
-                        "DailyStaminaPresetRerunMapMarker": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "Story",
-                                        "Free Quest"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         },
                         "CommonReturnMainFromStaminaStageList": {
                             "recognition": {
                                 "type": "And",
                                 "param": {
                                     "all_of": [
-                                        "DailyStaminaPresetRerunMapMarker"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "name": "兽耳乡的传说 - 秘宝",
-                    "description": "限时活动外部路线 + 复刻活动地图：选择 兽耳乡的传说，进入活动地图右列寻找秘宝，刷取秘宝。",
-                    "pipeline_override": {
-                        "DailyStaminaPresetRouteStart": {
-                            "next": [
-                                "DailyStaminaRouteActivitySectionStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivitySection": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "限时活动"
-                                    ],
-                                    "roi": [
-                                        480,
-                                        90,
-                                        150,
-                                        80
+                                        "DailyStaminaPresetStageListAnySelectable"
                                     ]
                                 }
                             }
                         },
-                        "DailyStaminaPresetInnerRouteStart": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetRerunMapMarker"
-                                    ]
-                                }
-                            },
-                            "next": [
-                                "DailyStaminaRouteInnerRerunUiStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivityName": {
+                        "DailyStaminaPresetFirstPageMarker": {
+                            "enabled": true,
                             "recognition": {
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "兽耳乡的传说"
-                                    ],
-                                    "roi": [
-                                        70,
-                                        770,
-                                        580,
-                                        60
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStageListTarget": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "秘宝-02"
+                                        "觉醒-01",
+                                        "觉醒01",
+                                        "磨刀-01",
+                                        "磨刀01",
+                                        "保养-01",
+                                        "保养01",
+                                        "修行-01",
+                                        "修行01",
+                                        "刀剑-01",
+                                        "刀剑01"
                                     ],
                                     "roi": [
                                         0,
                                         160,
                                         720,
                                         1000
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaEnough": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "enough",
-                                        "cost": 35,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaLow": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "low",
-                                        "cost": 35,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaRouteInnerRerunUiStart": {
-                            "next": [
-                                "DailyStaminaRerunClickTarget",
-                                "DailyStaminaRerunRightColumnStart"
-                            ]
-                        },
-                        "DailyStaminaPresetRerunMapMarker": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "Story",
-                                        "Free Quest"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        },
-                        "CommonReturnMainFromStaminaStageList": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetRerunMapMarker"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "name": "兽耳乡的传说 - 陷阱",
-                    "description": "限时活动外部路线 + 复刻活动地图：选择 兽耳乡的传说，进入活动地图右列寻找陷阱，刷取陷阱。",
-                    "pipeline_override": {
-                        "DailyStaminaPresetRouteStart": {
-                            "next": [
-                                "DailyStaminaRouteActivitySectionStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivitySection": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "限时活动"
-                                    ],
-                                    "roi": [
-                                        480,
-                                        90,
-                                        150,
-                                        80
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetInnerRouteStart": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetRerunMapMarker"
-                                    ]
-                                }
-                            },
-                            "next": [
-                                "DailyStaminaRouteInnerRerunUiStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivityName": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "兽耳乡的传说"
-                                    ],
-                                    "roi": [
-                                        70,
-                                        770,
-                                        580,
-                                        60
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStageListTarget": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "陷阱-02"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaEnough": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "enough",
-                                        "cost": 35,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaLow": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "low",
-                                        "cost": 35,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaRouteInnerRerunUiStart": {
-                            "next": [
-                                "DailyStaminaRerunClickTarget",
-                                "DailyStaminaRerunRightColumnStart"
-                            ]
-                        },
-                        "DailyStaminaPresetRerunMapMarker": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "Story",
-                                        "Free Quest"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        },
-                        "CommonReturnMainFromStaminaStageList": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetRerunMapMarker"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "name": "兽耳乡的传说 - 料理",
-                    "description": "限时活动外部路线 + 复刻活动地图：选择 兽耳乡的传说，进入活动地图右列寻找料理，刷取料理。",
-                    "pipeline_override": {
-                        "DailyStaminaPresetRouteStart": {
-                            "next": [
-                                "DailyStaminaRouteActivitySectionStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivitySection": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "限时活动"
-                                    ],
-                                    "roi": [
-                                        480,
-                                        90,
-                                        150,
-                                        80
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetInnerRouteStart": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetRerunMapMarker"
-                                    ]
-                                }
-                            },
-                            "next": [
-                                "DailyStaminaRouteInnerRerunUiStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivityName": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "兽耳乡的传说"
-                                    ],
-                                    "roi": [
-                                        70,
-                                        770,
-                                        580,
-                                        60
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStageListTarget": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "料理-02"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaEnough": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "enough",
-                                        "cost": 35,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaLow": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "low",
-                                        "cost": 35,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaRouteInnerRerunUiStart": {
-                            "next": [
-                                "DailyStaminaRerunClickTarget",
-                                "DailyStaminaRerunRightColumnStart"
-                            ]
-                        },
-                        "DailyStaminaPresetRerunMapMarker": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "Story",
-                                        "Free Quest"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        },
-                        "CommonReturnMainFromStaminaStageList": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetRerunMapMarker"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "name": "兽耳乡的传说 - 探险",
-                    "description": "限时活动外部路线 + 复刻活动地图：选择 兽耳乡的传说，进入活动地图右列寻找探险，刷取探险。",
-                    "pipeline_override": {
-                        "DailyStaminaPresetRouteStart": {
-                            "next": [
-                                "DailyStaminaRouteActivitySectionStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivitySection": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "限时活动"
-                                    ],
-                                    "roi": [
-                                        480,
-                                        90,
-                                        150,
-                                        80
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetInnerRouteStart": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetRerunMapMarker"
-                                    ]
-                                }
-                            },
-                            "next": [
-                                "DailyStaminaRouteInnerRerunUiStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivityName": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "兽耳乡的传说"
-                                    ],
-                                    "roi": [
-                                        70,
-                                        770,
-                                        580,
-                                        60
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStageListTarget": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "探险-02"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaEnough": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "enough",
-                                        "cost": 35,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaLow": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "low",
-                                        "cost": 35,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaRouteInnerRerunUiStart": {
-                            "next": [
-                                "DailyStaminaRerunClickTarget",
-                                "DailyStaminaRerunRightColumnStart"
-                            ]
-                        },
-                        "DailyStaminaPresetRerunMapMarker": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "Story",
-                                        "Free Quest"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        },
-                        "CommonReturnMainFromStaminaStageList": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetRerunMapMarker"
                                     ]
                                 }
                             }

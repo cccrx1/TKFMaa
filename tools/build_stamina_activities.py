@@ -473,7 +473,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate interface.json stamina activity cases from YAML/JSON config."
     )
-    parser.add_argument("--source", default="assets/stamina_activities.yaml")
+    parser.add_argument("--source", default="assets/stamina/active.yaml")
     parser.add_argument("--interface", default="assets/interface.json")
     parser.add_argument("--schema", default="deps/tools/stamina_activities.schema.json")
     parser.add_argument("--check", action="store_true")
