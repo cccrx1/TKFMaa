@@ -16,14 +16,26 @@
 
 ```mermaid
 flowchart TD
-A[主界面] --> B[打开玩家信息]
-B --> C[打开好友列表]
-C --> D{存在可领取体力?}
-D -->|是| E[一键领取]
-D -->|否| F[安全返回]
-E --> F
-
+    Start[开始任务，处理加载与可恢复页面] --> Main[识别主界面，点击头像]
+    Main --> Profile[识别玩家信息，打开好友清单]
+    Profile --> Check{按优先级判断好友页面}
+    Check -->|加载文字或占位能量计数| Loading[等待并复查，最多命中 8 次]
+    Loading -->|仍在加载且未达上限| Loading
+    Loading -->|加载不再命中或次数用尽| Retry{可识别好友页且尚未重新进入?}
+    Retry -->|是| Reopen[关闭页面，最多 1 次]
+    Reopen --> Main
+    Retry -->|无可执行候选并超时| Fail[任务失败，不认定领取完成]
+    Check -->|一键领取可见且未领取| Receive[点击识别按钮，最多 1 次]
+    Receive --> Close[识别好友页并关闭]
+    Check -->|未命中领取且好友页可识别| Close
+    Check -->|候选识别超时| Fail
+    Close --> Confirm[公共主界面结束确认]
+    Confirm -->|识别成功| Done[停止任务]
+    Confirm -->|确认失败| Fail
 ```
+
+加载分支一旦命中，当前代码在加载标记消失或命中次数用尽后尝试关闭并重新进入一次，
+不会直接跳到领取按钮；该恢复分支仍待实测。公共结束确认见 [公共主界面恢复](common_navigation.md)。
 
 ## 页面识别
 
@@ -38,8 +50,8 @@ E --> F
 ## 异常与分支
 
 - 返回主界面及重新进入前取消全屏稳定等待，交给目标页面识别与公共结束确认；入口通过公共恢复关闭礼包。
-- 好友列表持续加载时，`DailyFriendStaminaWaitFriendListLoading` 最多等待 8 次；达到上限后关闭页面并
-  重新进入一次。`DailyFriendStaminaCloseProfileForRetry` 最多命中一次，防止持续异常时反复打开好友页。
+- 好友列表加载时，`DailyFriendStaminaWaitFriendListLoading` 最多命中 8 次；加载不再命中或达到上限后，
+  尝试识别并关闭页面，重新进入一次。`DailyFriendStaminaCloseProfileForRetry` 最多命中一次，防止持续异常时反复打开好友页。
 - 无赠送体力时不会点击固定坐标，而是直接关闭页面。
 - “一键领取”设置单次命中限制，避免页面未刷新时重复点击。
 
