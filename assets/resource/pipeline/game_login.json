@@ -258,6 +258,7 @@
                 "expected": [
                     "挑战奖励",
                     "LOGIN\\s*REWARDS",
+                    "^REWARDS$",
                     "UTC\\+8"
                 ]
             }
