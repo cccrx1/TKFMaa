@@ -724,15 +724,6 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "DailyTaskRewardsDone"
         ],
