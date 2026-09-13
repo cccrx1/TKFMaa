@@ -2,7 +2,9 @@
     "CommonEnsureMain": {
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "[JumpBack]CommonCloseReward",
+            "CommonMainReady",
             "CommonReturnMainFromShop",
             "CommonReturnMainFromTaskPage",
             "CommonReturnMainFromProfile",
@@ -39,16 +41,13 @@
                 "target": true
             }
         },
-        "post_wait_freezes": {
-            "time": 700,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonMainReady"
+        ],
+        "timeout": 10000
     },
     "CommonReturnMainFromTaskPage": {
         "recognition": {
@@ -74,16 +73,13 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 700,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonMainReady"
+        ],
+        "timeout": 10000
     },
     "CommonReturnMainFromProfile": {
         "recognition": {
@@ -110,16 +106,13 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 700,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonMainReady"
+        ],
+        "timeout": 10000
     },
     "CommonReturnMainFromAlchemy": {
         "recognition": {

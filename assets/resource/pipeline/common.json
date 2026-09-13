@@ -58,6 +58,8 @@
     },
     "CommonStopOnMainWithRetries": {
         "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "CommonStopOnMain",
             "CommonStopOnMainWait1"
         ],
@@ -67,82 +69,57 @@
         "recognition": {
             "type": "DirectHit"
         },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "CommonStopOnMain",
             "CommonStopOnMainWait2"
-        ]
+        ],
+        "timeout": 10000,
+        "post_delay": 300
     },
     "CommonStopOnMainWait2": {
         "recognition": {
             "type": "DirectHit"
         },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "CommonStopOnMain",
             "CommonStopOnMainWait3"
-        ]
+        ],
+        "timeout": 10000,
+        "post_delay": 300
     },
     "CommonStopOnMainWait3": {
         "recognition": {
             "type": "DirectHit"
         },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "CommonStopOnMain"
-        ]
+        ],
+        "timeout": 10000,
+        "post_delay": 300
     },
     "CommonWaitLoading": {
         "recognition": {
             "type": "OCR",
             "param": {
                 "expected": [
-                    "LOADING",
-                    "LOAD ING",
-                    "CONNECTING",
-                    "CONNECT ING"
+                    "L\\s*O\\s*A\\s*D\\s*I\\s*N\\s*G",
+                    "C\\s*O\\s*N\\s*N\\s*E\\s*C\\s*T\\s*I\\s*N\\s*G"
                 ],
                 "roi": [
-                    218,
+                    180,
                     1158,
-                    268,
+                    360,
                     92
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 700,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        }
+        "post_delay": 500
     },
     "CommonCloseReward": {
         "recognition": {
@@ -176,5 +153,45 @@
             ]
         },
         "pre_wait_freezes": 300
+    },
+    "__CommonGiftTabs": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    100,
+                    95,
+                    530,
+                    75
+                ],
+                "expected": [
+                    "^限时$",
+                    "^精选$",
+                    "^月卡$",
+                    "^STEP$"
+                ]
+            }
+        }
+    },
+    "CommonCloseMainGift": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__CommonGiftTabs"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    75
+                ]
+            }
+        },
+        "pre_wait_freezes": 300,
+        "max_hit": 3
     }
 }

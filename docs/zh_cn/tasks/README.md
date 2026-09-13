@@ -27,3 +27,5 @@ flowchart TD
 | 奖励领取 | `DailyTaskRewardsStart`   | 低   | [奖励领取](daily_task_rewards.md)   |
 
 详细 OCR、ROI、节点名和素材路径只在对应任务文档的实现映射中维护。
+
+加载等待、礼包关闭与主界面恢复见 [公共主界面恢复](common_navigation.md)。
