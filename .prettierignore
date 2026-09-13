@@ -4,6 +4,7 @@ node_modules/
 
 # 本地开发和运行产物
 .venv/
+.venv312/
 config/
 debug/
 

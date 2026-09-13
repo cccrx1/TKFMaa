@@ -21,7 +21,7 @@ def configure_runtime() -> None:
     else:
         raise RuntimeError(
             f"Unsupported Python architecture: {platform.machine()}; "
-            "use a 64-bit x64 or ARM64 CPython 3.14 build."
+            "use a 64-bit x64 or ARM64 CPython 3.12 build."
         )
     platform_prefix = {"windows": "win", "darwin": "osx", "linux": "linux"}.get(
         system

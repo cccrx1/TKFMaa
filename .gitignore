@@ -453,3 +453,7 @@ tools/ImageCropper/**/*.png
 
 config
 debug
+
+# Local Python environments
+.venv/
+.venv312/

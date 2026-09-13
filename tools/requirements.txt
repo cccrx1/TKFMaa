@@ -1,5 +1,5 @@
 # Maa Agent runtime and Python tooling
-maafw
+maafw==5.13.0
 json-with-comments
 PyYAML
 jsonschema==4.26.0

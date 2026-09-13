@@ -40,7 +40,9 @@
         "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
     },
     "terminal.integrated.env.windows": {
-        "VIRTUAL_ENV": "${workspaceFolder}\\.venv",
-        "PATH": "${workspaceFolder}\\.venv\\Scripts;${env:PATH}"
-    }
+        "VIRTUAL_ENV": "${workspaceFolder}\\.venv312",
+        "PATH": "${workspaceFolder}\\.venv312\\Scripts;${env:PATH}",
+        "PYTHONUTF8": "1"
+    },
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv312/Scripts/python.exe"
 }
