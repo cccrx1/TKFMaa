@@ -6,7 +6,8 @@
     },
     "AutoBattleStart": {
         "next": [
-            "RegularActivityStageListDecision"
+            "RegularActivityStageListDecision",
+            "CommonStopOnMainWithRetries"
         ]
     },
     "RegularActivityStageListDecision": {
