@@ -6,7 +6,7 @@
 
 ## Python 版本基线
 
-本项目开发与发布统一使用 Python 3.12；`tools/requirements.txt` 中的 `maafw` 版本必须与 CI 的 `MAAFW_VERSION` 以及插件使用的 MaaFramework native runtime 保持一致。Python 3.14 可用于其他项目，但不作为本项目首选验证环境。
+本项目开发与发布统一使用 Python 3.12；`tools/requirements.txt` 中的 `maafw` 版本必须与 CI 的 `MAAFW_VERSION` 以及插件使用的 MaaFramework native runtime 保持一致。发布包的 MaaFramework 与 MFAAvalonia 版本分别由 `.github/workflows/install.yml` 的 `MAAFW_VERSION`、`MFAA_VERSION` 固定，升级任一项前须确认两者兼容。Python 3.14 可用于其他项目，但不作为本项目首选验证环境。
 
 Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端均指向该目录；新终端设置 `PYTHONUTF8=1`，避免中文 Windows 控制台编码导致校验输出异常。`.python-version` 声明 Python 3.12，`maatools.config.mts` 固定校验运行时 5.13.0，资源校验 CI 也显式使用 Python 3.12。环境搭建与验收见 `docs/zh_cn/develop/development_environment.md`。虚拟环境、日志、截图和本地配置只保存在被 Git 忽略的路径中，不自动上传。
 

@@ -5,7 +5,7 @@ env:
   # - 设置 VERSION 为空字符串时，下载 latest 版本
   # - 设置 VERSION 为具体版本号时（如 v1.2.3），下载指定版本
   MAAFW_VERSION: "v5.13.0"
-  MFAA_VERSION: ""
+  MFAA_VERSION: "v2.16.1"
   PYTHON_VERSION: "3.12"
   PYTHON_ABI: "cp312"
 

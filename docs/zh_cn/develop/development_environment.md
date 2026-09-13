@@ -4,16 +4,16 @@
 
 ## 配置位置
 
-| 配置                            | 用途                                                                        |
-| ------------------------------- | --------------------------------------------------------------------------- |
-| `.python-version`               | 声明项目 Python 3.12，供支持该文件的工具读取，不会自动切换所有终端          |
-| `.vscode/settings.json`         | Windows 默认解释器和新终端指向 `.venv312`，启用 UTF-8                       |
-| `tools/requirements.txt`        | 固定 `maafw==5.13.0` 和校验依赖；并非完整的传递依赖锁文件                   |
-| `maatools.config.mts`           | maa-tools 固定加载 5.13.0，避免随 latest 漂移                               |
-| `.github/workflows/check.yml`   | 资源校验明确使用 Python 3.12 和 Node.js 22                                  |
-| `.github/workflows/install.yml` | 发布 Python 3.12，原生 MaaFramework 固定 v5.13.0，Agent Python 包跟随该版本 |
+| 配置                            | 用途                                                                                                                       |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `.python-version`               | 声明项目 Python 3.12，供支持该文件的工具读取，不会自动切换所有终端                                                         |
+| `.vscode/settings.json`         | Windows 默认解释器和新终端指向 `.venv312`，启用 UTF-8                                                                      |
+| `tools/requirements.txt`        | 固定 `maafw==5.13.0` 和校验依赖；并非完整的传递依赖锁文件                                                                  |
+| `maatools.config.mts`           | maa-tools 固定加载 5.13.0，避免随 latest 漂移                                                                              |
+| `.github/workflows/check.yml`   | 资源校验明确使用 Python 3.12 和 Node.js 22                                                                                 |
+| `.github/workflows/install.yml` | 发布 Python 3.12，原生 MaaFramework 固定 v5.13.0，发布前端 MFAAvalonia 固定 v2.16.1，Agent Python 包跟随 MaaFramework 版本 |
 
-Maa Support 插件独立维护所选框架版本，修改 maa-tools 配置不会替它切换版本。VS Code 命令面板中的“**Maa: 选择 MaaFramework 版本**”应选择 `5.13.0`。发布前端 MFAAvalonia 仍沿用原来的版本选择策略，此轮没有锁定整个发布工具链。
+Maa Support 插件独立维护所选框架版本，修改 maa-tools 配置不会替它切换版本。VS Code 命令面板中的“**Maa: 选择 MaaFramework 版本**”应选择 `5.13.0`。发布前端 MFAAvalonia 由 workflow 的 `MFAA_VERSION` 固定为 `v2.16.1`；升级前端时须同时确认它与当前的 MaaFramework 版本兼容，不要把前端单独升到 `latest`。
 
 ## 使用已安装的环境
 
