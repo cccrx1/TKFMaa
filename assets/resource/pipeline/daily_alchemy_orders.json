@@ -26,15 +26,6 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 600,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "DailyAlchemyOrdersOpenAlchemy"
         ],
@@ -202,15 +193,6 @@
                     72
                 ]
             }
-        },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
         },
         "next": [
             "DailyAlchemyOrdersDone"
