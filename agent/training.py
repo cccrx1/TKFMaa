@@ -37,7 +37,7 @@ def _node_enabled(context, node_name, default):
     node = context.get_node_data(node_name)
     if not node:
         return default
-    return bool(node.get("enabled", default))
+    return node.get("enabled", default) is True
 
 
 def _read_config(context):
@@ -63,11 +63,11 @@ def _ocr_texts(context, image, roi):
 
 
 def _parse_item_count(text):
-    normalized = text.replace(",", "").replace(" ", "")
-    numbers = re.findall(r"\d+", normalized)
-    if not numbers:
+    normalized = text.strip()
+    match = re.fullmatch(r"[xX×]?\s*([0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)", normalized)
+    if not match:
         return None
-    return int(numbers[-1])
+    return int(match[1].replace(",", ""))
 
 
 def _read_item_count(context, image, item):
@@ -83,11 +83,20 @@ def _read_item_count(context, image, item):
 class DailyTrainingChooseItem(CustomRecognition):
     def analyze(self, context, argv):
         raw_param = argv.custom_recognition_param
-        param = raw_param if isinstance(raw_param, dict) else safe_json_loads(raw_param, {})
+        if isinstance(raw_param, dict):
+            param = raw_param
+        elif raw_param is None or raw_param == "":
+            param = {}
+        elif isinstance(raw_param, str):
+            param = safe_json_loads(raw_param, None)
+        else:
+            param = None
+        if not isinstance(param, dict):
+            return CustomRecognition.AnalyzeResult(box=None, detail={"reason": "invalid_param"})
         config = _read_config(context)
         tab = param.get("tab", "common")
-        if tab not in ITEMS:
-            tab = "common"
+        if not isinstance(tab, str) or tab not in ITEMS:
+            return CustomRecognition.AnalyzeResult(box=None, detail={"reason": "invalid_tab"})
         tried = []
 
         for index, item in enumerate(ITEMS[tab]):
@@ -97,7 +106,10 @@ class DailyTrainingChooseItem(CustomRecognition):
 
             count, texts = _read_item_count(context, argv.image, item)
             tried.append({"index": index, "item": item["name"], "count": count, "texts": texts})
-            if count is None or count > 0:
+            if count is None:
+                tried[-1]["skipped"] = "unreadable_count"
+                continue
+            if count > 0:
                 return CustomRecognition.AnalyzeResult(
                     box=item["box"],
                     detail={
