@@ -4,6 +4,8 @@
 
 - [功能流程总览](tasks/README.md)：按功能查看流程图、选项、限制和实现映射。
 - [项目开发指南](develop/project_guide.md)：了解项目结构、开发步骤、检查命令和 AI 协作方式。
+- [开发环境](develop/development_environment.md)：Python 虚拟环境、插件版本与本地检查。
+- [稳定性优化路线](develop/optimization_roadmap.md)：按五个阶段固定依赖、调试和任务流程。
 - [自动化策略](develop/automation_policy.md)：了解资源风险、默认行为和安全边界。
 - [体力活动配置](develop/stamina_activity_config.md)：维护体力活动和 Interface 生成配置。
 - [常见问题](develop/faq.md)
