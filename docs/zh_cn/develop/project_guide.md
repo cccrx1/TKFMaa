@@ -8,6 +8,31 @@
 - `assets/resource/image/`：TemplateMatch 识别素材。
 - `tools/`：配置生成、Schema 校验和辅助检查。
 - `docs/zh_cn/tasks/`：统一任务流程文档。
+- `docs/zh_cn/develop/optimization_roadmap.md`：五阶段稳定性优化路线和调试信息边界。
+
+## Pipeline 架构基线
+
+项目采用三层协作：
+
+- **Interface 层**（`assets/interface.json`）声明任务入口、用户选项和 `pipeline_override`。Override 只能合并已存在的节点属性，不能创建节点。
+- **Pipeline 层**（`assets/resource/pipeline/`）表达页面状态机：识别页面、执行动作、通过 `next`/`on_error`/`[JumpBack]` 恢复，并用 `max_hit`、`timeout` 限制重试。
+- **Agent 层**（`agent/`）只承载 Pipeline 难以表达的运行时计算，例如体力数值解析、道具库存选择、商品去重和招募词条组合。`agent/main.py` 通过导入模块触发自定义识别与动作注册。
+
+公共节点集中在 `common.json` 和 `common_return.json`；任务 Pipeline 通过节点名跨文件引用它们。`regular_activity.json` 是常规活动/自动战斗的共享子流程，体力路线通过 `daily_stamina_routes.json` 与 `daily_stamina_presets.json` 组合。
+
+优化时优先保持“识别 → 动作 → 再识别”，先在 Pipeline 中补充明确状态和安全回退，再考虑 Agent 逻辑；需要改变选项行为时同时检查 Interface、Override 目标节点和对应任务文档。
+
+## 优化路线
+
+1. **建立节点引用清单**：检查入口、跨文件引用、`[JumpBack]` 和锚点，确认每个任务都有可识别的完成态和安全退出态。
+2. **核对公共状态**：优先验证 `CommonEnsureMain`、加载/奖励弹窗处理和各任务返回主界面的识别，避免局部任务重复实现返回逻辑。
+3. **按风险验证流程**：先登录、领取和派遣，再商城、调教、征才，最后验证体力和自动战斗；高风险任务必须在模拟器中记录实际页面和停止点。
+4. **收敛 Agent 边界**：为自定义识别保留可诊断 `detail`，为 OCR 失败提供安全结果；能用 Pipeline 表达的固定分支不继续堆到 Python。
+5. **同步文档与检查**：流程变化同步任务 Mermaid 和实现映射，然后运行 Prettier、`maa-tools check`、Schema 校验及交互稳定性检查。
+
+`2026-09-12` 的静态核对已发现：任务文档 Mermaid 围栏存在格式错误（本轮修复）、总览漏列自动战斗（本轮修复）、部分任务文档仍需以当前 Interface 和实际客户端复核。
+
+本地环境设置与检查命令见 [开发环境](development_environment.md)，五阶段进度统一维护在 [稳定性优化路线](optimization_roadmap.md)。
 
 ## 开发流程
 
