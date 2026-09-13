@@ -209,15 +209,6 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 700,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "DailyFriendStaminaDone"
         ],
@@ -247,15 +238,6 @@
                     1220
                 ]
             }
-        },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
         },
         "next": [
             "DailyFriendStaminaOpenProfileFromMain"
