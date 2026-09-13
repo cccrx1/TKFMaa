@@ -2,7 +2,7 @@
 
 ## 项目结构与模块组织
 
-本仓库是基于 MaaFramework 的自动化助手。Python 自定义动作逻辑位于 `agent/`，其中 `agent/main.py` 负责注册处理器并启动 Maa Agent 服务。声明式自动化流程位于 `assets/resource/pipeline/`，识别模板应放入 `assets/resource/image/` 下对应的功能目录。面向用户的任务与选项在 `assets/interface.json` 中声明。通用 OCR 模型通过 `assets/MaaCommonAssets` 子模块管理。构建、Schema 校验和数据生成脚本位于 `tools/`，贡献者文档位于 `docs/zh_cn/develop/`，统一任务流程位于 `docs/zh_cn/tasks/`。公开文档总入口为 `docs/zh_cn/README.md`。目前没有独立的单元测试目录。
+本仓库是基于 MaaFramework 的自动化助手。Python 自定义动作逻辑位于 `agent/`，其中 `agent/main.py` 负责注册处理器并启动 Maa Agent 服务。声明式自动化流程位于 `assets/resource/pipeline/`，识别模板应放入 `assets/resource/image/` 下对应的功能目录。面向用户的任务与选项在 `assets/interface.json` 中声明。通用 OCR 模型通过 `assets/MaaCommonAssets` 子模块管理。构建、Schema 校验和数据生成脚本位于 `tools/`，贡献者文档位于 `docs/zh_cn/develop/`，统一任务流程位于 `docs/zh_cn/tasks/`，实机验证与调试记录位于 `docs/zh_cn/records/`。公开文档总入口为 `docs/zh_cn/README.md`。目前没有独立的单元测试目录。
 
 ## Python 版本基线
 
@@ -48,7 +48,7 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 ## 任务开发流程
 
 - 新增任务或重构跨页面主流程前，必须先在模拟器中观察实际游戏流程，并在 `docs/zh_cn/tasks/` 建立流程记录。
-- 流程记录至少包含前置状态、页面流转、识别依据、异常分支和完成状态；不能只按需求描述推测界面行为。
+- 流程记录至少包含前置状态、页面流转、识别依据、异常分支和完成状态；不能只按需求描述推测界面行为。任务文档只描述流程与实现，实测结论写入 `docs/zh_cn/records/` 下的对应记录。
 - 局部识别或动作修复只需复现并验证受影响路径，可将截图、日志和结果记录在 Issue 或 PR 中；纯文档及非行为改动无需运行模拟器。
 - 涉及购买、资源消耗、账号操作等高风险行为时，合并前必须完成端到端实机验证。
 - 从其他项目或旧分支迁入的文档只能作为线索；必须核对本仓库路径、节点、选项和当前客户端，未经本项目复测的“已验证”记录统一标为待验证。
@@ -58,9 +58,9 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 
 - 仓库目录、必需命令、编码约定、验证门槛或协作规则改变时，必须在同一 PR 更新 `AGENTS.md`；具体功能实现变化不写入本文件。
 - 流程采集方法、变更分级、记录模板或验收标准改变时，更新 `docs/zh_cn/develop/project_guide.md`。
-- 新增任务，或现有任务的页面顺序、识别依据、Option 行为、Agent 决策、异常恢复、资源消耗或结束条件改变时，更新对应的 `docs/zh_cn/tasks/task_*.md`。
+- 新增任务，或现有任务的页面顺序、识别依据、Option 行为、Agent 决策、异常恢复、资源消耗或结束条件改变时，更新 `docs/zh_cn/tasks/` 下对应的任务文档。
 - ROI、OCR 文本或模板调整如果改变识别目标、适用页面或已知风险，需要同步任务文档；仅微调数值且流程含义不变时，在 PR 验证记录中说明即可。
-- 完成新的实机验证后，更新任务文档的“当前状态”，注明日期、客户端版本、设备和覆盖路径；未覆盖分支继续保留为待验证。
+- 完成新的实机验证后，把结论写入 `docs/zh_cn/records/` 下对应的记录，注明日期、客户端版本、设备和覆盖路径；未覆盖分支继续保留在记录的覆盖状态里。任务文档不再保留“当前状态”节。
 - 纯格式化、无行为重构或未被文档引用的内部节点重命名通常无需更新任务文档；若文档引用的路径、节点或命令发生变化，必须同步修正。
 
 ## Interface、Option 与 Agent 联动

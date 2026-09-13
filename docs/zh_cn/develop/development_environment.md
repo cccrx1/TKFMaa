@@ -69,13 +69,6 @@ npx prettier --check .
 
 运行资源应包含 `assets/resource/model/ocr/det.onnx`、`rec.onnx` 和 `keys.txt`。缺少时按仓库要求初始化子模块，再运行 `tools/configure.py`；目录存在时脚本会跳过复制，因此还应检查文件是否完整。模型文件存在并不能证明识别效果正常，也不能仅据此推断与子模块当前提交完全一致。
 
-`.venv312/`、`.venv/`、`debug/`、`assets/debug/`、`config/`、`assets/config/` 和普通 `*.log` 均由 Git 忽略。本轮只进行本地检查，没有上传日志、截图、配置或游戏数据。工具下载依赖需要联网，不会因此自动上传本地调试证据。
+`.venv312/`、`.venv/`、`debug/`、`assets/debug/`、`config/`、`assets/config/` 和普通 `*.log` 均由 Git 忽略。工具下载依赖需要联网，不会因此自动上传本地调试证据。
 
-## 2026-09-12 本地验收记录
-
-- Python 3.12.10 x64，`maafw` Python 包和实际加载的原生库均为 5.13.0。
-- `pip check` 通过；Agent 在独立进程中导入并注册成功。
-- Maa Support 插件 509.0.29，保存的框架选择为 5.13.0；已确认版本设置，尚未确认故障发生时的运行实例。
-- 三个 OCR 必需文件存在且非空；未进行设备 OCR 或模型来源一致性验证。
-- maa-tools、Pipeline/Interface Schema、体力配置同步、交互稳定性检查通过。
-- 原插件 Bug 尚未复现，也没有执行任何购买、体力消耗或游戏任务。后续须在重启插件运行实例后记录具体失败操作、节点和报错，区分启动环境问题与页面流程问题。
+本文只说明如何搭建和检查环境，历次验收结论见 [开发环境验收记录](../records/environment.md)。

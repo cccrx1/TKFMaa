@@ -7,7 +7,8 @@
 - `assets/interface.json`：用户任务、选项和 Override。
 - `assets/resource/image/`：TemplateMatch 识别素材。
 - `tools/`：配置生成、Schema 校验和辅助检查。
-- `docs/zh_cn/tasks/`：统一任务流程文档。
+- `docs/zh_cn/tasks/`：统一任务流程文档，只描述流程与实现。
+- `docs/zh_cn/records/`：实机验证、调试与覆盖状态记录，只存放结论。
 - `docs/zh_cn/develop/optimization_roadmap.md`：五阶段稳定性优化路线和调试信息边界。
 
 ## Pipeline 架构基线
@@ -30,9 +31,8 @@
 4. **收敛 Agent 边界**：为自定义识别保留可诊断 `detail`，为 OCR 失败提供安全结果；能用 Pipeline 表达的固定分支不继续堆到 Python。
 5. **同步文档与检查**：流程变化同步任务 Mermaid 和实现映射，然后运行 Prettier、`maa-tools check`、Schema 校验及交互稳定性检查。
 
-`2026-09-12` 的静态核对已发现：任务文档 Mermaid 围栏存在格式错误（本轮修复）、总览漏列自动战斗（本轮修复）、部分任务文档仍需以当前 Interface 和实际客户端复核。
-
-本地环境设置与检查命令见 [开发环境](development_environment.md)，五阶段进度统一维护在 [稳定性优化路线](optimization_roadmap.md)。
+本地环境设置与检查命令见 [开发环境](development_environment.md)，五阶段进度见
+[优化路线执行进度](../records/optimization_roadmap.md)，文档核对结论见 [文档核对记录](../records/project_review.md)。
 
 ## 开发流程
 
@@ -46,7 +46,7 @@
 
 ## 文档更新规则
 
-任务页面顺序、选项行为、资源边界或安全退出改变时，更新对应任务文档。开发命令、目录结构和硬性协作规则改变时，更新本文件和 `AGENTS.md`。不要把历史日志、设备信息和资源前后数值写入公开任务文档。
+任务页面顺序、选项行为、资源边界或安全退出改变时，更新对应任务文档。开发命令、目录结构和硬性协作规则改变时，更新本文件和 `AGENTS.md`。任务文档只写流程、识别依据和实现约束，不要写入日期、设备信息、资源前后数值或实测耗时；这些结论统一记入 `docs/zh_cn/records/` 下的对应记录。
 
 ## AI 协作方式
 
