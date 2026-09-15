@@ -25,20 +25,12 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 700,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaPresetRouteStart"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "post_delay": 500
     },
     "DailyStaminaOpenTargetStage": {
         "recognition": {
@@ -62,22 +54,14 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 600,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaStageDetailInitialDecision",
             "DailyStaminaScanStageListUp"
         ],
         "max_hit": 4,
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "post_delay": 500
     },
     "DailyStaminaScanStageListDown": {
         "recognition": {
@@ -275,20 +259,12 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 1200,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaDone"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "post_delay": 500
     },
     "DailyStaminaOpenSweep": {
         "recognition": {
@@ -864,20 +840,12 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 1200,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaDone"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "post_delay": 500
     },
     "DailyStaminaReturnMainFromStageList": {
         "recognition": {
@@ -897,20 +865,12 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 1200,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaDone"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "post_delay": 500
     },
     "DailyStaminaDone": {
         "next": [

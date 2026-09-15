@@ -40,7 +40,6 @@
             "[JumpBack]GameWaitResourceCheck",
             "[JumpBack]GameCloseGift",
             "[JumpBack]GameCloseAnnouncement",
-            "[JumpBack]GameCloseEventSignIn",
             "[JumpBack]GameCloseSignIn",
             "[JumpBack]GameTapTitleScreen",
             "GameLoginConfirmMain"
@@ -126,10 +125,8 @@
             "type": "And",
             "param": {
                 "all_of": [
-                    "__GameCloseEventSignInMarker",
                     "__GameSignInTouchScreen"
-                ],
-                "box_index": 1
+                ]
             }
         },
         "action": {
@@ -139,7 +136,7 @@
             }
         },
         "max_hit": 2,
-        "pre_wait_freezes": 300
+        "post_delay": 800
     },
     "GameCloseAnnouncement": {
         "recognition": {
@@ -169,17 +166,15 @@
             }
         },
         "max_hit": 3,
-        "pre_wait_freezes": 300
+        "post_delay": 800
     },
     "GameCloseSignIn": {
         "recognition": {
             "type": "And",
             "param": {
                 "all_of": [
-                    "__GameCloseSignInMarker",
                     "__GameSignInTouchScreen"
-                ],
-                "box_index": 1
+                ]
             }
         },
         "action": {
@@ -188,8 +183,8 @@
                 "target": true
             }
         },
-        "max_hit": 2,
-        "pre_wait_freezes": 300
+        "max_hit": 4,
+        "post_delay": 800
     },
     "GameCloseGift": {
         "recognition": {
@@ -210,7 +205,7 @@
             }
         },
         "max_hit": 3,
-        "pre_wait_freezes": 300
+        "post_delay": 800
     },
     "GameMainReady": {
         "recognition": {
@@ -223,45 +218,6 @@
         },
         "action": {
             "type": "StopTask"
-        }
-    },
-    "__GameCloseSignInMarker": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    0,
-                    0,
-                    720,
-                    1080
-                ],
-                "threshold": 0.3,
-                "expected": [
-                    "奖励已送至仓库",
-                    "每日获得\\(连续30\\s*天\\)",
-                    "^签到$"
-                ]
-            }
-        }
-    },
-    "__GameCloseEventSignInMarker": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    80,
-                    500,
-                    560,
-                    500
-                ],
-                "threshold": 0.25,
-                "expected": [
-                    "挑战奖励",
-                    "LOGIN\\s*REWARDS",
-                    "^REWARDS$",
-                    "UTC\\+8"
-                ]
-            }
         }
     },
     "__GameSignInTouchScreen": {
@@ -310,7 +266,6 @@
                     "GameWaitResourceCheck",
                     "GameCloseGift",
                     "GameCloseAnnouncement",
-                    "GameCloseEventSignIn",
                     "GameCloseSignIn",
                     "GameTapTitleScreen"
                 ]

@@ -60,7 +60,7 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "[JumpBack]CommonCloseMainGift",
-            "CommonStopOnMain",
+            "CommonStopOnMainObserve",
             "CommonStopOnMainWait1"
         ],
         "timeout": 10000
@@ -72,7 +72,7 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "[JumpBack]CommonCloseMainGift",
-            "CommonStopOnMain",
+            "CommonStopOnMainObserve",
             "CommonStopOnMainWait2"
         ],
         "timeout": 10000,
@@ -85,7 +85,7 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "[JumpBack]CommonCloseMainGift",
-            "CommonStopOnMain",
+            "CommonStopOnMainObserve",
             "CommonStopOnMainWait3"
         ],
         "timeout": 10000,
@@ -103,13 +103,36 @@
         "timeout": 10000,
         "post_delay": 300
     },
+    "CommonStopOnMainObserve": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__CommonMainExpeditionButton",
+                    "__CommonMainTrainingButton"
+                ]
+            }
+        },
+        "next": [
+            "CommonStopOnMainConfirm"
+        ],
+        "post_delay": 1000
+    },
+    "CommonStopOnMainConfirm": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonStopOnMain"
+        ],
+        "timeout": 10000
+    },
     "CommonWaitLoading": {
         "recognition": {
             "type": "OCR",
             "param": {
                 "expected": [
-                    "L\\s*O\\s*A\\s*D\\s*I\\s*N\\s*G",
-                    "C\\s*O\\s*N\\s*N\\s*E\\s*C\\s*T\\s*I\\s*N\\s*G"
+                    "[Ll]\\s*[Oo0]\\s*[Aa]\\s*[Dd]",
+                    "[Cc]?\\s*[Oo0]\\s*[Nn]\\s*[Nn]?\\s*[Ee]\\s*[CcGg]"
                 ],
                 "roi": [
                     180,
