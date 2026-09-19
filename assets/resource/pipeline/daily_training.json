@@ -512,11 +512,26 @@
             }
         },
         "next": [
-            "CommonStopOnMain",
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonStopOnMainObserve",
             "DailyTrainingReturnMainFromRoomList"
         ],
-        "pre_wait_freezes": 300,
-        "max_hit": 1
+        "pre_wait_freezes": {
+            "time": 300,
+            "target": [
+                15,
+                52,
+                85,
+                44
+            ],
+            "timeout": 1500
+        },
+        "max_hit": 1,
+        "timeout": 1500,
+        "on_error": [
+            "DailyTrainingReturnRoomListFromDetail"
+        ]
     },
     "DailyTrainingReturnRoomListFromDetail": {
         "recognition": {
@@ -543,9 +558,26 @@
             }
         },
         "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonStopOnMainObserve",
             "DailyTrainingReturnMainFromRoomList"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": {
+            "time": 300,
+            "target": [
+                15,
+                52,
+                85,
+                44
+            ],
+            "timeout": 1500
+        },
+        "timeout": 1500,
+        "on_error": [
+            "DailyTrainingReturnRoomListFromDetail"
+        ],
+        "max_hit": 3
     },
     "DailyTrainingReturnMainFromRoomList": {
         "recognition": {
@@ -586,7 +618,17 @@
         "next": [
             "DailyTrainingDone"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": {
+            "time": 300,
+            "target": [
+                15,
+                52,
+                85,
+                44
+            ],
+            "timeout": 1500
+        },
+        "max_hit": 3
     },
     "DailyTrainingConfigItemScope": {
         "recognition": {
@@ -603,7 +645,13 @@
     },
     "DailyTrainingDone": {
         "next": [
-            "CommonStopOnMainWithRetries"
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonStopOnMainObserve"
+        ],
+        "timeout": 1500,
+        "on_error": [
+            "DailyTrainingReturnMainFromRoomList"
         ]
     },
     "DailyTrainingSelectCommonTab": {
