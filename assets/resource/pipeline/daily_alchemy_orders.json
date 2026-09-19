@@ -197,11 +197,27 @@
         "next": [
             "DailyAlchemyOrdersDone"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": {
+            "time": 300,
+            "target": [
+                15,
+                52,
+                85,
+                44
+            ],
+            "timeout": 1500
+        },
+        "max_hit": 3
     },
     "DailyAlchemyOrdersDone": {
         "next": [
-            "CommonStopOnMainWithRetries"
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonStopOnMainObserve"
+        ],
+        "timeout": 1500,
+        "on_error": [
+            "DailyAlchemyOrdersReturnMain"
         ]
     }
 }
