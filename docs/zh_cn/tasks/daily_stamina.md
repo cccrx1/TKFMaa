@@ -14,6 +14,8 @@
 
 活动更新时在 `assets/stamina/active.yaml` 的 `activity_groups` 中维护活动级名称与 marker，并在 `cases` 中填写各关卡差异；跨活动复用的 UI 路线保留在 `templates`。具体字段、四类 UI 示例和更新步骤见 [`../develop/stamina_activity_config.md`](../develop/stamina_activity_config.md)。随后运行 `python tools/build_stamina_activities.py` 生成 `assets/interface.json` 中的活动 Case，不要直接编辑生成字段。提交前使用 `python tools/build_stamina_activities.py --check` 确认源配置与派生产物同步；脚本通过只代表配置一致，新增或变化的活动路线仍须在模拟器中验证。
 
+当前活动“Trick or Sweet”使用常规分页列表路线。当前启用 Case 为第一页六个 `-01` 关卡；第二页关卡不在指定关卡 Case 中。自动通关任务已从 Interface 撤下，不能通过本任务文案推断自动通关已启用。
+
 ## 主流程
 
 1. 从主界面进入出征，由 `DailyStaminaPresetRouteStart` 选择限时活动或日常政务等统一外部路线。

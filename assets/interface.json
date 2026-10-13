@@ -165,11 +165,11 @@
         },
         "体力消耗关卡": {
             "type": "select",
-            "default_case": "刀剑魔舞 - 觉醒-01",
+            "default_case": "Trick or Sweet - 研究-01",
             "cases": [
                 {
-                    "name": "刀剑魔舞 - 觉醒-01",
-                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找觉醒-01，刷取觉醒-01。",
+                    "name": "Trick or Sweet - 研究-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Trick or Sweet，进入关卡列表后寻找研究-01，刷取研究-01。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
@@ -210,7 +210,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "刀剑魔舞"
+                                        "Trick or Sweet"
                                     ],
                                     "roi": [
                                         70,
@@ -226,8 +226,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "觉醒-01",
-                                        "觉醒01"
+                                        "研究-01",
+                                        "研究01"
                                     ],
                                     "roi": [
                                         0,
@@ -282,7 +282,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "刀剑魔舞",
+                                        "Trick or Sweet",
                                         "活动挑战还有"
                                     ],
                                     "roi": [
@@ -310,14 +310,18 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "觉醒-01",
-                                        "觉醒01",
-                                        "磨刀-01",
-                                        "磨刀01",
-                                        "保养-01",
-                                        "保养01",
-                                        "修行-01",
-                                        "修行01"
+                                        "研究-01",
+                                        "研究01",
+                                        "基金-01",
+                                        "基金01",
+                                        "法令-01",
+                                        "法令01",
+                                        "南瓜-01",
+                                        "南瓜01",
+                                        "糖果-01",
+                                        "糖果01",
+                                        "捣蛋-01",
+                                        "捣蛋01"
                                     ],
                                     "roi": [
                                         0,
@@ -331,8 +335,8 @@
                     }
                 },
                 {
-                    "name": "刀剑魔舞 - 磨刀-01",
-                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找磨刀-01，刷取磨刀-01。",
+                    "name": "Trick or Sweet - 基金-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Trick or Sweet，进入关卡列表后寻找基金-01，刷取基金-01。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
@@ -373,7 +377,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "刀剑魔舞"
+                                        "Trick or Sweet"
                                     ],
                                     "roi": [
                                         70,
@@ -389,8 +393,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "磨刀-01",
-                                        "磨刀01"
+                                        "基金-01",
+                                        "基金01"
                                     ],
                                     "roi": [
                                         0,
@@ -445,7 +449,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "刀剑魔舞",
+                                        "Trick or Sweet",
                                         "活动挑战还有"
                                     ],
                                     "roi": [
@@ -473,14 +477,18 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "觉醒-01",
-                                        "觉醒01",
-                                        "磨刀-01",
-                                        "磨刀01",
-                                        "保养-01",
-                                        "保养01",
-                                        "修行-01",
-                                        "修行01"
+                                        "研究-01",
+                                        "研究01",
+                                        "基金-01",
+                                        "基金01",
+                                        "法令-01",
+                                        "法令01",
+                                        "南瓜-01",
+                                        "南瓜01",
+                                        "糖果-01",
+                                        "糖果01",
+                                        "捣蛋-01",
+                                        "捣蛋01"
                                     ],
                                     "roi": [
                                         0,
@@ -494,8 +502,8 @@
                     }
                 },
                 {
-                    "name": "刀剑魔舞 - 保养-01",
-                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找保养-01，刷取保养-01。",
+                    "name": "Trick or Sweet - 法令-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Trick or Sweet，进入关卡列表后寻找法令-01，刷取法令-01。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
@@ -536,7 +544,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "刀剑魔舞"
+                                        "Trick or Sweet"
                                     ],
                                     "roi": [
                                         70,
@@ -552,8 +560,8 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "保养-01",
-                                        "保养01"
+                                        "法令-01",
+                                        "法令01"
                                     ],
                                     "roi": [
                                         0,
@@ -608,7 +616,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "刀剑魔舞",
+                                        "Trick or Sweet",
                                         "活动挑战还有"
                                     ],
                                     "roi": [
@@ -636,14 +644,18 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "觉醒-01",
-                                        "觉醒01",
-                                        "磨刀-01",
-                                        "磨刀01",
-                                        "保养-01",
-                                        "保养01",
-                                        "修行-01",
-                                        "修行01"
+                                        "研究-01",
+                                        "研究01",
+                                        "基金-01",
+                                        "基金01",
+                                        "法令-01",
+                                        "法令01",
+                                        "南瓜-01",
+                                        "南瓜01",
+                                        "糖果-01",
+                                        "糖果01",
+                                        "捣蛋-01",
+                                        "捣蛋01"
                                     ],
                                     "roi": [
                                         0,
@@ -657,8 +669,8 @@
                     }
                 },
                 {
-                    "name": "刀剑魔舞 - 修行-01",
-                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 刀剑魔舞，进入关卡列表后寻找修行-01，刷取修行-01。",
+                    "name": "Trick or Sweet - 南瓜-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Trick or Sweet，进入关卡列表后寻找南瓜-01，刷取南瓜-01。",
                     "pipeline_override": {
                         "DailyStaminaPresetRouteStart": {
                             "next": [
@@ -699,7 +711,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "刀剑魔舞"
+                                        "Trick or Sweet"
                                     ],
                                     "roi": [
                                         70,
@@ -715,8 +727,342 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "修行-01",
-                                        "修行01"
+                                        "南瓜-01",
+                                        "南瓜01"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 30,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 30,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListAnySelectable": {
+                            "enabled": true,
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "Trick or Sweet",
+                                        "活动挑战还有"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        90,
+                                        720,
+                                        180
+                                    ]
+                                }
+                            }
+                        },
+                        "CommonReturnMainFromStaminaStageList": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetFirstPageMarker": {
+                            "enabled": true,
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "研究-01",
+                                        "研究01",
+                                        "基金-01",
+                                        "基金01",
+                                        "法令-01",
+                                        "法令01",
+                                        "南瓜-01",
+                                        "南瓜01",
+                                        "糖果-01",
+                                        "糖果01",
+                                        "捣蛋-01",
+                                        "捣蛋01"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "Trick or Sweet - 糖果-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Trick or Sweet，进入关卡列表后寻找糖果-01，刷取糖果-01。",
+                    "pipeline_override": {
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteRegularPagedFirstPageStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "Trick or Sweet"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        770,
+                                        580,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "糖果-01",
+                                        "糖果01"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 30,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 30,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListAnySelectable": {
+                            "enabled": true,
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "Trick or Sweet",
+                                        "活动挑战还有"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        90,
+                                        720,
+                                        180
+                                    ]
+                                }
+                            }
+                        },
+                        "CommonReturnMainFromStaminaStageList": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetFirstPageMarker": {
+                            "enabled": true,
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "研究-01",
+                                        "研究01",
+                                        "基金-01",
+                                        "基金01",
+                                        "法令-01",
+                                        "法令01",
+                                        "南瓜-01",
+                                        "南瓜01",
+                                        "糖果-01",
+                                        "糖果01",
+                                        "捣蛋-01",
+                                        "捣蛋01"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "Trick or Sweet - 捣蛋-01",
+                    "description": "限时活动外部路线 + 常规活动纵向关卡列表：选择 Trick or Sweet，进入关卡列表后寻找捣蛋-01，刷取捣蛋-01。",
+                    "pipeline_override": {
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteRegularPagedFirstPageStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "Trick or Sweet"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        770,
+                                        580,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "捣蛋-01",
+                                        "捣蛋01"
                                     ],
                                     "roi": [
                                         0,
@@ -771,7 +1117,7 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "刀剑魔舞",
+                                        "Trick or Sweet",
                                         "活动挑战还有"
                                     ],
                                     "roi": [
@@ -799,14 +1145,18 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "觉醒-01",
-                                        "觉醒01",
-                                        "磨刀-01",
-                                        "磨刀01",
-                                        "保养-01",
-                                        "保养01",
-                                        "修行-01",
-                                        "修行01"
+                                        "研究-01",
+                                        "研究01",
+                                        "基金-01",
+                                        "基金01",
+                                        "法令-01",
+                                        "法令01",
+                                        "南瓜-01",
+                                        "南瓜01",
+                                        "糖果-01",
+                                        "糖果01",
+                                        "捣蛋-01",
+                                        "捣蛋01"
                                     ],
                                     "roi": [
                                         0,
