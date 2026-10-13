@@ -45,9 +45,9 @@ SHOP_SLOTS = [
     },
 ]
 
-_LAST_TARGET_SIGNATURE = None
 _HANDLED_ITEM_KEYS = set()
 _PENDING_TARGET = None
+_VERIFICATION_PASSES = 0
 
 
 def _is_word_char(ch):
@@ -107,16 +107,6 @@ def _parse_targets(raw_targets):
             seen.add(normalized)
             targets.append({"raw": str(candidate), "normalized": normalized})
     return targets
-
-
-def _reset_session(targets):
-    global _LAST_TARGET_SIGNATURE, _HANDLED_ITEM_KEYS, _PENDING_TARGET
-
-    signature = tuple(target["normalized"] for target in targets)
-    if signature != _LAST_TARGET_SIGNATURE:
-        _LAST_TARGET_SIGNATURE = signature
-        _HANDLED_ITEM_KEYS = set()
-        _PENDING_TARGET = None
 
 
 def _ocr_results(context, image, roi, expected=None, threshold=0.3, *, only_rec=True):
@@ -189,12 +179,35 @@ def _read_visible_items(context, image, targets):
     return visible
 
 
-def _visible_signature(visible):
-    return tuple((entry["slot"], entry["normalized"], entry["sold_out"]) for entry in visible)
+def _item_key(shop_id, target, item):
+    return (shop_id, target["normalized"], item["slot"])
 
 
-def _item_key(shop_id, target, item, visible):
-    return (shop_id, target["normalized"], item["slot"], _visible_signature(visible))
+def _pending_detail_matches(context, image):
+    if not _PENDING_TARGET:
+        return CustomRecognition.AnalyzeResult(box=None, detail={"reason": "no_pending_item"})
+
+    shop_id, target_name, slot_name = _PENDING_TARGET
+    results = _ocr_results(context, image, (70, 400, 580, 85), threshold=0.3, only_rec=False)
+    texts = _text_results(results)
+    matched_result = next(
+        (
+            result
+            for result in results
+            if _target_matches(target_name, getattr(result, "text", ""))
+        ),
+        None,
+    )
+    return CustomRecognition.AnalyzeResult(
+        box=getattr(matched_result, "box", None),
+        detail={
+            "shop_id": shop_id,
+            "slot": slot_name,
+            "target": target_name,
+            "texts": texts,
+            "matched": matched_result is not None,
+        },
+    )
 
 
 def _analyze_target_item(context, argv, default_shop_id):
@@ -204,8 +217,6 @@ def _analyze_target_item(context, argv, default_shop_id):
     param = raw_param if isinstance(raw_param, dict) else safe_json_loads(raw_param, {})
     targets = _parse_targets(param.get("target_names", param.get("targets", "")))
     shop_id = str(param.get("shop_id", default_shop_id))
-    _reset_session([{"normalized": shop_id}, *targets])
-
     raw_targets = [target["raw"] for target in targets]
     visible = _read_visible_items(context, argv.image, targets)
     skipped = []
@@ -229,7 +240,7 @@ def _analyze_target_item(context, argv, default_shop_id):
                     )
                     continue
 
-                key = _item_key(shop_id, target, item, visible)
+                key = _item_key(shop_id, target, item)
                 if key in _HANDLED_ITEM_KEYS:
                     skipped.append(
                         {
@@ -287,11 +298,34 @@ def _analyze_target_item(context, argv, default_shop_id):
 @AgentServer.custom_action("DailyShopResetExchangeSession")
 class DailyShopResetExchangeSession(CustomAction):
     def run(self, context, argv):
-        global _LAST_TARGET_SIGNATURE, _HANDLED_ITEM_KEYS, _PENDING_TARGET
-        _LAST_TARGET_SIGNATURE = None
+        global _HANDLED_ITEM_KEYS, _PENDING_TARGET, _VERIFICATION_PASSES
         _HANDLED_ITEM_KEYS = set()
         _PENDING_TARGET = None
+        _VERIFICATION_PASSES = 0
         return True
+
+
+@AgentServer.custom_action("DailyShopMarkVerificationPass")
+class DailyShopMarkVerificationPass(CustomAction):
+    def run(self, context, argv):
+        global _VERIFICATION_PASSES
+        _VERIFICATION_PASSES += 1
+        return True
+
+
+@AgentServer.custom_recognition("DailyShopNeedsSecondPass")
+class DailyShopNeedsSecondPass(CustomRecognition):
+    def analyze(self, context, argv):
+        return CustomRecognition.AnalyzeResult(
+            box=(0, 0, 1, 1) if _VERIFICATION_PASSES == 0 else None,
+            detail={"verification_passes": _VERIFICATION_PASSES},
+        )
+
+
+@AgentServer.custom_recognition("DailyShopVerifyPurchaseDetail")
+class DailyShopVerifyPurchaseDetail(CustomRecognition):
+    def analyze(self, context, argv):
+        return _pending_detail_matches(context, argv.image)
 
 
 @AgentServer.custom_action("DailyShopMarkTargetPurchased")
