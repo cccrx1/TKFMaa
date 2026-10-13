@@ -1,6 +1,7 @@
 # 自动战斗（AutoBattle）
 
 入口节点：`AutoBattleStart`；主要实现：`assets/resource/pipeline/regular_activity.json`。
+当前已从 Interface 取消注册，用户任务列表不提供“自动战斗”；以下流程保留供后续优化与测试参考。
 本文描述按 `NEW` 推进未通关关卡的自动通关流程。指定关卡的扫荡与手动补刷见[消耗体力](daily_stamina.md)，
 实机覆盖状态见[自动战斗验证记录](../records/auto_battle.md)。
 

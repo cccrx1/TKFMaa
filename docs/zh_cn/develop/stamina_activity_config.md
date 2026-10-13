@@ -88,8 +88,7 @@ activity_groups:
 `RegularActivityPresetStageListMarker`。当前 `active.yaml` 与生成后的关卡选项没有启用这一模式，
 不要把兼容分支当作现有任务选项。
 
-自动通关现由独立的[自动战斗任务](../tasks/auto_battle.md)提供，入口是 `AutoBattleStart`，需要手动进入
-受支持的常规活动关卡列表；它不读取本指南的活动 Case。扫描、战斗、体力判断与扩展限制统一见该任务文档。
+自动通关流程说明保留在[自动战斗任务文档](../tasks/auto_battle.md)，但当前未在 Interface 注册；不要把兼容分支当作可运行的用户任务。
 
 ## 复刻活动示例
 
