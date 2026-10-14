@@ -48,6 +48,7 @@ SHOP_SLOTS = [
 _HANDLED_ITEM_KEYS = set()
 _PENDING_TARGET = None
 _VERIFICATION_PASSES = 0
+_SCAN_POSITION = "top"
 
 
 def _is_word_char(ch):
@@ -180,14 +181,14 @@ def _read_visible_items(context, image, targets):
 
 
 def _item_key(shop_id, target, item):
-    return (shop_id, target["normalized"], item["slot"])
+    return (shop_id, target["normalized"], _SCAN_POSITION, item["slot"])
 
 
 def _pending_detail_matches(context, image):
     if not _PENDING_TARGET:
         return CustomRecognition.AnalyzeResult(box=None, detail={"reason": "no_pending_item"})
 
-    shop_id, target_name, slot_name = _PENDING_TARGET
+    shop_id, target_name, position, slot_name = _PENDING_TARGET
     results = _ocr_results(context, image, (70, 400, 580, 85), threshold=0.3, only_rec=False)
     texts = _text_results(results)
     matched_result = next(
@@ -203,6 +204,7 @@ def _pending_detail_matches(context, image):
         detail={
             "shop_id": shop_id,
             "slot": slot_name,
+            "position": position,
             "target": target_name,
             "texts": texts,
             "matched": matched_result is not None,
@@ -259,6 +261,7 @@ def _analyze_target_item(context, argv, default_shop_id):
                         "target": target["raw"],
                         "shop_id": shop_id,
                         "slot": item["slot"],
+                        "position": _SCAN_POSITION,
                         "visible": [entry["text"] for entry in visible],
                         "items": [
                             {
@@ -298,10 +301,31 @@ def _analyze_target_item(context, argv, default_shop_id):
 @AgentServer.custom_action("DailyShopResetExchangeSession")
 class DailyShopResetExchangeSession(CustomAction):
     def run(self, context, argv):
-        global _HANDLED_ITEM_KEYS, _PENDING_TARGET, _VERIFICATION_PASSES
+        global _HANDLED_ITEM_KEYS, _PENDING_TARGET, _VERIFICATION_PASSES, _SCAN_POSITION
         _HANDLED_ITEM_KEYS = set()
         _PENDING_TARGET = None
         _VERIFICATION_PASSES = 0
+        _SCAN_POSITION = "top"
+        return True
+
+
+@AgentServer.custom_action("DailyShopSetScanPosition")
+class DailyShopSetScanPosition(CustomAction):
+    def run(self, context, argv):
+        global _SCAN_POSITION
+        raw_param = argv.custom_action_param
+        if isinstance(raw_param, dict):
+            param = raw_param
+        elif isinstance(raw_param, str):
+            param = safe_json_loads(raw_param, {})
+        else:
+            param = {}
+        if not isinstance(param, dict):
+            return False
+        position = param.get("position")
+        if position not in ("top", "bottom"):
+            return False
+        _SCAN_POSITION = position
         return True
 
 

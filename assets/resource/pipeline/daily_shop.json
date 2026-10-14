@@ -137,7 +137,9 @@
         "pre_wait_freezes": 300
     },
     "DailyShopExchangeResetTop1": {
-        "recognition": {"type": "DirectHit"},
+        "recognition": {
+            "type": "DirectHit"
+        },
         "action": {
             "type": "Swipe",
             "param": {
@@ -152,10 +154,15 @@
                 "duration": 1000
             }
         },
-        "next": ["DailyShopExchangeResetTop2"]
+        "next": [
+            "DailyShopExchangeResetTop2"
+        ],
+        "max_hit": 24
     },
     "DailyShopExchangeResetTop2": {
-        "recognition": {"type": "DirectHit"},
+        "recognition": {
+            "type": "DirectHit"
+        },
         "action": {
             "type": "Swipe",
             "param": {
@@ -170,7 +177,19 @@
                 "duration": 1000
             }
         },
-        "next": ["DailyShopExchangeScanTop"]
+        "next": [
+            "DailyShopExchangeScanTop"
+        ],
+        "max_hit": 24,
+        "post_wait_freezes": {
+            "time": 400,
+            "target": [
+                70,
+                280,
+                545,
+                740
+            ]
+        }
     },
     "DailyShopStartSecondVerificationPass": {
         "recognition": {
@@ -199,7 +218,16 @@
             "DailyShopExchangeSwipe1",
             "DailyShopOpenGuildShop"
         ],
-        "timeout": 5000
+        "timeout": 5000,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "DailyShopSetScanPosition",
+                "custom_action_param": {
+                    "position": "top"
+                }
+            }
+        }
     },
     "DailyShopExchangeTargetItem": {
         "recognition": {
@@ -236,7 +264,7 @@
             "DailyShopPurchaseDetailInsufficient",
             "[JumpBack]DailyShopPurchaseCurrentItem",
             "[JumpBack]DailyShopClosePurchaseDetail",
-            "DailyShopExchangeScanTop"
+            "DailyShopExchangeResetTop1"
         ],
         "max_hit": 10,
         "pre_wait_freezes": 300
@@ -309,7 +337,16 @@
             "DailyShopExchangeTargetItem",
             "DailyShopOpenGuildShop"
         ],
-        "timeout": 5000
+        "timeout": 5000,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "DailyShopSetScanPosition",
+                "custom_action_param": {
+                    "position": "bottom"
+                }
+            }
+        }
     },
     "DailyShopPurchaseCurrentItem": {
         "recognition": {
@@ -595,7 +632,7 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "[JumpBack]CommonCloseReward",
-            "DailyShopExchangeScanTop"
+            "DailyShopExchangeResetTop1"
         ],
         "timeout": 5000,
         "on_error": [
@@ -621,7 +658,7 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "[JumpBack]CommonCloseReward",
-            "DailyShopGuildScanTop"
+            "DailyShopGuildResetTop1"
         ],
         "timeout": 5000,
         "on_error": [
@@ -646,7 +683,7 @@
         },
         "next": [
             "[JumpBack]CommonCloseReward",
-            "DailyShopExchangeScanTop"
+            "DailyShopExchangeResetTop1"
         ]
     },
     "DailyShopRecoverGuildPurchaseReward": {
@@ -667,7 +704,7 @@
         },
         "next": [
             "[JumpBack]CommonCloseReward",
-            "DailyShopGuildScanTop"
+            "DailyShopGuildResetTop1"
         ]
     },
     "__DailyShopPurchaseRewardMarker": {
@@ -725,7 +762,9 @@
         "pre_wait_freezes": 300
     },
     "DailyShopGuildResetTop1": {
-        "recognition": {"type": "DirectHit"},
+        "recognition": {
+            "type": "DirectHit"
+        },
         "action": {
             "type": "Swipe",
             "param": {
@@ -740,10 +779,15 @@
                 "duration": 1000
             }
         },
-        "next": ["DailyShopGuildResetTop2"]
+        "next": [
+            "DailyShopGuildResetTop2"
+        ],
+        "max_hit": 24
     },
     "DailyShopGuildResetTop2": {
-        "recognition": {"type": "DirectHit"},
+        "recognition": {
+            "type": "DirectHit"
+        },
         "action": {
             "type": "Swipe",
             "param": {
@@ -758,7 +802,19 @@
                 "duration": 1000
             }
         },
-        "next": ["DailyShopGuildScanTop"]
+        "next": [
+            "DailyShopGuildScanTop"
+        ],
+        "max_hit": 24,
+        "post_wait_freezes": {
+            "time": 400,
+            "target": [
+                70,
+                280,
+                545,
+                740
+            ]
+        }
     },
     "DailyShopGuildScanTop": {
         "next": [
@@ -766,7 +822,16 @@
             "DailyShopGuildTargetItem",
             "DailyShopGuildSwipe1"
         ],
-        "timeout": 5000
+        "timeout": 5000,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "DailyShopSetScanPosition",
+                "custom_action_param": {
+                    "position": "top"
+                }
+            }
+        }
     },
     "DailyShopGuildSwipe1": {
         "recognition": {
@@ -837,7 +902,16 @@
             "DailyShopStartSecondVerificationPass",
             "DailyShopReturnMain"
         ],
-        "timeout": 5000
+        "timeout": 5000,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "DailyShopSetScanPosition",
+                "custom_action_param": {
+                    "position": "bottom"
+                }
+            }
+        }
     },
     "DailyShopGuildTargetItem": {
         "recognition": {
@@ -874,7 +948,7 @@
             "DailyShopPurchaseDetailInsufficient",
             "[JumpBack]DailyShopPurchaseGuildItem",
             "[JumpBack]DailyShopClosePurchaseDetail",
-            "DailyShopGuildScanTop"
+            "DailyShopGuildResetTop1"
         ],
         "max_hit": 10,
         "pre_wait_freezes": 300
@@ -904,11 +978,18 @@
             "[JumpBack]CommonWaitLoading",
             "DailyShopDone"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "max_hit": 3
     },
     "DailyShopDone": {
         "next": [
-            "CommonStopOnMainWithRetries"
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonStopOnMainObserve"
+        ],
+        "timeout": 1500,
+        "on_error": [
+            "DailyShopReturnMain"
         ]
     }
 }
