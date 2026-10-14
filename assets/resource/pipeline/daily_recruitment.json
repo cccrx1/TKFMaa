@@ -2048,26 +2048,28 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "DailyRecruitmentDone"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "max_hit": 3,
+        "post_wait_freezes": 0
     },
     "DailyRecruitmentDone": {
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonStopOnMainObserve"
+        ],
+        "timeout": 1500,
+        "on_error": [
+            "DailyRecruitmentReturnFromOverview"
+        ],
         "recognition": {
             "type": "DirectHit"
         },
         "action": {
-            "type": "StopTask"
+            "type": "DoNothing"
         }
     }
 }
