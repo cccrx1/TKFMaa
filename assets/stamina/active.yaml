@@ -59,7 +59,7 @@ activity_groups:
       stamina:
         cost: 30
       activity_name:
-        expected: ["Trick or Sweet"]
+        expected: ["^Trick or Sweet$"]
         roi: [70, 770, 580, 80]
       stage:
         any_selectable:

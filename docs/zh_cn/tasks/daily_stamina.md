@@ -14,12 +14,12 @@
 
 活动更新时在 `assets/stamina/active.yaml` 的 `activity_groups` 中维护活动级名称与 marker，并在 `cases` 中填写各关卡差异；跨活动复用的 UI 路线保留在 `templates`。具体字段、四类 UI 示例和更新步骤见 [`../develop/stamina_activity_config.md`](../develop/stamina_activity_config.md)。随后运行 `python tools/build_stamina_activities.py` 生成 `assets/interface.json` 中的活动 Case，不要直接编辑生成字段。提交前使用 `python tools/build_stamina_activities.py --check` 确认源配置与派生产物同步；脚本通过只代表配置一致，新增或变化的活动路线仍须在模拟器中验证。
 
-当前活动“Trick or Sweet”使用常规分页列表路线。当前启用 Case 为第一页六个 `-01` 关卡；第二页关卡不在指定关卡 Case 中。自动通关任务已从 Interface 撤下，不能通过本任务文案推断自动通关已启用。
+当前活动“Trick or Sweet”使用常规分页列表路线。活动卡名称使用 `^Trick or Sweet$` 完整匹配，避免误进入附加的 `Hard Mode-Trick or Sweet`。当前启用 Case 为第一页六个 `-01` 关卡；第二页关卡不在指定关卡 Case 中。自动通关任务已从 Interface 撤下，不能通过本任务文案推断自动通关已启用。
 
 ## 主流程
 
 1. 从主界面进入出征，由 `DailyStaminaPresetRouteStart` 选择限时活动或日常政务等统一外部路线。
-2. 活动卡页默认已经选中第一栏，先检查当前活动名；不匹配时直接尝试第二栏、第三栏，不能再次点击第一栏，否则会进入第一栏活动。每次切换后仍须按活动名称确认，只有名称命中才点击“进击”。`DailyStaminaPresetInnerRouteStart` 必须先确认内部页面 marker，再进入对应 UI 路线：常规活动 UI 进入普通纵向列表或分页列表，复刻活动 UI 进入二维地图，大型活动特殊 UI 进入活动专用路线，日常政务 UI 进入政务分类列表。未进入时最多重试 4 次“进击”，仍失败则返回主界面。
+2. 点击活动页签后先识别底部“进击”或“选择关卡”，确认已到活动卡页；未切换成功时最多重新点击页签三次，禁止在其他页面盲点活动卡坐标。活动卡页默认已经选中第一栏，先检查当前活动名；不匹配时直接尝试第二栏、第三栏，不能再次点击第一栏，否则会进入第一栏活动。每次切换后仍须按活动名称确认，只有名称命中才点击“进击”。`DailyStaminaPresetInnerRouteStart` 必须先确认内部页面 marker，再进入对应 UI 路线：常规活动 UI 进入普通纵向列表或分页列表，复刻活动 UI 进入二维地图，大型活动特殊 UI 进入活动专用路线，日常政务 UI 进入政务分类列表。未进入时最多重试 4 次“进击”，仍失败则返回主界面。
 3. 第一次进入第一个目标关卡详情后，由 `DailyStaminaCompare` OCR 当前体力，并与关卡消耗及保留值比较；只有尚未成功扫荡或战斗时，才允许按开关使用体力药或购买体力。
 4. 体力足够时优先打开军团扫荡；扫荡不可用且开关启用时改为手动战斗。购买体力成功后执行已购买状态分发器，保证首次消费前最多购买一次。
 5. 扫荡动画的“跳过”和结果页的“完成”分别识别与点击；成功扫荡或战斗后进入已消费状态。扫荡后由 `DailyStaminaAfterSweepDecision` 判断是否手动补刷；战斗结算时体力足够则点击“再次挑战”，不足则返回地图并退出，不再补充体力。

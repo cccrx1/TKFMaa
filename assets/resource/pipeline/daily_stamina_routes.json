@@ -19,11 +19,21 @@
             "DailyStaminaRouteActivityListFindSelected"
         ],
         "pre_wait_freezes": 300,
-        "post_delay": 500
+        "post_delay": 500,
+        "timeout": 3000,
+        "on_error": [
+            "DailyStaminaRouteActivitySectionStart"
+        ],
+        "max_hit": 3
     },
     "DailyStaminaRouteActivityListFindSelected": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyStaminaActivityListReady"
+                ]
+            }
         },
         "action": {
             "type": "DoNothing"
@@ -73,7 +83,12 @@
     },
     "DailyStaminaRouteActivityListSelectSlot2": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyStaminaActivityListReady"
+                ]
+            }
         },
         "action": {
             "type": "Click",
@@ -89,11 +104,17 @@
             "DailyStaminaRouteActivityListEnterSelected",
             "DailyStaminaRouteActivityListSelectSlot3"
         ],
-        "post_delay": 500
+        "post_delay": 500,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRouteActivityListSelectSlot3": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyStaminaActivityListReady"
+                ]
+            }
         },
         "action": {
             "type": "Click",
@@ -109,7 +130,8 @@
             "DailyStaminaRouteActivityListEnterSelected",
             "DailyStaminaStageNotFoundGiveUp"
         ],
-        "post_delay": 500
+        "post_delay": 500,
+        "pre_wait_freezes": 300
     },
     "DailyStaminaRouteInnerSpecialUiStart": {
         "recognition": {
@@ -461,5 +483,22 @@
         "max_hit": 2,
         "pre_wait_freezes": 300,
         "post_delay": 500
+    },
+    "__DailyStaminaActivityListReady": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "^进击$",
+                    "^选择关卡$"
+                ],
+                "roi": [
+                    250,
+                    1070,
+                    230,
+                    150
+                ]
+            }
+        }
     }
 }
