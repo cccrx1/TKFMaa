@@ -8,6 +8,9 @@ on:
       - ".github/workflows/check.yml"
       - "assets/**"
       - "tools/requirements.txt"
+      - "tools/ocr_model.json"
+      - ".github/workflows/install.yml"
+      - ".python-version"
       - "maatools.config.mts"
       - "package.json"
       - "package-lock.json"
@@ -19,6 +22,9 @@ on:
       - ".github/workflows/check.yml"
       - "assets/**"
       - "tools/requirements.txt"
+      - "tools/ocr_model.json"
+      - ".github/workflows/install.yml"
+      - ".python-version"
       - "maatools.config.mts"
       - "package.json"
       - "package-lock.json"
@@ -58,3 +64,18 @@ jobs:
 
       - name: Validate JSON Schema
         run: python tools/validate_schema.py --schema-dir deps/tools --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json
+
+      - name: Check generated activities
+        run: python tools/build_stamina_activities.py --check
+
+      - name: Verify environment and load resource bundle
+        run: |
+          python -m pip check
+          python tools/configure.py --download
+          python tools/check_environment.py --load-resource
+
+      - name: Check Agent registration
+        run: python -c "import sys; sys.path.insert(0, 'agent'); import main; print('Agent imports OK')"
+
+      - name: Test tooling and custom actions
+        run: python -m unittest discover -s tools -p 'test_*.py'

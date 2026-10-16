@@ -1,0 +1,22 @@
+{
+    "repository": "MaaXYZ/MaaCommonAssets",
+    "revision": "dabcd4681ac990dc4361de26416d986abd80e4aa",
+    "path": "OCR/ppocr_v6/small",
+    "files": [
+        {
+            "name": "det.onnx",
+            "bytes": 9893172,
+            "sha256": "66c0f34caaf432553710fd9973a7134d8cf924db7109310c3d2562dcc39b209d"
+        },
+        {
+            "name": "rec.onnx",
+            "bytes": 21146753,
+            "sha256": "7dcf6298d77d2a6eb44c1ebeed990826ca895a9c68d955a3eace00763d052949"
+        },
+        {
+            "name": "keys.txt",
+            "bytes": 74947,
+            "sha256": "b5f2bfe2bdd9448429e3e82b51c789775d9b42f2403d082b00662eb77e401c5d"
+        }
+    ]
+}

@@ -2,17 +2,21 @@
 
 ## 项目结构与模块组织
 
-本仓库是基于 MaaFramework 的自动化助手。Python 自定义动作逻辑位于 `agent/`，其中 `agent/main.py` 负责注册处理器并启动 Maa Agent 服务。声明式自动化流程位于 `assets/resource/pipeline/`，识别模板应放入 `assets/resource/image/` 下对应的功能目录。面向用户的任务与选项在 `assets/interface.json` 中声明。通用 OCR 模型通过 `assets/MaaCommonAssets` 子模块管理。构建、Schema 校验和数据生成脚本位于 `tools/`，贡献者文档位于 `docs/zh_cn/develop/`，统一任务流程位于 `docs/zh_cn/tasks/`，实机验证与调试记录位于 `docs/zh_cn/records/`。公开文档总入口为 `docs/zh_cn/README.md`。目前没有独立的单元测试目录。
+本仓库是基于 MaaFramework 的自动化助手。Python 自定义动作逻辑位于 `agent/`，其中 `agent/main.py` 负责注册处理器并启动 Maa Agent 服务。声明式自动化流程位于 `assets/resource/pipeline/`，识别模板应放入 `assets/resource/image/` 下对应的功能目录。面向用户的任务与选项在 `assets/interface.json` 中声明。通用 OCR 模型来自 MaaCommonAssets；当前提交仅保留 `.gitmodules` 声明、缺少 gitlink，模型来源由 `tools/ocr_model.json` 固定，通过 `tools/configure.py --download` 恢复，详情见开发环境文档。构建、Schema 校验和数据生成脚本位于 `tools/`，贡献者文档位于 `docs/zh_cn/develop/`，统一任务流程位于 `docs/zh_cn/tasks/`，实机验证与调试记录位于 `docs/zh_cn/records/`。公开文档总入口为 `docs/zh_cn/README.md`。目前没有独立的单元测试目录。
 
 ## Python 版本基线
 
-本项目开发与发布统一使用 Python 3.12；`tools/requirements.txt` 中的 `maafw` 版本必须与 CI 的 `MAAFW_VERSION` 以及插件使用的 MaaFramework native runtime 保持一致。发布包的 MaaFramework 与 MFAAvalonia 版本分别由 `.github/workflows/install.yml` 的 `MAAFW_VERSION`、`MFAA_VERSION` 固定，升级任一项前须确认两者兼容。Python 3.14 可用于其他项目，但不作为本项目首选验证环境。
+本项目开发与发布统一使用 Python 3.12；`tools/requirements.txt` 中的 `maafw` 版本必须与 CI 的 `MAAFW_VERSION` 以及插件使用的 MaaFramework native runtime 保持一致。当前评估并切换到 MaaFramework 5.14.3 与 MFAAvalonia 2.16.2，升级后仍须完成本地资源校验和实机回归。Python 3.14 可用于其他项目，但不作为本项目首选验证环境。
 
-Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端均指向该目录；新终端设置 `PYTHONUTF8=1`，避免中文 Windows 控制台编码导致校验输出异常。`.python-version` 声明 Python 3.12，`maatools.config.mts` 固定校验运行时 5.13.0，资源校验 CI 也显式使用 Python 3.12。环境搭建与验收见 `docs/zh_cn/develop/development_environment.md`。虚拟环境、日志、截图和本地配置只保存在被 Git 忽略的路径中，不自动上传。
+Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端均指向该目录；新终端设置 `PYTHONUTF8=1`，避免中文 Windows 控制台编码导致校验输出异常。`.python-version` 声明 Python 3.12，`maatools.config.mts` 固定校验运行时 5.14.3，资源校验 CI 也显式使用 Python 3.12。环境搭建与验收见 `docs/zh_cn/develop/development_environment.md`。虚拟环境、日志、截图和本地配置只保存在被 Git 忽略的路径中，不自动上传。
 
 ## 构建、测试与开发命令
 
-- `git submodule update --init --recursive`：克隆后初始化 Maa 通用资源。
+- `git submodule update --init --recursive`：存在 gitlink 时初始化 Maa 通用资源；当前缺少 gitlink，须按开发环境文档恢复本地 OCR。
+- `python tools/configure.py --download`：下载固定修订的 OCR 缺失文件，逐文件校验大小和 SHA256，不覆盖不匹配的已有文件。
+- `python tools/configure.py --check`：只读检查 OCR 模型完整性与来源一致性。
+- `python tools/check_environment.py --load-resource`：核对 Python、maafw、native runtime、构建和 maa-tools 版本，并在不连接设备的情况下加载完整资源包。Agent 导入注册须在另一个独立进程检查。
+- `python tools/sync_schemas.py`：按 requirements 固定的 MaaFramework 版本同步六份 Schema，不跟随上游 main。
 - `npm ci`：安装 CI 使用的锁定版本 Node.js 工具。
 - `npx @nekosu/maa-tools check`：校验 Maa Pipeline 与 Interface 资源。
 - `python -m pip install -r tools/requirements.txt`：安装 Maa Agent、配置生成和 Schema 校验所需的 Python 依赖。
@@ -21,7 +25,7 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 - `python tools/build_stamina_activities.py --check`：只检查体力活动配置与 `assets/interface.json` 是否同步，不写文件。
 - `python tools/add_interaction_stability.py --check`：检查带识别结果的交互动作是否配置点击前稳定等待。
 
-`.github/workflows/install.yml` 会为 `v1.2.3` 等版本标签构建发布包。本地打包需要预先下载 MaaFramework 运行时，不属于常规开发验证流程。
+`.github/workflows/install.yml` 会为 `v1.2.3` 等版本标签构建发布包。普通分支推送命中构建路径规则时生成带前端的 Artifact，前端验收须使用对应提交的完整包，步骤见开发环境文档。本地打包需要预先下载 MaaFramework 运行时，不属于常规开发验证流程。
 
 ## 生成配置与派生产物
 
@@ -77,7 +81,9 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 
 ## Agent 技能使用指引
 
-处理 MaaFramework API、控制器或自定义逻辑前参考 `maaframework` 技能；编写或审查 Pipeline JSON 时参考 `pipeline-guide`；新增 UI 选项时参考 `pipeline-option`；通过设备 OCR 生成节点或扫描 ROI 时参考 `pipeline-generate`。技能中的示例路径可能来自其他仓库，落地时必须换成本仓库的 `assets/resource/pipeline/`、`assets/resource/image/` 和 `assets/interface.json`，并以当前代码及 Schema 为准。
+完整技能路由、MCP 可用性分级与验收步骤见 `docs/zh_cn/develop/maa_workflow.md`。`basic_info.md` 为被 Git 忽略的本地扫描缓存，存在时先读取接力章节，再核对当前源码；不要把静态图中的孤立节点直接当作可删除节点，Option 配置节点可能没有入边。
+
+处理 MaaFramework API、控制器或自定义逻辑前参考 `maa-wiki`，再按需使用 `maa-pipeline-guide`；编写或审查 Pipeline JSON 使用 `maa-pipeline-guide`，新增 UI 选项使用 `maa-pipeline-option`，通过设备 OCR 生成节点或扫描 ROI 使用 `maa-pipeline-generate`，测试与验收使用 `maa-pipeline-testing`，跨页面新流程使用 `maa-workflow-build`，项目上下文扫描使用 `maa-project-init`。重复性设备检查可用固定版本 `maafw-cli`，长连接探索使用已配置的 `maa-mcp==1.2.3`；两者不要同时控制同一设备会话。技能中的示例路径可能来自其他仓库，落地时必须换成本仓库的 `assets/resource/pipeline/`、`assets/resource/image/` 和 `assets/interface.json`，并以当前代码及 Schema 为准。
 
 ## 测试规范
 

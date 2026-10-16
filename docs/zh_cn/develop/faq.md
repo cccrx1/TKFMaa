@@ -20,7 +20,7 @@ MFAAvalonia 是桌面发布包中的运行客户端，不是参与本仓库开�
 
 ## 3. 我应该如何打包我的项目？
 
-你需要按照项目推荐的 [开发流程](./project_guide.md) 发布一个版本，[CI](../../.github/workflows/install.yml) 会自动完成打包工作。具体的工作方式请参考 [GitHub Actions 文档](https://docs.github.com/zh/actions)。
+普通分支推送也会生成含前端的测试包，下载与前端验收步骤见 [开发环境](./development_environment.md#使用自动构建包验证前端)。正式发布需按照项目推荐的 [开发流程](./project_guide.md) 操作，[CI](../../../.github/workflows/install.yml) 会自动完成打包工作。具体的工作方式请参考 [GitHub Actions 文档](https://docs.github.com/zh/actions)。
 
 ## 4. 在哪里反馈问题？
 
@@ -32,7 +32,7 @@ TKFMaa 的任务识别、流程或发布包问题请在本仓库提交 Issue，�
 
 ## 5. OCR 文字识别一直没有识别结果，报错 "Failed to load det or rec", "ocrer\_ is null"
 
-先确认已经执行 `git submodule update --init --recursive` 和 `python tools/configure.py`，并检查 `assets/resource/model/ocr/` 下是否存在 `det.onnx`、`keys.txt` 和 `rec.onnx`。
+先运行 `python tools/configure.py --check` 校验三个模型文件。缺文件时执行 `python tools/configure.py --download`；已有文件大小或摘要不符时先备份检查，不直接覆盖。当前检出缺少子模块 gitlink，仅初始化子模块无法恢复 OCR，详情见 [开发环境](./development_environment.md#ocr-与本地数据)。
 
 ## 6. 在开发过程中遇到了其他问题
 

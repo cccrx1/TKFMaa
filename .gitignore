@@ -458,3 +458,7 @@ tmp
 # Local Python environments
 .venv/
 .venv312/
+
+# Local Maa skill context and downloaded OCR models
+/basic_info.md
+/assets/resource/model/

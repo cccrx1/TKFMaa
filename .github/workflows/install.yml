@@ -4,8 +4,8 @@ env:
   # 版本控制：
   # - 设置 VERSION 为空字符串时，下载 latest 版本
   # - 设置 VERSION 为具体版本号时（如 v1.2.3），下载指定版本
-  MAAFW_VERSION: "v5.13.0"
-  MFAA_VERSION: "v2.16.1"
+  MAAFW_VERSION: "v5.14.3"
+  MFAA_VERSION: "v2.16.2"
   PYTHON_VERSION: "3.12"
   PYTHON_ABI: "cp312"
 
@@ -19,6 +19,9 @@ on:
       - ".github/workflows/install.yml"
       - "assets/**"
       - "tools/requirements.txt"
+      - "tools/ocr_model.json"
+      - "maatools.config.mts"
+      - ".python-version"
       - "**.py"
   pull_request:
     branches:
@@ -27,6 +30,9 @@ on:
       - ".github/workflows/install.yml"
       - "assets/**"
       - "tools/requirements.txt"
+      - "tools/ocr_model.json"
+      - "maatools.config.mts"
+      - ".python-version"
       - "**.py"
   workflow_dispatch:
 
@@ -146,7 +152,7 @@ jobs:
         id: download_mfa
         uses: robinraju/release-downloader@v1
         with:
-          repository: SweetSmellFox/MFAAvalonia
+          repository: MaaXYZ/MFAAvalonia
           fileName: "MFAAvalonia-*-${{ (matrix.os == 'win' && 'win') || (matrix.os == 'macos' && 'osx') || (matrix.os == 'linux' && 'linux') }}-${{ (matrix.arch == 'x86_64' && 'x64') || (matrix.arch == 'aarch64' && 'arm64') }}*"
           latest: ${{ env.MFAA_VERSION == '' }}
           tag: ${{ env.MFAA_VERSION }}
@@ -201,6 +207,8 @@ jobs:
 
           cd tools/
           python -m pip install -r ./requirements.txt
+          python ./check_environment.py
+          python ./configure.py --download
           python ./install.py ${{ needs.meta.outputs.tag }} ${{ matrix.os }} ${{ matrix.arch }}
           cd ..
 

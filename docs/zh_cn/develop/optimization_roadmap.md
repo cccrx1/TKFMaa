@@ -7,18 +7,18 @@
 目标是让本地插件调试、CI 和发布包使用同一套版本。
 
 - Python 基线：3.12
-- MaaFramework 基线：5.13.0
-- `maafw` Python 包：5.13.0
+- MaaFramework 基线：5.14.3
+- `maafw` Python 包：5.14.3
 - Node.js：22
-- OCR 与 `MaaCommonAssets`：仓库当前配置版本
+- OCR 与 `MaaCommonAssets`：`tools/ocr_model.json` 固定的修订和文件摘要
 - 设备基准：720x1280 竖屏，记录 DPI、帧率和模拟器版本
 
 验收内容：
 
-1. 初始化 `assets/MaaCommonAssets` 子模块并生成 OCR 模型。
+1. 使用 `tools/configure.py --download` 恢复 OCR，执行 `--check` 验证；当前检出缺少子模块 gitlink。
 2. 在 Python 3.12 虚拟环境安装 `tools/requirements.txt`。
-3. 确认插件/MFAAvalonia 使用 MaaFramework 5.13.0 native runtime。
-4. 运行 Prettier、`maa-tools check`、Schema 校验和交互稳定性检查。
+3. 确认插件/MFAAvalonia 使用 MaaFramework 5.14.3 native runtime。
+4. 运行版本一致性与资源加载检查、Prettier、`maa-tools check`、Schema 校验和交互稳定性检查。
 5. 保存一份本地环境版本记录；调试日志默认只保存在本机。
 
 Python 3.14 可以继续保留用于其他项目，但不作为本项目第一验证环境。若 3.12 和 3.14 的结果不同，再单独建立兼容性问题。
