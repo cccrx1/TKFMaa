@@ -6,6 +6,7 @@
 - [验证与调试记录](records/README.md)：按任务查看实机验证、调试结论和覆盖状态。
 - [项目开发指南](develop/project_guide.md)：了解项目结构、开发步骤、检查命令和 AI 协作方式。
 - [开发环境](develop/development_environment.md)：Python 虚拟环境、插件版本与本地检查。
+- [Maa 技能与工具流程](develop/maa_workflow.md)：新版技能路由、MCP/CLI 分工和验收顺序。
 - [稳定性优化路线](develop/optimization_roadmap.md)：按五个阶段固定依赖、调试和任务流程。
 - [自动化策略](develop/automation_policy.md)：了解资源风险、默认行为和安全边界。
 - [体力活动配置](develop/stamina_activity_config.md)：维护体力活动和 Interface 生成配置。

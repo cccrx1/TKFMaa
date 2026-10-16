@@ -44,6 +44,14 @@
 6. 运行适用的格式、`maa-tools check` 和 JSON Schema 检查。
 7. 在结果中说明改动范围、检查命令、未覆盖分支和风险。
 
+## Maa skill 与 MCP 分工
+
+完整路由表、上下文缓存和验收顺序见 [Maa 技能与工具流程](maa_workflow.md)。
+
+开始任务时先读取根目录 `basic_info.md`（若已生成且未过期），再按任务选择技能：新建或扩展跨页面流程使用 `maa-workflow-build`；项目结构扫描使用 `maa-project-init`；Pipeline 设计与审查使用 `maa-pipeline-guide`；OCR、ROI 和模板生成使用 `maa-pipeline-generate`；选项接线使用 `maa-pipeline-option`；验证使用 `maa-pipeline-testing`。涉及 MaaFramework 版本、Schema 或 API 语义时先用 `maa-wiki` 回到官方来源。
+
+设备验证优先使用已经配置的 `maa-mcp==1.2.3` 完成长连接探索、截图、OCR 和多文件流程；重复性检查或 CI 使用 `maafw-cli==0.1.6` 并要求 JSON 输出。两个后端不要同时连接同一设备。没有设备或 MCP 工具未加载时，只能完成静态扫描和资源校验，不得把它们写成实机已验证。
+
 ## 文档更新规则
 
 任务页面顺序、选项行为、资源边界或安全退出改变时，更新对应任务文档。开发命令、目录结构和硬性协作规则改变时，更新本文件和 `AGENTS.md`。任务文档只写流程、识别依据和实现约束，不要写入日期、设备信息、资源前后数值或实测耗时；这些结论统一记入 `docs/zh_cn/records/` 下的对应记录。
