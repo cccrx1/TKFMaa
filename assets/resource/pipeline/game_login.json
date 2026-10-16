@@ -136,7 +136,8 @@
             }
         },
         "max_hit": 2,
-        "post_delay": 800
+        "post_delay": 800,
+        "pre_wait_freezes": 300
     },
     "GameCloseAnnouncement": {
         "recognition": {
@@ -166,7 +167,8 @@
             }
         },
         "max_hit": 3,
-        "post_delay": 800
+        "post_delay": 800,
+        "pre_wait_freezes": 300
     },
     "GameCloseSignIn": {
         "recognition": {
@@ -184,7 +186,8 @@
             }
         },
         "max_hit": 4,
-        "post_delay": 800
+        "post_delay": 800,
+        "pre_wait_freezes": 300
     },
     "GameCloseGift": {
         "recognition": {
@@ -205,7 +208,8 @@
             }
         },
         "max_hit": 3,
-        "post_delay": 800
+        "post_delay": 800,
+        "pre_wait_freezes": 300
     },
     "GameMainReady": {
         "recognition": {

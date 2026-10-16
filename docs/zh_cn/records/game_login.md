@@ -4,6 +4,8 @@
 
 ## 覆盖状态
 
+- 2026-10-12 环境升级检查为 `GameCloseEventSignIn`、`GameCloseAnnouncement`、`GameCloseSignIn`、`GameCloseGift` 补齐 `pre_wait_freezes: 300`。当时仅完成资源与静态校验；2026-10-14 当前签到链、公告和礼包已在 MaaFramework 5.14.3 上回归，独立的 `GameCloseEventSignIn` 节点未命中，不认定单独验证通过。
+
 - 2026-09-15 改为仅识别底部 `TOUCH SCREEN`，各类签到共用 4 次点击额度；当前连续两页签到链已在2026-10-14覆盖，其他签到组合及四次额度耗尽分支仍待验证。下方 2026-09-13 结论对应修改前的正文组合识别。
 - 登录流程图包含尚未实测的重启与异常分支。
 - erolab 包名、首次登录完整签到链、网络异常和重启恢复分支仍待验证；普通网络加载耗时不设为固定 1.5 秒。
