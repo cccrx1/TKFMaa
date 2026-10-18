@@ -2,6 +2,7 @@
     "DailyFriendStaminaStart": {
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "DailyFriendStaminaOpenProfileFromMain",
             "[JumpBack]DailyFriendStaminaWaitFriendListLoading",
             "[JumpBack]DailyFriendStaminaCloseProfile",
