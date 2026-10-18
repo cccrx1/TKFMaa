@@ -2,6 +2,7 @@
     "DailyDispatchStart": {
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "DailyDispatchOpenDrawerFromMain",
             "DailyDispatchScanOverview",
             "[JumpBack]DailyDispatchCloseReturnPopup",
@@ -61,15 +62,6 @@
             "param": {
                 "target": true
             }
-        },
-        "post_wait_freezes": {
-            "time": 1000,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
         },
         "next": [
             "DailyDispatchScanOverview"
