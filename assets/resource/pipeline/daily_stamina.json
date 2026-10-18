@@ -2,6 +2,7 @@
     "DailyStaminaStart": {
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "DailyStaminaOpenExpeditionFromMain",
             "[JumpBack]CommonEnsureMain"
         ],
@@ -917,7 +918,6 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "DailyStaminaConfirmPotionUse",
             "DailyStaminaCloseStaminaPurchasePopupAfterRefill",
             "DailyStaminaSkipSweepAnimationLower",
             "DailyStaminaSkipSweepAnimationUpper",
@@ -1018,45 +1018,6 @@
             "DailyStaminaReturnMainFromStageDetail"
         ],
         "timeout": 12000
-    },
-    "DailyStaminaConfirmPotionUse": {
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    "StaminaPurchasePopupCancel",
-                    "StaminaPurchasePopupConfirm"
-                ],
-                "box_index": 1
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true
-            }
-        },
-        "post_wait_freezes": {
-            "time": 700,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "[JumpBack]CommonWaitLoading",
-            "DailyStaminaCloseStaminaPurchasePopupAfterRefill",
-            "DailyStaminaSkipSweepAnimationLower",
-            "DailyStaminaSkipSweepAnimationUpper",
-            "DailyStaminaFinishSweepResult",
-            "DailyStaminaStartSweep",
-            "DailyStaminaSweepDialog",
-            "DailyStaminaOpenSweep",
-            "DailyStaminaStageDetailInitialDecision"
-        ],
-        "pre_wait_freezes": 300
     },
     "DailyStaminaSelectPotionTab": {
         "enabled": false,
