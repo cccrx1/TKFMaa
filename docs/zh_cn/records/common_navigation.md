@@ -159,3 +159,17 @@
   任务 `200000101` 成功、30 次稳定等待全部成功、0 次超时，耗时 19.5 秒。
 - 相关探针与 Override：MaaMCP `pipelines/tkfmaa-probe-20260913-freeze/`（`probe_regions.json`、
   `probe_regions2.json`、`override_prod3s.json` 等），均不参与发布。
+
+### 2026-10-18 召唤页返回目标确认
+
+- 客户端 2.3.0、MuMuPlayer v5+、720×1280、TKFMaa v1.0.5-beta.1 / MFAAvalonia 2.16.2、MaaFramework 5.14.3。
+- 前端征才基线触发公共召唤返回，点击后全屏稳定等待约 20.3 秒超时。移除该等待并连接加载、礼包与主界面候选，保留点击前 300 毫秒稳定等待。
+- 优化征才复测实际触发公共召唤返回，并在约 0.7 秒后命中 `CommonMainReady`，随后重新进入征才并完整成功。未覆盖该节点的礼包或慢加载分支。
+- 从调教上限提示恢复时，公共奖励关闭与调教房间列表返回仍各出现约 20 秒全屏稳定等待；这两个节点在该阶段尚未修改；后续补充优化与覆盖见下节。
+
+### 2026-10-18 公共奖励、列表返回与礼包后续回归
+
+- 同日客户端 2.3.0、MuMuPlayer v5+ / 720×1280，完整包 MFAAvalonia 2.16.2 / MaaFramework 5.14.3。公共奖励关闭改为只等确认区域稳定，调教列表返回只等返回箭头区域稳定，并移除两者动作后全屏等待。
+- 10:14 九项队列中公共奖励关闭在炼金交付中多次执行，任务约 27.7 秒成功，没有稳定等待失败。10:24 从真实调教房间列表启动体力任务，`CommonReturnMainFromTrainingRoomList` 于 10:24:25.247 执行动作，10:24:25.867 命中 `CommonMainReady`，约 0.62 秒完成衔接，随后体力业务继续。尚未覆盖列表返回三次全部失效或真实慢加载。
+- 各业务入口补充礼包优先候选，商城增加入口重试后，10:14 队列实际关闭迟到礼包并继续完成商城。较早 10:00 队列的商城失败及截图仅作问题证据，不计为通过。
+- 10:07 曾尝试在 And 引用节点上添加顶层 inverse，导致主界面识别失败，10:10 人工停止；已完整撤销该尝试及临时节点。核对 5.14.3 `Recognizer::and_` 源码：子节点读取 reco_type/reco_param 后直接调用 recognize，未应用子节点顶层 inverse。该结论仅针对 And 引用，不扩大为 inverse 全局失效。[官方源码](https://github.com/MaaXYZ/MaaFramework/blob/v5.14.3/source/MaaFramework/Task/Component/Recognizer.cpp)。

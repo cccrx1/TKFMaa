@@ -210,16 +210,13 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 700,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonMainReady"
+        ],
+        "timeout": 10000
     },
     "CommonReturnMainFromTrainingDetail": {
         "recognition": {
@@ -266,14 +263,14 @@
                     "稀有度",
                     "等级",
                     "必杀技Lv",
-                    "HP",
-                    "ATK",
                     "进化",
                     "潜力Lv",
                     "调教房间",
                     "必杀技CD",
                     "CLEAR",
-                    "NEXT"
+                    "NEXT",
+                    "入手顺序",
+                    "图鉴顺序"
                 ],
                 "roi": [
                     60,
@@ -292,16 +289,26 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 700,
+        "pre_wait_freezes": {
+            "time": 300,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                15,
+                52,
+                85,
+                44
+            ],
+            "timeout": 1500
         },
-        "pre_wait_freezes": 300
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonMainReady"
+        ],
+        "max_hit": 3,
+        "timeout": 1500,
+        "on_error": [
+            "CommonReturnMainFromTrainingRoomList"
+        ]
     },
     "CommonReturnMainFromDispatchOverview": {
         "recognition": {

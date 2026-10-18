@@ -47,8 +47,7 @@
             "type": "And",
             "param": {
                 "all_of": [
-                    "__CommonMainExpeditionButton",
-                    "__CommonMainTrainingButton"
+                    "CommonMainReady"
                 ]
             }
         },
@@ -108,8 +107,7 @@
             "type": "And",
             "param": {
                 "all_of": [
-                    "__CommonMainExpeditionButton",
-                    "__CommonMainTrainingButton"
+                    "CommonMainReady"
                 ]
             }
         },
@@ -166,16 +164,16 @@
                 "target": true
             }
         },
-        "post_wait_freezes": {
-            "time": 500,
+        "pre_wait_freezes": {
+            "time": 300,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "pre_wait_freezes": 300
+                300,
+                700,
+                120,
+                80
+            ],
+            "timeout": 1500
+        }
     },
     "__CommonGiftTabs": {
         "recognition": {
