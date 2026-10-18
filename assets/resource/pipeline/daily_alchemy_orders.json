@@ -2,6 +2,7 @@
     "DailyAlchemyOrdersStart": {
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "DailyAlchemyOrdersOpenDrawer",
             "[JumpBack]CommonCloseReward",
             "[JumpBack]CommonEnsureMain"
