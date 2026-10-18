@@ -2,6 +2,9 @@
     "DailyTrainingStart": {
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
+            "DailyTrainingCloseStoryPrompt",
+            "DailyTrainingCloseLimitPrompt",
             "DailyTrainingOpenFromMain",
             "DailyTrainingDoneNoCount",
             "[JumpBack]CommonEnsureMain"
@@ -390,6 +393,8 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "DailyTrainingCloseStoryPrompt",
+            "DailyTrainingCloseLimitPrompt",
             "DailyTrainingCloseEnergyPrompt",
             "DailyTrainingCloseShortagePopup",
             "CommonStopOnMain",
@@ -405,7 +410,6 @@
             "type": "OCR",
             "param": {
                 "expected": [
-                    "提示",
                     "调教点不足",
                     "禁忌果实",
                     "补充能量",
@@ -451,8 +455,7 @@
                 "expected": [
                     "道具不足",
                     "点数不足",
-                    "购买",
-                    "取消"
+                    "购买"
                 ],
                 "roi": [
                     130,
@@ -513,6 +516,8 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "DailyTrainingCloseStoryPrompt",
+            "DailyTrainingCloseLimitPrompt",
             "[JumpBack]CommonCloseMainGift",
             "CommonStopOnMainObserve",
             "DailyTrainingReturnMainFromRoomList"
@@ -559,6 +564,8 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "DailyTrainingCloseStoryPrompt",
+            "DailyTrainingCloseLimitPrompt",
             "[JumpBack]CommonCloseMainGift",
             "CommonStopOnMainObserve",
             "DailyTrainingReturnMainFromRoomList"
@@ -587,8 +594,6 @@
                     "稀有度",
                     "等级",
                     "必杀技Lv",
-                    "HP",
-                    "ATK",
                     "进化",
                     "潜力Lv",
                     "调教房间",
@@ -646,6 +651,8 @@
     "DailyTrainingDone": {
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "DailyTrainingCloseStoryPrompt",
+            "DailyTrainingCloseLimitPrompt",
             "[JumpBack]CommonCloseMainGift",
             "CommonStopOnMainObserve"
         ],
@@ -775,6 +782,8 @@
             ]
         },
         "next": [
+            "DailyTrainingCloseStoryPrompt",
+            "DailyTrainingCloseLimitPrompt",
             "DailyTrainingCloseEnergyPrompt",
             "DailyTrainingCloseShortagePopup",
             "CommonStopOnMain",
@@ -824,16 +833,7 @@
         "next": [
             "DailyTrainingClickCenterStart"
         ],
-        "pre_wait_freezes": 300,
-        "post_wait_freezes": {
-            "time": 350,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        }
+        "pre_wait_freezes": 300
     },
     "DailyTrainingCloseFilterAfterFailure": {
         "recognition": {
@@ -864,5 +864,145 @@
             "DailyTrainingReturnMainFromRoomList"
         ],
         "max_hit": 1
+    },
+    "DailyTrainingCloseStoryPrompt": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyTrainingStoryPromptText",
+                    "__DailyTrainingStoryCancel"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "pre_wait_freezes": {
+            "time": 300,
+            "target": [
+                110,
+                555,
+                500,
+                220
+            ],
+            "timeout": 1500
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyTrainingCloseLimitPrompt",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonStopOnMainObserve",
+            "DailyTrainingReturnRoomListFromDetail",
+            "DailyTrainingReturnMainFromRoomList"
+        ],
+        "timeout": 5000,
+        "max_hit": 3
+    },
+    "__DailyTrainingStoryPromptText": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    110,
+                    555,
+                    500,
+                    145
+                ],
+                "expected": [
+                    "随时观看剧情"
+                ]
+            }
+        }
+    },
+    "__DailyTrainingStoryCancel": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    175,
+                    695,
+                    110,
+                    85
+                ],
+                "expected": [
+                    "取消"
+                ]
+            }
+        }
+    },
+    "DailyTrainingCloseLimitPrompt": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyTrainingLimitPromptText",
+                    "__DailyTrainingLimitConfirm"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "pre_wait_freezes": {
+            "time": 300,
+            "target": [
+                110,
+                575,
+                500,
+                195
+            ],
+            "timeout": 1500
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyTrainingCloseStoryPrompt",
+            "[JumpBack]CommonCloseMainGift",
+            "CommonStopOnMainObserve",
+            "DailyTrainingReturnRoomListFromDetail",
+            "DailyTrainingReturnMainFromRoomList"
+        ],
+        "timeout": 5000,
+        "max_hit": 3
+    },
+    "__DailyTrainingLimitPromptText": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    110,
+                    575,
+                    500,
+                    100
+                ],
+                "expected": [
+                    "已达到调教上限"
+                ]
+            }
+        }
+    },
+    "__DailyTrainingLimitConfirm": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    305,
+                    680,
+                    110,
+                    85
+                ],
+                "expected": [
+                    "确定"
+                ]
+            }
+        }
     }
 }
