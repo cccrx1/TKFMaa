@@ -2,6 +2,7 @@
     "DailyTaskRewardsStart": {
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "DailyTaskRewardsOpenFromMain",
             "[JumpBack]CommonEnsureMain"
         ],
