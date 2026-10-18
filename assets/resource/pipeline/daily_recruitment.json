@@ -2,6 +2,7 @@
     "DailyRecruitmentStart": {
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "[JumpBack]CommonCloseMainGift",
             "[JumpBack]CommonCloseReward",
             "[JumpBack]DailyRecruitmentCollectSkip",
             "[JumpBack]DailyRecruitmentCollectClose",
@@ -76,15 +77,6 @@
             "param": {
                 "target": true
             }
-        },
-        "post_wait_freezes": {
-            "time": 700,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
@@ -235,7 +227,7 @@
                     80
                 ],
                 "expected": [
-                    "鍏ㄥ寰佹墠"
+                    "全境征才"
                 ]
             }
         },
