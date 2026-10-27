@@ -1,6 +1,6 @@
 # Pull Request
 
-提交前请阅读 [PR 规范](../docs/zh_cn/develop/pull_request_guidelines.md)。
+提交前请阅读 [仓库协作规范](../AGENTS.md)。
 
 ## 关联 Issue
 
@@ -14,7 +14,7 @@
 
 <!-- 请写清楚执行了什么验证、结果如何。不要只写“已测试”。 -->
 
-- [ ] 我已阅读并遵守 [PR 规范](../docs/zh_cn/develop/pull_request_guidelines.md)
+- [ ] 我已阅读并遵守仓库协作规范，注明已验证和未覆盖的路径
 
 ## 截图 / 日志 / 说明
 

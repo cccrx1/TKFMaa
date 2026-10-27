@@ -4,6 +4,12 @@
 
 本仓库是基于 MaaFramework 的自动化助手。Python 自定义动作逻辑位于 `agent/`，其中 `agent/main.py` 负责注册处理器并启动 Maa Agent 服务。声明式自动化流程位于 `assets/resource/pipeline/`，识别模板应放入 `assets/resource/image/` 下对应的功能目录。面向用户的任务与选项在 `assets/interface.json` 中声明。通用 OCR 模型来自 MaaCommonAssets；当前提交仅保留 `.gitmodules` 声明、缺少 gitlink，模型来源由 `tools/ocr_model.json` 固定，通过 `tools/configure.py --download` 恢复，详情见开发环境文档。构建、Schema 校验和数据生成脚本位于 `tools/`，贡献者文档位于 `docs/zh_cn/develop/`，统一任务流程位于 `docs/zh_cn/tasks/`，实机验证与调试记录位于 `docs/zh_cn/records/`。公开文档总入口为 `docs/zh_cn/README.md`。目前没有独立的单元测试目录。
 
+## 公开内容与本地资料
+
+Git 跟踪运行代码、资源、构建与校验工具、功能流程说明和协作规则。`docs/zh_cn/develop/`、`docs/zh_cn/records/` 与 `tools/test_*.py` 仅保留在维护者本地，由 `.gitignore` 排除；不要强制暂存这些路径。本文引用的开发说明和验证记录属于可选本地资料，新检出不存在时以当前源码、本文规则及官方文档为准。
+
+修改功能后仍须同步本地开发资料与实机记录，但不将其纳入提交。公开文档不得链接仅本地保存的资料。单元测试在具备本地测试文件的环境中运行 `python -m unittest discover -s tools -p 'test_*.py'`；远端 CI 保留资源、Schema、生成配置、交互稳定性、运行环境和 Agent 注册检查，不执行本地单元测试。
+
 ## Python 版本基线
 
 本项目开发与发布统一使用 Python 3.12；`tools/requirements.txt` 中的 `maafw` 版本必须与 CI 的 `MAAFW_VERSION` 以及插件使用的 MaaFramework native runtime 保持一致。当前评估并切换到 MaaFramework 5.14.3 与 MFAAvalonia 2.16.2，升级后仍须完成本地资源校验和实机回归。Python 3.14 可用于其他项目，但不作为本项目首选验证环境。

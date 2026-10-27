@@ -77,5 +77,4 @@ jobs:
       - name: Check Agent registration
         run: python -c "import sys; sys.path.insert(0, 'agent'); import main; print('Agent imports OK')"
 
-      - name: Test tooling and custom actions
-        run: python -m unittest discover -s tools -p 'test_*.py'
+      # Unit tests are maintained locally and are not included in this checkout.

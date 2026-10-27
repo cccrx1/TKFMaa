@@ -3,18 +3,11 @@
 ## 快速入口
 
 - [功能流程总览](tasks/README.md)：按功能查看流程图、选项、限制和实现映射。
-- [验证与调试记录](records/README.md)：按任务查看实机验证、调试结论和覆盖状态。
-- [项目开发指南](develop/project_guide.md)：了解项目结构、开发步骤、检查命令和 AI 协作方式。
-- [开发环境](develop/development_environment.md)：Python 虚拟环境、插件版本与本地检查。
-- [Maa 技能与工具流程](develop/maa_workflow.md)：新版技能路由、MCP/CLI 分工和验收顺序。
-- [稳定性优化路线](develop/optimization_roadmap.md)：按五个阶段固定依赖、调试和任务流程。
-- [自动化策略](develop/automation_policy.md)：了解资源风险、默认行为和安全边界。
-- [体力活动配置](develop/stamina_activity_config.md)：维护体力活动和 Interface 生成配置。
-- [常见问题](develop/faq.md)
+- [安装与使用](../../README.md)：查看下载方式、设备要求和功能介绍。
 
 ## 文档约定
 
 任务文档是功能行为的唯一说明入口，同时服务于用户、贡献者和 AI。流程图表达页面状态和决策，表格补充选项、识别依据和实现位置。未明确写出的行为不得根据推测实现。
 
-任务文档只描述流程、识别依据、选项和实现约束；实机验证、调试结论和覆盖状态按任务记入
-[验证与调试记录](records/README.md)，不要把日期、设备和实测数值写回任务文档。
+任务文档只描述流程、识别依据、选项和实现约束，不代表所有分支均已完成实机验证。
+开发说明、测试脚本及实机调试记录保留在维护者本地，不纳入公开目录。

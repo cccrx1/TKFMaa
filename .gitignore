@@ -462,3 +462,8 @@ tmp
 # Local Maa skill context and downloaded OCR models
 /basic_info.md
 /assets/resource/model/
+
+# Local tests, development notes and device validation records
+/tools/test_*.py
+/docs/zh_cn/develop/
+/docs/zh_cn/records/

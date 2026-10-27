@@ -12,7 +12,7 @@
   常规活动 UI 还要继续区分普通纵向关卡列表和常规活动分页关卡列表，两者的目标扫描与翻页方式不同。
 - 复刻活动使用二维地图路线；大型活动按真实内部 UI 分为“关卡图标页”和“直接关卡页”两条入口。两条大型活动路线动作与进入后的页面不同，不合并为同一状态链。
 
-活动更新时在 `assets/stamina/active.yaml` 的 `activity_groups` 中维护活动级名称与 marker，并在 `cases` 中填写各关卡差异；跨活动复用的 UI 路线保留在 `templates`。具体字段、四类 UI 示例和更新步骤见 [`../develop/stamina_activity_config.md`](../develop/stamina_activity_config.md)。随后运行 `python tools/build_stamina_activities.py` 生成 `assets/interface.json` 中的活动 Case，不要直接编辑生成字段。提交前使用 `python tools/build_stamina_activities.py --check` 确认源配置与派生产物同步；脚本通过只代表配置一致，新增或变化的活动路线仍须在模拟器中验证。
+活动更新时在 `assets/stamina/active.yaml` 的 `activity_groups` 中维护活动级名称与 marker，并在 `cases` 中填写各关卡差异；跨活动复用的 UI 路线保留在 `templates`。随后运行 `python tools/build_stamina_activities.py` 生成 `assets/interface.json` 中的活动 Case，不要直接编辑生成字段。提交前使用 `python tools/build_stamina_activities.py --check` 确认源配置与派生产物同步；脚本通过只代表配置一致，新增或变化的活动路线仍须在模拟器中验证。
 
 当前活动“Trick or Sweet”使用常规分页列表路线。活动卡名称使用 `^Trick or Sweet$` 完整匹配，避免误进入附加的 `Hard Mode-Trick or Sweet`。当前启用 Case 为第一页六个 `-01` 关卡；第二页关卡不在指定关卡 Case 中。自动通关任务已从 Interface 撤下，不能通过本任务文案推断自动通关已启用。
 

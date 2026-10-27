@@ -2,8 +2,7 @@
 
 入口节点：`AutoBattleStart`；主要实现：`assets/resource/pipeline/regular_activity.json`。
 当前已从 Interface 取消注册，用户任务列表不提供“自动战斗”；以下流程保留供后续优化与测试参考。
-本文描述按 `NEW` 推进未通关关卡的自动通关流程。指定关卡的扫荡与手动补刷见[消耗体力](daily_stamina.md)，
-实机覆盖状态见[自动战斗验证记录](../records/auto_battle.md)。
+本文描述按 `NEW` 推进未通关关卡的自动通关流程。指定关卡的扫荡与手动补刷见[消耗体力](daily_stamina.md)。
 
 ## 前置状态与选项
 
@@ -76,8 +75,7 @@ Loading、奖励弹窗和剧情仅在相应分发节点的 `next` 中处理，�
 - 点击结算“返回地图”或“返回”后进入 `RegularActivityConsumedState`，通过
   `RegularActivityLowDecision` 锚点转入已消费判断，再继续列表扫描。
 - 独立任务默认不使用药水或购买体力。旧生成模式及消耗体力选项仍有对 `RegularActivity*` 的 Override，
-  属于兼容配置；其存在不等于 `AutoBattleStart` 已注册这些选项。兼容模式说明见
-  [体力活动配置维护指南](../develop/stamina_activity_config.md#旧自动通关模式的兼容边界)。
+  属于兼容配置；其存在不等于 `AutoBattleStart` 已注册这些选项。
 
 ## 识别与实现映射
 
