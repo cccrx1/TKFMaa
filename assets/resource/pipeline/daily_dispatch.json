@@ -36,8 +36,7 @@
     "DailyDispatchEnterFromDrawer": {
         "next": [
             "DailyDispatchClickActionableDrawerSlot",
-            "DailyDispatchOpenBusyDrawerSlot",
-            "DailyDispatchCloseDrawerDone"
+            "DailyDispatchOpenBusyDrawerSlot"
         ],
         "timeout": 5000
     },
@@ -176,13 +175,9 @@
             "[JumpBack]CommonWaitLoading",
             "DailyDispatchOpenCompletedSlot",
             "DailyDispatchOpenIdleSlot",
-            "DailyDispatchReturnMainWhenAllBusy"
+            "DailyDispatchVerifyComplete"
         ],
-        "timeout": 6000,
-        "on_error": [
-            "DailyDispatchReturnMainAfterOverviewTimeout",
-            "DailyDispatchStopAfterOverviewTimeout"
-        ]
+        "timeout": 6000
     },
     "DailyDispatchOpenCompletedSlot": {
         "recognition": {
@@ -1640,8 +1635,7 @@
             }
         },
         "next": [
-            "DailyDispatchScanOverview",
-            "DailyDispatchDone"
+            "DailyDispatchScanOverview"
         ],
         "pre_wait_freezes": 300,
         "max_hit": 1
@@ -1652,7 +1646,9 @@
             "param": {
                 "all_of": [
                     "__DailyDispatchOverviewTitle",
-                    "__DailyDispatchOverviewBusySlot"
+                    "__DailyDispatchSlot1Busy",
+                    "__DailyDispatchSlot2Busy",
+                    "__DailyDispatchSlot3Busy"
                 ]
             }
         },
@@ -1668,7 +1664,8 @@
         "next": [
             "DailyDispatchDone"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "max_hit": 3
     },
     "DailyDispatchReturnMainAfterOverviewTimeout": {
         "recognition": {
@@ -1781,5 +1778,76 @@
                 ]
             }
         }
+    },
+    "__DailyDispatchSlot1Busy": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地城派遣中"
+                ],
+                "roi": [
+                    150,
+                    870,
+                    200,
+                    75
+                ]
+            }
+        }
+    },
+    "__DailyDispatchSlot2Busy": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地城派遣中"
+                ],
+                "roi": [
+                    150,
+                    1000,
+                    200,
+                    75
+                ]
+            }
+        }
+    },
+    "__DailyDispatchSlot3Busy": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "地城派遣中"
+                ],
+                "roi": [
+                    150,
+                    1130,
+                    200,
+                    75
+                ]
+            }
+        }
+    },
+    "DailyDispatchVerifyComplete": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyDispatchOverviewTitle",
+                    "__DailyDispatchSlot1Busy",
+                    "__DailyDispatchSlot2Busy",
+                    "__DailyDispatchSlot3Busy"
+                ]
+            }
+        },
+        "post_delay": 500,
+        "next": [
+            "[JumpBack]DailyDispatchCloseReturnPopup",
+            "[JumpBack]CommonWaitLoading",
+            "DailyDispatchOpenCompletedSlot",
+            "DailyDispatchOpenIdleSlot",
+            "DailyDispatchReturnMainWhenAllBusy"
+        ],
+        "timeout": 6000,
+        "max_hit": 3
     }
 }
