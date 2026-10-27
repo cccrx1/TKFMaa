@@ -263,17 +263,9 @@
     },
     "DailyRecruitmentOverviewComplete": {
         "recognition": {
-            "type": "OCR",
+            "type": "Custom",
             "param": {
-                "roi": [
-                    80,
-                    90,
-                    160,
-                    80
-                ],
-                "expected": [
-                    "全境征才"
-                ]
+                "custom_recognition": "DailyRecruitOverviewComplete"
             }
         },
         "next": [
@@ -2062,6 +2054,78 @@
         },
         "action": {
             "type": "DoNothing"
+        }
+    },
+    "__DailyRecruitmentSlot1Occupied": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    150,
+                    250,
+                    430,
+                    100
+                ],
+                "expected": [
+                    "停止招募",
+                    "紧急征召",
+                    "立即招募"
+                ]
+            }
+        }
+    },
+    "__DailyRecruitmentSlot2Occupied": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    150,
+                    460,
+                    430,
+                    100
+                ],
+                "expected": [
+                    "停止招募",
+                    "紧急征召",
+                    "立即招募"
+                ]
+            }
+        }
+    },
+    "__DailyRecruitmentSlot3Occupied": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    150,
+                    670,
+                    430,
+                    100
+                ],
+                "expected": [
+                    "停止招募",
+                    "紧急征召",
+                    "立即招募"
+                ]
+            }
+        }
+    },
+    "__DailyRecruitmentSlot4Occupied": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    150,
+                    880,
+                    430,
+                    100
+                ],
+                "expected": [
+                    "停止招募",
+                    "紧急征召",
+                    "立即招募"
+                ]
+            }
         }
     }
 }

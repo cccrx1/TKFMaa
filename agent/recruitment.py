@@ -89,6 +89,10 @@ RECRUITMENT_POOL = [
 KNOWN_TAGS = sorted({tag for item in RECRUITMENT_POOL for tag in item["tags"]}, key=len, reverse=True)
 
 _CYCLE_HIT_COUNT_NODES = (
+    "DailyRecruitmentSlot1SkipLeader",
+    "DailyRecruitmentSlot2SkipLeader",
+    "DailyRecruitmentSlot3SkipLeader",
+    "DailyRecruitmentSlot4SkipLeader",
     "DailyRecruitmentSlot1Open",
     "DailyRecruitmentSlot1Refresh",
     "DailyRecruitmentSlot1RecruitGuaranteed",
@@ -292,6 +296,27 @@ class DailyRecruitmentResetCycle(CustomAction):
         if clear_hit_count is None:
             return False
         return all(clear_hit_count(node_name) for node_name in _CYCLE_HIT_COUNT_NODES)
+
+
+@AgentServer.custom_recognition("DailyRecruitOverviewComplete")
+class DailyRecruitOverviewComplete(CustomRecognition):
+    def analyze(self, context, argv):
+        title = context.run_recognition("__DailyRecruitmentOverviewTitle", argv.image)
+        if not title or not title.hit:
+            return CustomRecognition.AnalyzeResult(box=None, detail={"reason": "not_overview"})
+
+        states = []
+        for slot in range(1, 5):
+            if context.get_hit_count(f"DailyRecruitmentSlot{slot}SkipLeader") > 0:
+                states.append("skipped_leader")
+                continue
+            occupied = context.run_recognition(f"__DailyRecruitmentSlot{slot}Occupied", argv.image)
+            states.append("recruiting" if occupied and occupied.hit else "unconfirmed")
+        complete = "unconfirmed" not in states
+        return CustomRecognition.AnalyzeResult(
+            box=(80, 90, 160, 80) if complete else None,
+            detail={"slots": states, "complete": complete},
+        )
 
 
 @AgentServer.custom_recognition("DailyRecruitDecision")
