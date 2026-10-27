@@ -110,3 +110,70 @@ activity_groups:
           expected: ["捣蛋-01", "捣蛋01"]
         stamina:
           cost: 45
+
+  halloween_deer_rerun:
+    case_prefix: "万圣鹿娘大横行！"
+    description_template: "复刻活动二维地图：选择 {activity}，进入{stage}并扫荡。"
+    base:
+      template: rerun_activity_map
+      activity_name:
+        expected: ["万圣鹿娘大横行！"]
+        roi: [70, 770, 580, 80]
+      rerun:
+        marker:
+          expected: ["Story", "Free Quest"]
+          roi: [0, 160, 720, 1000]
+        column: left
+      stamina:
+        cost: 30
+    cases:
+      - case_suffix: "关卡-1"
+        stage:
+          expected: ["关卡-1"]
+      - case_suffix: "关卡-2"
+        stage:
+          expected: ["关卡-2"]
+      - case_suffix: "关卡-3"
+        stage:
+          expected: ["关卡-3"]
+      - case_suffix: "关卡-4"
+        stage:
+          expected: ["关卡-4"]
+      - case_suffix: "关卡-5"
+        stage:
+          expected: ["关卡-5"]
+      - case_suffix: "陷阱-1"
+        rerun:
+          column: right
+        stage:
+          expected: ["陷阱-1"]
+        stamina:
+          cost: 50
+      - case_suffix: "陷阱-2"
+        rerun:
+          column: right
+        stage:
+          expected: ["陷阱-2"]
+        stamina:
+          cost: 50
+      - case_suffix: "陷阱-3"
+        rerun:
+          column: right
+        stage:
+          expected: ["陷阱-3"]
+        stamina:
+          cost: 50
+      - case_suffix: "陷阱-4"
+        rerun:
+          column: right
+        stage:
+          expected: ["陷阱-4"]
+        stamina:
+          cost: 50
+      - case_suffix: "陷阱-5"
+        rerun:
+          column: right
+        stage:
+          expected: ["陷阱-5"]
+        stamina:
+          cost: 50
