@@ -385,21 +385,15 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 900,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "DailyDispatchReturnOverviewFromBusySelection",
             "DailyDispatchScanOverview"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 8000,
+        "on_error": [
+            "DailyDispatchReturnOverviewFromBusySelection"
+        ]
     },
     "__DailyDispatchStartButton": {
         "recognition": {
@@ -1628,19 +1622,11 @@
     },
     "DailyDispatchReturnOverviewFromBusySelection": {
         "recognition": {
-            "type": "OCR",
+            "type": "And",
             "param": {
-                "expected": [
-                    "派遣中",
-                    "正在派遣中",
-                    "地城派遣中",
-                    "请选择房间"
-                ],
-                "roi": [
-                    80,
-                    430,
-                    560,
-                    470
+                "all_of": [
+                    "__DailyDispatchBusySelectionStatus",
+                    "__DailyDispatchSelectionBonus"
                 ]
             }
         },
@@ -1653,19 +1639,12 @@
                 ]
             }
         },
-        "post_wait_freezes": {
-            "time": 800,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "next": [
-            "DailyDispatchScanOverview"
+            "DailyDispatchScanOverview",
+            "DailyDispatchDone"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "max_hit": 1
     },
     "DailyDispatchReturnMainWhenAllBusy": {
         "recognition": {
@@ -1769,5 +1748,38 @@
         "next": [
             "CommonStopOnMainWithRetries"
         ]
+    },
+    "__DailyDispatchBusySelectionStatus": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "正在派遣中"
+                ],
+                "roi": [
+                    250,
+                    500,
+                    220,
+                    230
+                ]
+            }
+        }
+    },
+    "__DailyDispatchSelectionBonus": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "Bonus奖励条件",
+                    "Bonus獎勵條件"
+                ],
+                "roi": [
+                    80,
+                    760,
+                    200,
+                    70
+                ]
+            }
+        }
     }
 }
