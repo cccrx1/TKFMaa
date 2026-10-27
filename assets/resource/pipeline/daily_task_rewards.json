@@ -266,12 +266,13 @@
     "DailyTaskRewardsClaimDaily": {
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "[JumpBack]DailyTaskRewardsCloseInventoryFullPopup",
+            "[JumpBack]DailyTaskRewardsCloseDailyInventoryFullPopup",
             "[JumpBack]DailyTaskRewardsCloseExpandedRewardPopup",
             "[JumpBack]DailyTaskRewardsCloseCompactRewardPopup",
             "[JumpBack]DailyTaskRewardsCloseClaimPopup",
             "DailyTaskRewardsClaimDailyAvailable",
             "DailyTaskRewardsVerifyDailyComplete",
+            "DailyTaskRewardsVerifyDailyInventorySkip",
             "DailyTaskRewardsSelectDaily"
         ],
         "timeout": 10000
@@ -851,12 +852,13 @@
         "post_delay": 500,
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "[JumpBack]DailyTaskRewardsCloseInventoryFullPopup",
+            "[JumpBack]DailyTaskRewardsCloseDailyInventoryFullPopup",
             "[JumpBack]DailyTaskRewardsCloseExpandedRewardPopup",
             "[JumpBack]DailyTaskRewardsCloseCompactRewardPopup",
             "[JumpBack]DailyTaskRewardsCloseClaimPopup",
             "DailyTaskRewardsClaimDailyAvailable",
             "DailyTaskRewardsDailyCompleteConfirmed",
+            "DailyTaskRewardsVerifyDailyInventorySkip",
             "DailyTaskRewardsSelectDaily"
         ],
         "timeout": 5000,
@@ -1296,5 +1298,96 @@
         "next": [
             "DailyTaskRewardsSelectDaily"
         ]
+    },
+    "DailyTaskRewardsCloseDailyInventoryFullPopup": {
+        "max_hit": 6,
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    100,
+                    560,
+                    520,
+                    100
+                ],
+                "expected": [
+                    "可领取的物品已超过堆叠上限，请至仓库确认"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    360,
+                    720
+                ]
+            }
+        },
+        "post_wait_freezes": {
+            "time": 500,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "pre_wait_freezes": 300
+    },
+    "__DailyTaskRewardsDailyPageReady": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "TaskCompletionGuard",
+                "custom_recognition_param": {
+                    "required": [
+                        "__DailyTaskRewardsPageTitle",
+                        "__DailyTaskRewardsDailySelected",
+                        "__DailyTaskRewardsOneClickClaimButton"
+                    ],
+                    "absent": [
+                        "__DailyTaskRewardsRewardPopup"
+                    ]
+                }
+            }
+        }
+    },
+    "DailyTaskRewardsVerifyDailyInventorySkip": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyTaskRewardsInventorySkip"
+            }
+        },
+        "post_delay": 500,
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]DailyTaskRewardsCloseDailyInventoryFullPopup",
+            "[JumpBack]DailyTaskRewardsCloseExpandedRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseCompactRewardPopup",
+            "[JumpBack]DailyTaskRewardsCloseClaimPopup",
+            "DailyTaskRewardsClaimDailyAvailable",
+            "DailyTaskRewardsDailyCompleteConfirmed",
+            "DailyTaskRewardsSkipDailyInventoryFull",
+            "DailyTaskRewardsSelectDaily"
+        ],
+        "timeout": 5000,
+        "max_hit": 4
+    },
+    "DailyTaskRewardsSkipDailyInventoryFull": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyTaskRewardsInventorySkip"
+            }
+        },
+        "focus": {
+            "Node.PipelineNode.Succeeded": "每日部分奖励因堆叠上限未领取，继续检查其他页签"
+        },
+        "next": [
+            "DailyTaskRewardsSelectWeekly"
+        ],
+        "max_hit": 2
     }
 }
