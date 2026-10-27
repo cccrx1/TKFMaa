@@ -113,7 +113,7 @@
             "[JumpBack]CommonCloseReward",
             "[JumpBack]CommonWaitLoading",
             "DailyAlchemyOrdersDeliverVisibleOrder",
-            "DailyAlchemyOrdersReturnMain"
+            "DailyAlchemyOrdersVerifyComplete"
         ],
         "timeout": 5000
     },
@@ -173,17 +173,20 @@
     },
     "DailyAlchemyOrdersReturnMain": {
         "recognition": {
-            "type": "OCR",
+            "type": "Custom",
             "param": {
-                "expected": [
-                    "炼金"
-                ],
-                "roi": [
-                    70,
-                    120,
-                    120,
-                    70
-                ]
+                "custom_recognition": "TaskCompletionGuard",
+                "custom_recognition_param": {
+                    "required": [
+                        "__DailyAlchemyOrdersTitle",
+                        "__DailyAlchemyOrdersCount",
+                        "__DailyAlchemyOrdersCollectButton"
+                    ],
+                    "absent": [
+                        "__DailyAlchemyOrdersDeliverable",
+                        "__DailyAlchemyOrdersRewardPopup"
+                    ]
+                }
             }
         },
         "action": {
@@ -220,5 +223,125 @@
         "on_error": [
             "DailyAlchemyOrdersReturnMain"
         ]
+    },
+    "__DailyAlchemyOrdersTitle": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "炼金"
+                ],
+                "roi": [
+                    70,
+                    120,
+                    120,
+                    70
+                ]
+            }
+        }
+    },
+    "__DailyAlchemyOrdersCount": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "订单\\s*[0-7]\\s*/\\s*7"
+                ],
+                "roi": [
+                    0,
+                    840,
+                    160,
+                    65
+                ]
+            }
+        }
+    },
+    "__DailyAlchemyOrdersCollectButton": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "一键收取",
+                    "键收取"
+                ],
+                "roi": [
+                    390,
+                    750,
+                    210,
+                    90
+                ]
+            }
+        }
+    },
+    "__DailyAlchemyOrdersDeliverable": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    25,
+                    940,
+                    670,
+                    70
+                ],
+                "method": 40,
+                "lower": [
+                    15,
+                    80,
+                    120
+                ],
+                "upper": [
+                    45,
+                    255,
+                    255
+                ],
+                "count": 120,
+                "connected": true,
+                "order_by": "Horizontal"
+            }
+        }
+    },
+    "__DailyAlchemyOrdersRewardPopup": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "获得奖励|奖励已增加至仓库"
+                ],
+                "roi": [
+                    200,
+                    400,
+                    330,
+                    410
+                ]
+            }
+        }
+    },
+    "DailyAlchemyOrdersVerifyComplete": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "TaskCompletionGuard",
+                "custom_recognition_param": {
+                    "required": [
+                        "__DailyAlchemyOrdersTitle",
+                        "__DailyAlchemyOrdersCount",
+                        "__DailyAlchemyOrdersCollectButton"
+                    ],
+                    "absent": [
+                        "__DailyAlchemyOrdersDeliverable",
+                        "__DailyAlchemyOrdersRewardPopup"
+                    ]
+                }
+            }
+        },
+        "post_delay": 500,
+        "next": [
+            "[JumpBack]CommonCloseReward",
+            "[JumpBack]CommonWaitLoading",
+            "DailyAlchemyOrdersDeliverVisibleOrder",
+            "DailyAlchemyOrdersReturnMain"
+        ],
+        "timeout": 5000,
+        "max_hit": 3
     }
 }
