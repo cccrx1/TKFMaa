@@ -165,11 +165,12 @@
             ]
         },
         "next": [
-            "[JumpBack]CommonCloseReward",
-            "DailyAlchemyOrdersScanOrder"
+            "[JumpBack]CommonWaitLoading",
+            "DailyAlchemyOrdersCloseDeliveryReward"
         ],
         "max_hit": 7,
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 8000
     },
     "DailyAlchemyOrdersReturnMain": {
         "recognition": {
@@ -343,5 +344,37 @@
         ],
         "timeout": 5000,
         "max_hit": 3
+    },
+    "DailyAlchemyOrdersCloseDeliveryReward": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyAlchemyOrdersRewardPopup",
+                    "CommonCloseReward"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "pre_wait_freezes": {
+            "time": 300,
+            "target": [
+                300,
+                700,
+                120,
+                80
+            ],
+            "timeout": 1500
+        },
+        "next": [
+            "DailyAlchemyOrdersScanOrder"
+        ],
+        "max_hit": 7
     }
 }

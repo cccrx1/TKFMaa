@@ -11,7 +11,7 @@
 
 1. 打开主界面左侧抽屉并进入炼金页面。
 2. 出现“一键收取”时领取已完成的炼金收益并关闭奖励弹窗。
-3. 扫描当前页面的可交付订单，逐项点击交付并关闭奖励弹窗。
+3. 扫描当前页面的可交付订单，每次交付后只等待加载与奖励响应，确认奖励正文和确认按钮后关闭弹窗，再扫描下一笔订单。
 4. 确认炼金标题、订单计数与收取按钮可见，且当前可见范围内无可交付标记、无奖励弹窗；间隔复查后再返回主界面。
 
 ```mermaid
@@ -29,7 +29,11 @@ flowchart TD
     Scan -->|正在加载| ScanWait[等待后复查]
     ScanWait --> Scan
     Scan -->|橙色可交付标记，未达 7 次上限| Deliver[点击对应订单交付位置]
-    Deliver --> Scan
+    Deliver --> Response{等待交付奖励响应，单次 8 秒}
+    Response -->|奖励正文和确认按钮均命中| DeliveryReward[关闭本次交付奖励]
+    DeliveryReward --> Scan
+    Response -->|正在加载| Response
+    Response -->|无响应或未知状态| Fail
     Scan -->|页面确认且无可交付订单和奖励弹窗| Verify[间隔后再检查]
     Verify -->|发现可交付目标且未达上限| Deliver
     Verify -->|两次检查均无目标| Back[点击返回]
@@ -63,7 +67,8 @@ flowchart TD
   所有必要识别均成功执行才可作出完成判断。识别未能执行不等同于没有目标。
 - `DailyAlchemyOrdersVerifyComplete` 与 `DailyAlchemyOrdersReturnMain` 分别检查一次，
   复查最多三次进入；交付仍共用原来的七次上限，不为复查重置计数。
-- 奖励弹窗统一由 `CommonCloseReward` 关闭后回到订单扫描。
+- 交付后不立即回到订单扫描：`DailyAlchemyOrdersCloseDeliveryReward` 同时确认奖励正文和确认按钮后点击关闭，再扫描订单。等待响应期间仅处理加载，每次候选识别最多等待 8 秒；没有响应时失败，不继续消耗七次交付额度。
+- 收益收取及扫描时出现的奖励仍由 `CommonCloseReward` 关闭。
 - 返回点击前保留 300 毫秒稳定等待，仅检查左上角返回箭头区域 `[15, 52, 85, 44]`，
   单次稳定等待上限 1500 毫秒，不检查动态角色或整屏；局部稳定不保证游戏已经接受点击。
 - `DailyAlchemyOrdersDone` 优先处理加载与礼包，识别主界面后进入公共观察与结束确认。
