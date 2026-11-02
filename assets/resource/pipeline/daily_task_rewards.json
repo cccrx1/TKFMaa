@@ -306,10 +306,11 @@
             ]
         },
         "next": [
-            "DailyTaskRewardsClaimDaily"
+            "DailyTaskRewardsWaitDailyClaimResponse"
         ],
         "max_hit": 3,
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 8000
     },
     "DailyTaskRewardsSelectWeekly": {
         "recognition": {
@@ -389,10 +390,11 @@
             ]
         },
         "next": [
-            "DailyTaskRewardsClaimWeekly"
+            "DailyTaskRewardsWaitWeeklyClaimResponse"
         ],
         "max_hit": 3,
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 8000
     },
     "DailyTaskRewardsSelectMonthly": {
         "recognition": {
@@ -472,10 +474,11 @@
             ]
         },
         "next": [
-            "DailyTaskRewardsClaimMonthly"
+            "DailyTaskRewardsWaitMonthlyClaimResponse"
         ],
         "max_hit": 3,
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 8000
     },
     "DailyTaskRewardsSelectPersonal": {
         "recognition": {
@@ -555,10 +558,11 @@
             ]
         },
         "next": [
-            "DailyTaskRewardsClaimPersonal"
+            "DailyTaskRewardsWaitPersonalClaimResponse"
         ],
         "max_hit": 3,
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 8000
     },
     "DailyTaskRewardsSelectActivity": {
         "recognition": {
@@ -638,10 +642,11 @@
             ]
         },
         "next": [
-            "DailyTaskRewardsClaimActivity"
+            "DailyTaskRewardsWaitActivityClaimResponse"
         ],
         "max_hit": 3,
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 8000
     },
     "DailyTaskRewardsSelectGuild": {
         "recognition": {
@@ -721,10 +726,11 @@
             ]
         },
         "next": [
-            "DailyTaskRewardsClaimGuild"
+            "DailyTaskRewardsWaitGuildClaimResponse"
         ],
         "max_hit": 3,
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 8000
     },
     "DailyTaskRewardsReturnMainFromTaskPage": {
         "recognition": {
@@ -1389,5 +1395,101 @@
             "DailyTaskRewardsSelectWeekly"
         ],
         "max_hit": 2
+    },
+    "DailyTaskRewardsWaitDailyClaimResponse": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "DailyTaskRewardsCloseDailyInventoryFullPopup",
+                    "DailyTaskRewardsCloseExpandedRewardPopup",
+                    "DailyTaskRewardsCloseCompactRewardPopup",
+                    "DailyTaskRewardsCloseClaimPopup"
+                ]
+            }
+        },
+        "next": [
+            "DailyTaskRewardsClaimDaily"
+        ]
+    },
+    "DailyTaskRewardsWaitWeeklyClaimResponse": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "DailyTaskRewardsCloseInventoryFullPopup",
+                    "DailyTaskRewardsCloseExpandedRewardPopup",
+                    "DailyTaskRewardsCloseCompactRewardPopup",
+                    "DailyTaskRewardsCloseClaimPopup"
+                ]
+            }
+        },
+        "next": [
+            "DailyTaskRewardsClaimWeekly"
+        ]
+    },
+    "DailyTaskRewardsWaitMonthlyClaimResponse": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "DailyTaskRewardsCloseInventoryFullPopup",
+                    "DailyTaskRewardsCloseExpandedRewardPopup",
+                    "DailyTaskRewardsCloseCompactRewardPopup",
+                    "DailyTaskRewardsCloseClaimPopup"
+                ]
+            }
+        },
+        "next": [
+            "DailyTaskRewardsClaimMonthly"
+        ]
+    },
+    "DailyTaskRewardsWaitPersonalClaimResponse": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "DailyTaskRewardsCloseInventoryFullPopup",
+                    "DailyTaskRewardsCloseExpandedRewardPopup",
+                    "DailyTaskRewardsCloseCompactRewardPopup",
+                    "DailyTaskRewardsCloseClaimPopup"
+                ]
+            }
+        },
+        "next": [
+            "DailyTaskRewardsClaimPersonal"
+        ]
+    },
+    "DailyTaskRewardsWaitActivityClaimResponse": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "DailyTaskRewardsCloseInventoryFullPopup",
+                    "DailyTaskRewardsCloseExpandedRewardPopup",
+                    "DailyTaskRewardsCloseCompactRewardPopup",
+                    "DailyTaskRewardsCloseClaimPopup"
+                ]
+            }
+        },
+        "next": [
+            "DailyTaskRewardsClaimActivity"
+        ]
+    },
+    "DailyTaskRewardsWaitGuildClaimResponse": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "DailyTaskRewardsCloseInventoryFullPopup",
+                    "DailyTaskRewardsCloseExpandedRewardPopup",
+                    "DailyTaskRewardsCloseCompactRewardPopup",
+                    "DailyTaskRewardsCloseClaimPopup"
+                ]
+            }
+        },
+        "next": [
+            "DailyTaskRewardsClaimGuild"
+        ]
     }
 }
