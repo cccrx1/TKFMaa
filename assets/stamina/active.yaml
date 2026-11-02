@@ -51,66 +51,6 @@ activities:
       cost: 4
 
 activity_groups:
-  trick_or_sweet:
-    case_prefix: "Trick or Sweet"
-    description_template: "限时活动外部路线 + 常规活动纵向关卡列表：选择 {activity}，进入关卡列表后寻找{stage}，刷取{stage}。"
-    base:
-      template: regular_paged_list
-      stamina:
-        cost: 30
-      activity_name:
-        expected: ["^Trick or Sweet$"]
-        roi: [70, 770, 580, 80]
-      stage:
-        any_selectable:
-          expected: ["Trick or Sweet", "活动挑战还有"]
-          roi: [0, 90, 720, 180]
-      extra_overrides:
-        DailyStaminaPresetFirstPageMarker:
-          enabled: true
-          recognition:
-            type: OCR
-            param:
-              expected:
-                [
-                  "研究-01",
-                  "研究01",
-                  "基金-01",
-                  "基金01",
-                  "法令-01",
-                  "法令01",
-                  "南瓜-01",
-                  "南瓜01",
-                  "糖果-01",
-                  "糖果01",
-                  "捣蛋-01",
-                  "捣蛋01",
-                ]
-              roi: [0, 160, 720, 1000]
-    cases:
-      - case_suffix: "研究-01"
-        stage:
-          expected: ["研究-01", "研究01"]
-        stamina:
-          cost: 25
-      - case_suffix: "基金-01"
-        stage:
-          expected: ["基金-01", "基金01"]
-      - case_suffix: "法令-01"
-        stage:
-          expected: ["法令-01", "法令01"]
-      - case_suffix: "南瓜-01"
-        stage:
-          expected: ["南瓜-01", "南瓜01"]
-      - case_suffix: "糖果-01"
-        stage:
-          expected: ["糖果-01", "糖果01"]
-      - case_suffix: "捣蛋-01"
-        stage:
-          expected: ["捣蛋-01", "捣蛋01"]
-        stamina:
-          cost: 45
-
   halloween_deer_rerun:
     case_prefix: "万圣鹿娘大横行！"
     description_template: "复刻活动二维地图：选择 {activity}，进入{stage}并扫荡。"

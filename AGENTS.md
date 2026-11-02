@@ -35,7 +35,7 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 
 ## 生成配置与派生产物
 
-`assets/stamina/active.yaml` 是“体力消耗关卡”选项的唯一源数据，`assets/interface.json` 中对应的 `default_case` 和 `cases` 由 `tools/build_stamina_activities.py` 生成，不应手工修改。修改 YAML，或修改生成脚本中会影响输出的模板、校验和 Override 逻辑后，必须运行生成命令，并将源文件、脚本改动和生成后的 `assets/interface.json` 放在同一提交中。
+`assets/stamina/active.yaml` 是“体力消耗关卡”选项的唯一源数据，`assets/interface.json` 中对应的选项键、任务选项引用、`default_case` 和 `cases` 由 `tools/build_stamina_activities.py` 生成，不应手工修改。选项键包含列表布局及有序关卡名称的摘要，列表增删或重排时使旧序号失效并默认选中第一个真实关卡；显示名称固定，不添加重选占位项或入口拦截。仅修正 ROI 等而关卡名称和顺序不变时不重置选择。修改 YAML，或修改生成脚本中会影响输出的模板、校验和 Override 逻辑后，必须运行生成命令，并将源文件、脚本改动和生成后的 `assets/interface.json` 放在同一提交中。
 
 同一活动包含多个关卡时使用 `activity_groups`：活动名称、页面 marker 和公共 Override 放入 `base`，各关卡差异放入 `cases`；`templates` 仅描述可跨活动复用的内部 UI 路线，不写具体活动名称。四类模板、字段要求和示例见 `docs/zh_cn/develop/stamina_activity_config.md`。
 
@@ -59,6 +59,7 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 
 - 新增任务或重构跨页面主流程前，必须先在模拟器中观察实际游戏流程，并在 `docs/zh_cn/tasks/` 建立流程记录。
 - 流程记录至少包含前置状态、页面流转、识别依据、异常分支和完成状态；不能只按需求描述推测界面行为。任务文档只描述流程与实现，实测结论写入 `docs/zh_cn/records/` 下的对应记录。
+- 任务文档保留跨活动通用路线和选项规则；当期活动名单、具体关卡编号、消耗数值及换期快照保存在本地 `docs/zh_cn/records/`。运行配置仍以 `assets/stamina/active.yaml` 等源数据为准，公开任务文档不链接仅本地保存的记录。
 - 局部识别或动作修复只需复现并验证受影响路径，可将截图、日志和结果记录在 Issue 或 PR 中；纯文档及非行为改动无需运行模拟器。
 - 涉及购买、资源消耗、账号操作等高风险行为时，合并前必须完成端到端实机验证。
 - 从其他项目或旧分支迁入的文档只能作为线索；必须核对本仓库路径、节点、选项和当前客户端，未经本项目复测的“已验证”记录统一标为待验证。

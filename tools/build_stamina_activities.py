@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import argparse
 import copy
+import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -444,7 +446,7 @@ def build_override(resolved):
 def build_cases(config):
     config = expand_activity_groups(config)
     validate_config(config)
-    return [
+    cases = [
         {
             "name": activity["name"],
             "description": activity.get("description", ""),
@@ -452,6 +454,44 @@ def build_cases(config):
         }
         for activity in config["activities"]
     ]
+    return cases
+
+
+def activity_option_key(cases):
+    """Invalidate saved positional choices only when the ordered stage identities change."""
+    # The layout version invalidates indices saved by the earlier placeholder layout.
+    names = json.dumps({"layout": "direct-stage-v1", "names": [case["name"] for case in cases]},
+                       ensure_ascii=False, separators=(",", ":"))
+    revision = hashlib.sha256(names.encode("utf-8")).hexdigest()[:12]
+    return f"{OPTION_NAME}@{revision}"
+
+
+def update_interface(interface, cases):
+    if not cases:
+        raise ValueError("At least one real stamina stage is required")
+    result = copy.deepcopy(interface)
+    pattern = re.compile(rf"{re.escape(OPTION_NAME)}(?:@[0-9a-f]{{12}})?")
+    keys = [key for key in result["option"] if pattern.fullmatch(key)]
+    if len(keys) != 1:
+        raise ValueError(f"Expected one generated {OPTION_NAME} option, got {keys}")
+    old_key = keys[0]
+    new_key = activity_option_key(cases)
+    option = copy.deepcopy(result["option"][old_key])
+    option.update(
+        label=OPTION_NAME,
+        description="活动关卡列表变化导致旧选择失效时，默认选择列表中的第一个关卡。",
+        default_case=cases[0]["name"],
+        cases=cases,
+    )
+    result["option"] = {
+        (new_key if key == old_key else key): (option if key == old_key else value)
+        for key, value in result["option"].items()
+    }
+    tasks = [task for task in result["task"] if task.get("entry") == "DailyStaminaStart"]
+    if len(tasks) != 1 or tasks[0].get("option", []).count(old_key) != 1:
+        raise ValueError("Stamina task must register exactly one generated stage selector")
+    tasks[0]["option"] = [new_key if key == old_key else key for key in tasks[0]["option"]]
+    return result
 
 
 def write_interface(interface_path, interface):
@@ -491,25 +531,17 @@ def main():
         return
 
     interface = load_jsonc(interface_path)
-    try:
-        option = interface["option"][OPTION_NAME]
-    except KeyError as exc:
-        raise SystemExit(f"missing option {OPTION_NAME} in {interface_path}") from exc
+    expected = update_interface(interface, cases)
 
     if args.check:
-        current = option.get("cases", [])
-        expected_default_case = cases[0]["name"] if cases else None
-        if current != cases or option.get("default_case") != expected_default_case:
+        if interface != expected:
             print(f"{interface_path} is not in sync with {source_path}", file=sys.stderr)
             print("Run: python tools/build_stamina_activities.py", file=sys.stderr)
             sys.exit(1)
         print(f"{interface_path} is in sync with {source_path}")
         return
 
-    option["cases"] = cases
-    if cases:
-        option["default_case"] = cases[0]["name"]
-    write_interface(interface_path, interface)
+    write_interface(interface_path, expected)
     print(f"Updated {interface_path} from {source_path}")
 
 
