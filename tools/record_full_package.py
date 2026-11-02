@@ -31,16 +31,19 @@ def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allo
     if packaged_resources != {name: digest(data) for name, data in expected.items()}:
         raise ValueError("Full package resources differ from source")
     site = stage / ("python/Lib/site-packages" if os_name == "win" else "python/lib/python3.12/site-packages")
-    inventory = {}
+    inventory, raw_versions = {}, {}
     for path in site.glob("*.dist-info/METADATA"):
         metadata = BytesParser().parsebytes(path.read_bytes(), headersonly=True)
         name = re.sub(r"[-_.]+", "-", metadata["Name"]).lower()
         if name in inventory:
             raise ValueError(f"Duplicate installed distribution: {name}")
-        inventory[name] = metadata["Version"]
+        raw_versions[name] = metadata["Version"]
+        # MaaFw 5.14.3 wheels declare "v5.14.3" in METADATA; preserve the raw
+        # spelling while comparing the exact version without its optional v prefix.
+        inventory[name] = re.sub(r"^[vV](?=\d)", "", metadata["Version"].strip())
     for name, required in policy["dependencies"].items():
         if inventory.get(name) != required:
-            raise ValueError(f"Bundled dependency differs: {name}")
+            raise ValueError(f"Bundled dependency differs: {name}: {inventory.get(name)!r} != {required!r}")
     executable = "python/python.exe" if os_name == "win" else "python/bin/python3"
     if executable not in files or not any(name.startswith(f"runtimes/{platform}/native/") for name in files):
         raise ValueError("Missing packaged Python or native runtime")
@@ -48,7 +51,7 @@ def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allo
         raise ValueError("Missing frontend")
     value = {"schema_version": 1, "kind": "full", "version": version, "platform": platform,
              "source": source, "baseline": policy, "update_source": update_source,
-             "installed_distributions": inventory, "files": files,
+             "installed_distributions": inventory, "distribution_metadata_versions": raw_versions, "files": files,
              "runtime_evidence": "dependency METADATA and file inventory; framework/frontend versions declared by pinned build workflow"}
     write_json(stage / "package-provenance.json", value)
     return value
