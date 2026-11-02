@@ -67,7 +67,8 @@ def source_identity(root: Path, expected: str, allow_dirty: bool = False) -> dic
         return subprocess.check_output(["git", *args], cwd=root).decode("utf-8").strip()
     if git("rev-parse", "HEAD") != expected:
         raise ValueError("Source SHA differs from checked out HEAD")
-    dirty = bool(git("status", "--porcelain", "--untracked-files=all"))
+    status = git("status", "--porcelain", "--untracked-files=all")
+    dirty = bool(status)
     tracked = set(git("-c", "core.quotepath=false", "ls-files", "--", "agent", "assets/resource").splitlines())
     # Ignored executable/resource inputs must not silently enter a clean-SHA build.
     # OCR is the sole exception: its ignored files are checked against ocr_model.json.
@@ -79,7 +80,8 @@ def source_identity(root: Path, expected: str, allow_dirty: bool = False) -> dic
                     and not relative.startswith("assets/resource/model/ocr/") and relative not in tracked):
                 dirty = True
     if dirty and not allow_dirty:
-        raise ValueError("Dirty source rejected; --allow-dirty is local rehearsal only")
+        paths = "\n".join(status.splitlines()[:20]) or "Untracked resource input (possibly ignored by Git)"
+        raise ValueError("Dirty source rejected; --allow-dirty is local rehearsal only\n" + paths)
     return {"commit": expected, "worktree_dirty": dirty, "rehearsal": allow_dirty}
 
 

@@ -447,6 +447,10 @@ deps/tools/*
 !deps/tools/*.schema.json
 build
 install
+/MFA/
+/python-runtime/
+__pycache__/
+*.py[cod]
 
 # Tools
 tools/ImageCropper/**/*.png
