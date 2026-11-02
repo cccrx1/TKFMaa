@@ -1,0 +1,71 @@
+"""Record a complete desktop staging tree after dependencies have been bundled."""
+
+import argparse
+from email.parser import BytesParser
+import json
+from pathlib import Path
+import re
+
+from package_resources import ROOT, collect_resources, digest
+from release_support import baseline, source_identity, version_key, write_json
+
+
+def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allow_dirty: bool = False) -> dict:
+    version_key(version)
+    policy = baseline()
+    source = source_identity(ROOT, commit, allow_dirty)
+    platform = {"win": "win", "macos": "osx", "linux": "linux"}[os_name] + "-" + {"x86_64": "x64", "aarch64": "arm64"}[arch]
+    paths = sorted(stage.rglob("*"))
+    if stage.is_symlink() or any(path.is_symlink() and (not path.is_file() or not path.resolve().is_relative_to(stage.resolve())) for path in paths):
+        raise ValueError("Only internal file symlinks can be materialized by artifact upload")
+    files = {path.relative_to(stage).as_posix(): digest(path.read_bytes()) for path in paths if path.is_file()}
+    if "package-provenance.json" in files:
+        raise ValueError("Provenance already exists; do not overwrite")
+    interface = json.loads((stage / "interface.json").read_text(encoding="utf-8"))
+    update_source = interface["github"]
+    repository = update_source.removeprefix("https://github.com/")
+    if repository not in [policy["source_repository"], *policy["allowed_update_repositories"]]:
+        raise ValueError("Unapproved update repository")
+    expected = collect_resources(ROOT, version, os_name, repository)
+    packaged_resources = {name: value for name, value in files.items() if name == "interface.json" or name.startswith(("resource/", "agent/"))}
+    if packaged_resources != {name: digest(data) for name, data in expected.items()}:
+        raise ValueError("Full package resources differ from source")
+    site = stage / ("python/Lib/site-packages" if os_name == "win" else "python/lib/python3.12/site-packages")
+    inventory = {}
+    for path in site.glob("*.dist-info/METADATA"):
+        metadata = BytesParser().parsebytes(path.read_bytes(), headersonly=True)
+        name = re.sub(r"[-_.]+", "-", metadata["Name"]).lower()
+        if name in inventory:
+            raise ValueError(f"Duplicate installed distribution: {name}")
+        inventory[name] = metadata["Version"]
+    for name, required in policy["dependencies"].items():
+        if inventory.get(name) != required:
+            raise ValueError(f"Bundled dependency differs: {name}")
+    executable = "python/python.exe" if os_name == "win" else "python/bin/python3"
+    if executable not in files or not any(name.startswith(f"runtimes/{platform}/native/") for name in files):
+        raise ValueError("Missing packaged Python or native runtime")
+    if not any(Path(name).name.lower() in {"mfaavalonia.exe", "mfaavalonia", "mfaavalonia.dll"} for name in files):
+        raise ValueError("Missing frontend")
+    value = {"schema_version": 1, "kind": "full", "version": version, "platform": platform,
+             "source": source, "baseline": policy, "update_source": update_source,
+             "installed_distributions": inventory, "files": files,
+             "runtime_evidence": "dependency METADATA and file inventory; framework/frontend versions declared by pinned build workflow"}
+    write_json(stage / "package-provenance.json", value)
+    return value
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--stage", type=Path, default=ROOT / "install")
+    parser.add_argument("--version", required=True)
+    parser.add_argument("--os", choices=("win", "macos", "linux"), required=True)
+    parser.add_argument("--arch", choices=("x86_64", "aarch64"), required=True)
+    parser.add_argument("--source-sha", required=True)
+    parser.add_argument("--allow-dirty", action="store_true")
+    args = parser.parse_args()
+    record(args.stage, args.version, args.os, args.arch, args.source_sha, args.allow_dirty)
+    print("Full package provenance recorded; target execution not tested")
+
+
+if __name__ == "__main__":
+    main()

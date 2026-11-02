@@ -8,6 +8,13 @@ on:
       - "agent/**"
       - "tools/package_resources.py"
       - "tools/check_resource_package.py"
+      - "tools/release_support.py"
+      - "tools/release_baseline.json"
+      - "tools/prepare_resource_release.py"
+      - "tools/publish_resource_release.py"
+      - "tools/mirror_full_release.py"
+      - "tools/release_github.py"
+      - "tools/resource_repository/**"
       - "tools/build_stamina_activities.py"
       - "tools/add_interaction_stability.py"
       - "tools/configure.py"
@@ -73,6 +80,7 @@ jobs:
           python tools/build_stamina_activities.py --check
           python tools/add_interaction_stability.py --check
           python tools/check_environment.py --load-resource
+          python tools/release_support.py
           node --input-type=module -e 'import {runCli} from "@nekosu/maa-tools"; const ok = await runCli("check", "maatools.config.mts"); process.exit(ok ? 0 : 1);'
       - name: Build and verify resource archives
         shell: bash

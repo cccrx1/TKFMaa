@@ -38,4 +38,50 @@ python tools/check_resource_package.py --manifest build/resources/TKFMaa-resourc
 
 下载后先核对 SHA256 与清单，再在独立客户端验证选项、Agent 和受影响的游戏任务。Schema、资源加载与 Agent 导入通过不能代替实机验证。新增 Python 依赖或框架版本变化时，即使资源包能构建，也必须安排完整包升级。
 
-下一阶段在审核后接入正式资源仓库，并通过一次完整包发布切换资源更新源；当前两个流程不会替用户执行这一步。
+## 本地发布准备与演练
+
+`tools/release_baseline.json` 固定桌面资源基线和更新仓库允许名单。当前仅允许既有测试仓库，正式资源仓库尚未确定。完整包的 numpy、maaagentbinary、strenum 安装版本从此文件读取；基线来源为已验收 Windows x64 测试客户端，不代表其他平台已完成运行验收。
+
+发布准备、演练与真实发布分别执行：
+
+- `prepare_resource_release.py` 接收六个桌面资源包及清单，重新核对当前源码、版本、基线和更新源，逐包执行 Schema、资源加载与 Agent 注册/导入检查。
+- 输出仅包含六个 ZIP、`checksums.txt` 和 `release-manifest.json`。按固定前端附件选择规则检查每个平台唯一命中正确 ZIP，不把逐 ZIP 的校验附件直接发布。
+- `publish_resource_release.py --dry-run` 只读取本地远端状态快照，输出拟创建或恢复草稿的计划。`--publish` 则在指定的串行 Actions 发布 job 内上传草稿，核验远端大小和摘要，再公开；拒绝覆盖已公开版本、倒序版本、不一致草稿、缺失或错误摘要。
+- 工作区有未提交内容时默认拒绝准备；显式 `--allow-dirty` 只用于本机演练，输出标记 `publishable: false`。即使工作区干净，来源检查通过也不代替客户端验收和发布审核。
+
+准备命令示例（输入目录须先包含同一版本、源码和更新源的六个包）：
+
+```powershell
+$sourceCommit = git rev-parse HEAD
+python tools/prepare_resource_release.py --input build/resources --output build/release-ready --version v0.0.0-resource-test --repository cccrx1/TKFMaa-update-test --source-sha $sourceCommit
+python tools/publish_resource_release.py --prepared build/release-ready --remote-snapshot build/remote-snapshot.json --dry-run
+```
+
+离线快照格式为 `{"repository":"cccrx1/TKFMaa-update-test","complete":true,"releases":[]}`；每条 Release 使用 GitHub 的 `tag_name`、`draft`、`prerelease`、`body`、`assets` 字段。空列表只适用于模拟空仓库，不代表现有测试仓库的真实状态。恢复草稿要求正文包含演练输出的清单摘要标记，已有附件的大小和 `digest` 必须一致。快照检查不能代替发布前实时分页查询。
+
+Agent 静态 import 检查会拒绝未列入基线的新依赖，但不证明动态 import、运行时 API 或游戏行为兼容。Python、框架、前端或依赖基线改变时，需要整体更新和新的迁移审核，不能只修改基线文件就继续发布小包。
+
+## 完整包的来源记录
+
+`tools/install.py` 新增可选 `--update-repository owner/repository`，只影响生成包。手工 `install` 工作流提供相同输入；标签构建可通过维护者显式设置的仓库变量 `TKFM_UPDATE_REPOSITORY` 选择源，未设置时保持默认。变更该变量须单独审核，不会迁移已安装客户端。
+
+桌面完整包在依赖安装完成后执行 `record_full_package.py`，生成包内 `package-provenance.json`，记录源码、更新源、声明基线、实际依赖 METADATA 和文件哈希。记录前要求资源与源码完全一致，依赖符合基线，并检查前端、Python 和 native runtime 文件存在。框架与前端版本来自固定构建声明，不能把文件存在检查写成目标平台执行验证。Android 保持原有构建，不进入此桌面资源基线。
+
+`mirror_full_release.py` 从主仓库已公开的同版本 Release 下载六个桌面完整包，解析标签到指定源码提交，核对 GitHub 摘要、包内来源/依赖和逐文件哈希，保持原 ZIP 不变。包内更新源必须已指向目标更新仓库，不接受镜像时修改 ZIP，也不接受缺少来源记录的历史包。镜像产物与资源包使用相同的准备附件布局和发布工具。
+
+## 部署发布工作流
+
+`tools/resource_repository/publish.yml` 是待部署到已批准资源仓库 `.github/workflows/publish.yml` 的模板，不是主仓库中已启用的发布流程。
+
+1. 指定主仓库 40 位源码提交、版本和 `resource` / `full-mirror` 类型，保持 `publish: false`，取得候选 Artifact。
+2. 核验候选并完成 Windows x64 客户端验收，记录 `release-manifest.json` 的 SHA256。
+3. 使用相同源码、版本、包类型重新运行，显式启用发布，并提供发布说明与验收 JSON。该 JSON 必须包含 `source_commit`、`version`、`manifest_sha256`、`windows_x64_passed: true` 和非空 `evidence`；摘要不符时禁止上传。声明必须有实际验收证据支持。
+4. 发布 job 只获得资源仓库自己的写权限；按仓库串行执行，实时分页读取 Release 与附件，上传草稿后验证全部摘要，公开前再次检查版本序列。不会删除或替换不一致附件，失败保留草稿供检查；一致草稿可恢复，公开版本不可覆盖。
+
+资源发布前须配置 `TKFM_CHANNEL_BASELINE_SHA256` 为 `python tools/release_support.py` 输出的兼容指纹。这是该通道最旧受支持环境的固定约束，不能在发布新环境完整包后立即改成新指纹继续发小包。跨环境升级应暂停旧通道小包，完成兼容拦截或新通道迁移；完整包仍可作为明确审核的升级交付。
+
+工作流并发组只能串行使用该组的任务，不能防止维护者手工或其他发布程序并行修改 Release。应将该工作流设为此通道唯一写入入口。草稿上传异常不会自动删除附件；缺摘要或内容不符的草稿需维护者检查，工具不会自动覆盖修复。
+
+这些工具已实现本机模拟测试；新工作流尚未部署，真实 GitHub 上传、完整包在线镜像以及完整包→资源包→完整包和跳版本的客户端闭环仍待验收。
+
+正式接入建议使用独立资源仓库作为新客户端统一入口：兼容改动发资源包，需要整体更新时镜像主仓库完整包，同一版本只放一种包。首次接入须下载完整包到新目录并确认更新源；现有 MFAAvalonia 2.16.2 应用内更新会保留旧源，不能承诺自动迁址。将来跨运行环境基线升级时，恢复小包发布前须有兼容拦截或新的迁移方案，防止旧用户跳过整包后误装小包。

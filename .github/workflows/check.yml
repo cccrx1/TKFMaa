@@ -8,6 +8,8 @@ on:
       - ".github/workflows/check.yml"
       - "assets/**"
       - "tools/requirements.txt"
+      - "tools/release_baseline.json"
+      - "tools/resource_repository/**"
       - "tools/ocr_model.json"
       - ".github/workflows/install.yml"
       - ".python-version"
@@ -22,6 +24,8 @@ on:
       - ".github/workflows/check.yml"
       - "assets/**"
       - "tools/requirements.txt"
+      - "tools/release_baseline.json"
+      - "tools/resource_repository/**"
       - "tools/ocr_model.json"
       - ".github/workflows/install.yml"
       - ".python-version"
@@ -76,5 +80,8 @@ jobs:
 
       - name: Check Agent registration
         run: python -c "import sys; sys.path.insert(0, 'agent'); import main; print('Agent imports OK')"
+
+      - name: Check release baseline
+        run: python tools/release_support.py
 
       # Unit tests are maintained locally and are not included in this checkout.

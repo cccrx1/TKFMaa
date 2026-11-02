@@ -1,0 +1,22 @@
+{
+    "schema_version": 1,
+    "id": "desktop-py312-maafw5143-mfa2162",
+    "source_repository": "cccrx1/TKFMaa",
+    "allowed_update_repositories": ["cccrx1/TKFMaa-update-test"],
+    "python": "3.12",
+    "maafw": "5.14.3",
+    "frontend": "2.16.2",
+    "frontend_revision": "1080d3e1500f3439ac896ab2eca9aeb8e885f1f4",
+    "dependencies": {
+        "maafw": "5.14.3",
+        "numpy": "2.5.4",
+        "maaagentbinary": "1.0.1",
+        "strenum": "0.4.15"
+    },
+    "agent_imports": [
+        "maa",
+        "numpy",
+        "strenum"
+    ],
+    "evidence": "Windows x64 isolated client inventory, 2026-11-02; other platforms require acceptance"
+}

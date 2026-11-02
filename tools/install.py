@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import argparse
 import shutil
 import sys
 
@@ -19,6 +20,9 @@ if sys.argv.__len__() < 4:
 
 os_name = sys.argv[2]
 arch = sys.argv[3]
+parser = argparse.ArgumentParser()
+parser.add_argument("--update-repository")
+options = parser.parse_args(sys.argv[4:])
 
 
 def get_dotnet_platform_tag():
@@ -95,7 +99,7 @@ def install_resource():
 
     configure_ocr_model()
 
-    write_resource_tree(collect_resources(working_dir, version, os_name), install_path)
+    write_resource_tree(collect_resources(working_dir, version, os_name, options.update_repository), install_path)
 
 
 def install_chores():

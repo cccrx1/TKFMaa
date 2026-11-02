@@ -32,6 +32,14 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 - `python tools/add_interaction_stability.py --check`：检查带识别结果的交互动作是否配置点击前稳定等待。
 - `python tools/package_resources.py --version v1.2.3 --os win --arch x86_64`：从当前源码与已核验 OCR 生成独立资源 ZIP、SHA256 和清单，默认输出到被忽略的 `build/resources/`；不下载前端或运行环境，不发布。
 - `python tools/check_resource_package.py --manifest build/resources/TKFMaa-resource-win-x64-v1.2.3.zip.manifest.json`：核验资源包路径、文件清单、哈希、Schema、资源加载及 Agent 注册/导入，不连接设备。
+- `python tools/release_support.py`：核对桌面发布基线与 Python、MaaFramework、完整包构建声明的一致性。
+- `python tools/prepare_resource_release.py --help`：查看六目标资源发布附件准备参数；默认要求干净且匹配明确 SHA 的源码，`--allow-dirty` 仅生成不可发布的本机演练产物。
+- `python tools/publish_resource_release.py --help`：查看离线演练与显式发布参数；`--dry-run` 只读本地快照，`--publish` 仅允许在目标仓库串行 Actions 中执行，要求明确版本、源码、发布说明及绑定附件清单摘要的验收记录。
+- `python tools/mirror_full_release.py --help`：查看完整包镜像准备参数；只读下载主仓库已公开 Release，核对标签提交、远端摘要、包内来源和文件哈希，不重新打包、不发布。
+
+桌面资源发布基线位于 `tools/release_baseline.json`，完整包中的 numpy、maaagentbinary、strenum 按此固定版本安装。新增依赖或变更 Python、框架、前端基线时须安排整体更新与迁移审核，不得仅修改基线继续向旧客户端投放小包。桌面完整包在依赖安装后通过 `tools/record_full_package.py` 生成来源和逐文件哈希记录；实际运行验收与构建声明分别记录。基线允许名单当前仅含测试仓库，正式源变更仍需明确授权。
+
+资源仓库工作流模板位于 `tools/resource_repository/publish.yml`，部署后默认只生成 Artifact，发布 job 使用仓库级 `tkfmaa-release-publish` 并发组和本仓库 Token。资源发布还要求仓库变量 `TKFM_CHANNEL_BASELINE_SHA256` 与固定兼容基线一致；它代表该通道最旧受支持客户端的环境，不可随一次完整包升级而直接提高。模板部署、变量变更、远端运行和正式源切换均不由本地实现或提交自动授权。完整包标签构建可通过显式仓库变量 `TKFM_UPDATE_REPOSITORY` 选择更新源，未设置时保持默认源。
 
 `.github/workflows/resources.yml` 在资源/Agent 等路径的分支推送、PR 或手工运行时生成独立资源 Artifact，只有读取权限，无标签或 Release 发布步骤。完整包继续由 `.github/workflows/install.yml` 在 `v1.2.3` 等版本标签时构建发布；其普通分支/PR 构建仅匹配完整包工具、运行环境与依赖配置等路径，纯活动或 Agent 逻辑改动不触发完整包构建，需要前端组合验收时手工运行完整包流程。两个流程共用 `tools/package_resources.py` 中的资源收集和布局逻辑；完整包仍包含前端、Python 与 native runtime。前端验收须使用对应提交的完整包，步骤见开发环境文档。本地完整打包需要预先下载 MaaFramework 运行时，不属于常规开发验证流程。
 

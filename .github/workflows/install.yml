@@ -19,6 +19,9 @@ on:
       - ".github/workflows/install.yml"
       - "tools/install.py"
       - "tools/package_resources.py"
+      - "tools/release_support.py"
+      - "tools/release_baseline.json"
+      - "tools/record_full_package.py"
       - "tools/configure.py"
       - "tools/check_environment.py"
       - "tools/requirements.txt"
@@ -32,6 +35,9 @@ on:
       - ".github/workflows/install.yml"
       - "tools/install.py"
       - "tools/package_resources.py"
+      - "tools/release_support.py"
+      - "tools/release_baseline.json"
+      - "tools/record_full_package.py"
       - "tools/configure.py"
       - "tools/check_environment.py"
       - "tools/requirements.txt"
@@ -39,6 +45,12 @@ on:
       - "maatools.config.mts"
       - ".python-version"
   workflow_dispatch:
+    inputs:
+      update_repository:
+        description: 可选更新源，仅影响生成包；不迁移已有客户端
+        required: false
+        default: ""
+        type: string
 
 jobs:
   meta:
@@ -195,6 +207,8 @@ jobs:
 
       - name: Install
         shell: bash
+        env:
+          UPDATE_REPOSITORY: ${{ inputs.update_repository || vars.TKFM_UPDATE_REPOSITORY }}
         run: |
           if [[ "${{ matrix.os }}" != "android" ]]; then
             if [ -d "MFA" ]; then
@@ -213,7 +227,11 @@ jobs:
           python -m pip install -r ./requirements.txt
           python ./check_environment.py
           python ./configure.py --download
-          python ./install.py ${{ needs.meta.outputs.tag }} ${{ matrix.os }} ${{ matrix.arch }}
+          args=()
+          if [[ -n "$UPDATE_REPOSITORY" ]]; then
+            args+=(--update-repository "$UPDATE_REPOSITORY")
+          fi
+          python ./install.py ${{ needs.meta.outputs.tag }} ${{ matrix.os }} ${{ matrix.arch }} "${args[@]}"
           cd ..
 
       - name: Bundle Python dependencies
@@ -247,7 +265,7 @@ jobs:
             --python-version "${{ env.PYTHON_VERSION }}" \
             --implementation cp \
             --abi "${{ env.PYTHON_ABI }}" \
-            numpy
+            "$(python tools/release_support.py --runtime-requirement numpy)"
 
           python -m pip install \
             --target "${{ matrix.python_site_packages }}" \
@@ -255,7 +273,8 @@ jobs:
             --only-binary=:all: \
             --platform any \
             --python-version "${{ env.PYTHON_VERSION }}" \
-            maaagentbinary strenum
+            "$(python tools/release_support.py --runtime-requirement maaagentbinary)" \
+            "$(python tools/release_support.py --runtime-requirement strenum)"
 
           rm -rf "${{ matrix.python_site_packages }}/maa/bin"
 
@@ -270,10 +289,19 @@ jobs:
           test -d "install/runtimes/${{ (matrix.os == 'win' && 'win') || (matrix.os == 'macos' && 'osx') || 'linux' }}-${{ (matrix.arch == 'x86_64' && 'x64') || 'arm64' }}/native"
           grep -Fq '"child_exec": "./python/' install/interface.json
 
+      - name: Record full package provenance
+        if: matrix.os != 'android'
+        run: >-
+          python tools/record_full_package.py
+          --version ${{ needs.meta.outputs.tag }}
+          --os ${{ matrix.os }} --arch ${{ matrix.arch }}
+          --source-sha ${{ github.sha }}
+
       - uses: actions/upload-artifact@v4
         with:
           name: TKFMaa-${{ matrix.os }}-${{ matrix.arch }}
           path: "install"
+          include-hidden-files: true
 
   changelog:
     name: Generate changelog
