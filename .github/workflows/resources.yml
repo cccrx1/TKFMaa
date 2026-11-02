@@ -1,0 +1,98 @@
+name: resources
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "assets/**"
+      - "agent/**"
+      - "tools/package_resources.py"
+      - "tools/check_resource_package.py"
+      - "tools/build_stamina_activities.py"
+      - "tools/add_interaction_stability.py"
+      - "tools/configure.py"
+      - "tools/ocr_model.json"
+      - "tools/requirements.txt"
+      - "tools/validate_schema.py"
+      - "deps/tools/*.schema.json"
+      - "maatools.config.mts"
+      - "package*.json"
+      - ".github/workflows/resources.yml"
+  pull_request:
+    paths:
+      - "assets/**"
+      - "agent/**"
+      - "tools/**"
+      - "deps/tools/*.schema.json"
+      - "maatools.config.mts"
+      - "package*.json"
+      - ".github/workflows/resources.yml"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 资源包版本，仅生成下载附件，不发布
+        required: true
+        default: v0.0.0-resource-test
+        type: string
+      update_repository:
+        description: 可选测试更新源 owner/repository；留空保留源码地址
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+  RESOURCE_VERSION: ${{ inputs.version || format('v0.0.0-resource-ci.{0}', github.run_number) }}
+  UPDATE_REPOSITORY: ${{ inputs.update_repository }}
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install validation dependencies
+        run: |
+          python -m pip install -r tools/requirements.txt
+          npm ci
+      - name: Validate current source
+        run: |
+          python tools/configure.py --download
+          python tools/build_stamina_activities.py --check
+          python tools/add_interaction_stability.py --check
+          python tools/check_environment.py --load-resource
+          node --input-type=module -e 'import {runCli} from "@nekosu/maa-tools"; const ok = await runCli("check", "maatools.config.mts"); process.exit(ok ? 0 : 1);'
+      - name: Build and verify resource archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          for os in win macos linux; do
+            for arch in x86_64 aarch64; do
+              args=(--version "$RESOURCE_VERSION" --os "$os" --arch "$arch")
+              if [[ -n "$UPDATE_REPOSITORY" ]]; then
+                args+=(--update-repository "$UPDATE_REPOSITORY")
+              fi
+              python tools/package_resources.py "${args[@]}"
+            done
+          done
+          for manifest in build/resources/*.manifest.json; do
+            python tools/check_resource_package.py --manifest "$manifest"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TKFMaa-resources-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/resources/
+          if-no-files-found: error
+          retention-days: 7

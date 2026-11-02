@@ -3,16 +3,8 @@ from pathlib import Path
 import shutil
 import sys
 
-try:
-    import jsonc
-except ModuleNotFoundError as e:
-    raise ImportError(
-        "Missing dependency 'json-with-comments' (imported as 'jsonc').\n"
-        f"Install it with:\n  {sys.executable} -m pip install json-with-comments\n"
-        "Or add it to your project's requirements."
-    ) from e
-
 from configure import configure_ocr_model
+from package_resources import collect_resources, write_resource_tree
 
 
 working_dir = Path(__file__).parent.parent.resolve()
@@ -103,30 +95,7 @@ def install_resource():
 
     configure_ocr_model()
 
-    shutil.copytree(
-        working_dir / "assets" / "resource",
-        install_path / "resource",
-        dirs_exist_ok=True,
-    )
-    shutil.copy2(
-        working_dir / "assets" / "interface.json",
-        install_path,
-    )
-
-    with open(install_path / "interface.json", "r", encoding="utf-8") as f:
-        interface = jsonc.load(f)
-
-    interface["version"] = version
-    # The source interface lives under assets/, while the packaged interface
-    # and agent/ directory are siblings in the release root.
-    if os_name == "win":
-        interface["agent"]["child_exec"] = "./python/python.exe"
-    elif os_name in {"macos", "linux"}:
-        interface["agent"]["child_exec"] = "./python/bin/python3"
-    interface["agent"]["child_args"] = ["./agent/main.py"]
-
-    with open(install_path / "interface.json", "w", encoding="utf-8") as f:
-        jsonc.dump(interface, f, ensure_ascii=False, indent=4)
+    write_resource_tree(collect_resources(working_dir, version, os_name), install_path)
 
 
 def install_chores():
@@ -140,18 +109,9 @@ def install_chores():
     )
 
 
-def install_agent():
-    shutil.copytree(
-        working_dir / "agent",
-        install_path / "agent",
-        dirs_exist_ok=True,
-    )
-
-
 if __name__ == "__main__":
     install_deps()
     install_resource()
     install_chores()
-    install_agent()
 
     print(f"Install to {install_path} successfully.")

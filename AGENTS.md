@@ -30,8 +30,10 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 - `python tools/build_stamina_activities.py`：修改 `assets/stamina/active.yaml` 后重新生成体力活动配置。
 - `python tools/build_stamina_activities.py --check`：只检查体力活动配置与 `assets/interface.json` 是否同步，不写文件。
 - `python tools/add_interaction_stability.py --check`：检查带识别结果的交互动作是否配置点击前稳定等待。
+- `python tools/package_resources.py --version v1.2.3 --os win --arch x86_64`：从当前源码与已核验 OCR 生成独立资源 ZIP、SHA256 和清单，默认输出到被忽略的 `build/resources/`；不下载前端或运行环境，不发布。
+- `python tools/check_resource_package.py --manifest build/resources/TKFMaa-resource-win-x64-v1.2.3.zip.manifest.json`：核验资源包路径、文件清单、哈希、Schema、资源加载及 Agent 注册/导入，不连接设备。
 
-`.github/workflows/install.yml` 会为 `v1.2.3` 等版本标签构建发布包。普通分支推送命中构建路径规则时生成带前端的 Artifact，前端验收须使用对应提交的完整包，步骤见开发环境文档。本地打包需要预先下载 MaaFramework 运行时，不属于常规开发验证流程。
+`.github/workflows/resources.yml` 在资源/Agent 等路径的分支推送、PR 或手工运行时生成独立资源 Artifact，只有读取权限，无标签或 Release 发布步骤。完整包继续由 `.github/workflows/install.yml` 在 `v1.2.3` 等版本标签时构建发布；其普通分支/PR 构建仅匹配完整包工具、运行环境与依赖配置等路径，纯活动或 Agent 逻辑改动不触发完整包构建，需要前端组合验收时手工运行完整包流程。两个流程共用 `tools/package_resources.py` 中的资源收集和布局逻辑；完整包仍包含前端、Python 与 native runtime。前端验收须使用对应提交的完整包，步骤见开发环境文档。本地完整打包需要预先下载 MaaFramework 运行时，不属于常规开发验证流程。
 
 ## 生成配置与派生产物
 

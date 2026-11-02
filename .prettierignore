@@ -1,5 +1,6 @@
 # 构建产物
 install/
+build/
 node_modules/
 
 # 本地开发和运行产物
