@@ -41,6 +41,8 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 
 完整构建下载目录 `/MFA/`、`/python-runtime/` 以及 Python 字节码由 `.gitignore` 排除，不能纳入源码提交；完整包 CI 禁止生成字节码。来源检查仍拒绝真实源码改动，并输出有限的脏路径供定位，不使用 `--allow-dirty` 绕过云端发布来源检查。
 
+分支完整包使用 `git describe --long` 生成 CI 版本：预发布基准追加 `.ci.<距离>.g<提交>`，稳定基准追加 `-ci.<距离>.g<提交>`；版本标签构建保留标签原文。不得把 `beta.1` 改成 `beta.1-ci`，否则数字预发布序号变为文本，可能阻挡后续 beta 资源更新。CI 产物只用于开发验收，不作为已发布完整包镜像来源。
+
 资源仓库工作流模板位于 `tools/resource_repository/publish.yml`，部署后默认只生成 Artifact，发布 job 使用仓库级 `tkfmaa-release-publish` 并发组和本仓库 Token。资源发布还要求仓库变量 `TKFM_CHANNEL_BASELINE_SHA256` 与固定兼容基线一致；它代表该通道最旧受支持客户端的环境，不可随一次完整包升级而直接提高。模板部署、变量变更、远端运行和正式源切换均不由本地实现或提交自动授权。完整包标签构建可通过显式仓库变量 `TKFM_UPDATE_REPOSITORY` 选择更新源，未设置时保持默认源。
 
 `.github/workflows/resources.yml` 在资源/Agent 等路径的分支推送、PR 或手工运行时生成独立资源 Artifact，只有读取权限，无标签或 Release 发布步骤。完整包继续由 `.github/workflows/install.yml` 在 `v1.2.3` 等版本标签时构建发布；其普通分支/PR 构建仅匹配完整包工具、运行环境与依赖配置等路径，纯活动或 Agent 逻辑改动不触发完整包构建，需要前端组合验收时手工运行完整包流程。两个流程共用 `tools/package_resources.py` 中的资源收集和布局逻辑；完整包仍包含前端、Python 与 native runtime。前端验收须使用对应提交的完整包，步骤见开发环境文档。本地完整打包需要预先下载 MaaFramework 运行时，不属于常规开发验证流程。

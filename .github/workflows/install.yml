@@ -65,7 +65,7 @@ jobs:
         run: |
           # 检查标签格式
           is_release=${{ startsWith(github.ref, 'refs/tags/v') }}
-          tag=$(git describe --tags --match "v*" ${{ github.ref }} || true)
+          tag=$(git describe --long --tags --match "v*" ${{ github.ref }} || true)
           if [[ $tag != v* ]]; then
             tag=$(curl -sX GET "https://api.github.com/repos/${{ github.repository }}/releases/latest" --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | awk '/tag_name/{print $4}' FS='["]')
             if [[ $tag != v* ]]; then
@@ -74,15 +74,20 @@ jobs:
             tag=$(date "+$tag-%y%m%d-$(git rev-parse --short HEAD)")
           fi
 
-          if ! $($is_release) ; then
+          if [[ "$is_release" == "true" ]]; then
+            tag="${{ github.ref_name }}"
+          else
             prefix=${tag%-*-*}
             suffix=${tag#$prefix-}
-            tag="$prefix-ci.$suffix"
+            # 保留预发布序号的数字类型，避免 beta.1-ci 被判为高于 beta.8。
+            separator="-"
+            [[ "$prefix" == *-* ]] && separator="."
+            tag="$prefix${separator}ci.${suffix//-/.}"
           fi
 
           # 检查是否为预发布版本
           is_prerelease=false
-          if [[ $tag =~ .*alpha.* || $tag =~ .*beta.* || $tag =~ .*rc.* || $tag =~ .*dev.* || $tag =~ .*-ci.* ]]; then
+          if [[ $tag == *-* ]]; then
             is_prerelease=true
             echo "This is a pre-release version"
           fi
