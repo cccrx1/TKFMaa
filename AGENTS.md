@@ -45,7 +45,7 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 
 桌面资源发布基线位于 `tools/release_baseline.json`，完整包中的 numpy、maaagentbinary、strenum 按此固定版本安装。新增依赖或变更 Python、框架、前端基线时须安排整体更新与迁移审核，不得仅修改基线继续向旧客户端投放小包。桌面完整包在依赖安装后通过 `tools/record_full_package.py` 生成来源和逐文件哈希记录；实际运行验收与构建声明分别记录。基线允许名单当前仅含测试仓库，正式源变更仍需明确授权。
 
-完整包前端构建配置位于 `tools/frontend_release.json`，与资源通道最旧客户端基线分开记录。v1.0.8 为完整更新，保持主仓库更新源，不部署正式资源通道或提高其兼容指纹。`install` 手工输入 `preview_version: v1.0.8` 可生成准确版本的预演包，源码仍须干净且匹配 SHA，所有非标签构建均记录 rehearsal；即使手工选择版本标签也不发布。正式标签需要对应的 `tools/releases/<版本>.json` 和 `docs/zh_cn/releases/<版本>.md`，发布 job 在上传前核对六个桌面完整包的版本、更新源、来源、前端及全部文件摘要。编译与依赖恢复仍可能联网；前端继续要求系统 .NET 10，与原上游成品一致。
+完整包前端构建配置位于 `tools/frontend_release.json`，与资源通道最旧客户端基线分开记录。v1.0.8 为完整更新，保持主仓库更新源，不部署正式资源通道或提高其兼容指纹。`install` 手工输入 `preview_version: v1.0.8` 可生成准确版本的预演包，源码仍须干净且匹配 SHA，所有非标签构建均记录 rehearsal；即使手工选择版本标签也不发布。正式标签需要对应的 `tools/releases/<版本>.json` 和 `docs/zh_cn/releases/<版本>.md`，发布 job 在上传前核对六个桌面完整包的版本、更新源、来源、前端及全部文件摘要。完整包保留 `licenses/MFAAvalonia-LICENSE.txt` 和绑定源码提交的来源说明，禁止在清理中删除。编译与依赖恢复仍可能联网；前端继续要求系统 .NET 10，与原上游成品一致。
 
 完整构建下载目录 `/MFA/`、`/python-runtime/` 以及 Python 字节码由 `.gitignore` 排除，不能纳入源码提交；完整包 CI 禁止生成字节码。来源检查仍拒绝真实源码改动，并输出有限的脏路径供定位，不使用 `--allow-dirty` 绕过云端发布来源检查。
 

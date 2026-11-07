@@ -2,6 +2,7 @@
     "schema_version": 1,
     "id": "tkfmaa-mfa2162-patch1",
     "manifest_sha256": "4436c99dc28428bd82bcb48dfa3e658ac195c888889b8e09f4a45bfd89714d8e",
+    "license_sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
     "python": "3.12",
     "maafw": "5.14.3",
     "frontend": "2.16.2",

@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parent.parent
 MANIFEST = ROOT / "tools/frontend_candidate/manifest.json"
@@ -29,6 +30,7 @@ def release_profile() -> dict:
     baseline = read_json(ROOT / "tools/release_baseline.json")
     if (profile.get("schema_version") != 1 or profile.get("platforms") != list(PLATFORMS)
             or profile.get("manifest_sha256") != hashlib.sha256(MANIFEST.read_bytes()).hexdigest()
+            or profile.get("license_sha256") != hashlib.sha256((MANIFEST.parent / "LICENSE").read_bytes()).hexdigest()
             or any(profile.get(key) != baseline[key] for key in ("python", "maafw", "frontend"))
             or manifest["revision"] != baseline["frontend_revision"]
             or manifest["frontend"] != profile["frontend"] or manifest["maafw"] != profile["maafw"]):
@@ -47,6 +49,9 @@ def verify_proof(proof: dict, files: dict[str, str], platform: str, candidate: b
             raise ValueError("Invalid candidate frontend provenance")
     elif proof.get("build_profile") != release_profile():
         raise ValueError("Frontend build does not match the release profile")
+    if not candidate and (proof["files"].get("licenses/MFAAvalonia-LICENSE.txt") != release_profile()["license_sha256"]
+                          or "licenses/MFAAvalonia-SOURCE.md" not in proof["files"]):
+        raise ValueError("Frontend license or source notice missing from provenance")
     for name, checksum in proof["files"].items():
         if files.get(name) != checksum:
             raise ValueError(f"Frontend file changed: {name}")
@@ -68,12 +73,28 @@ def stage(published: Path, output: Path, source: Path, platform: str, candidate:
     if runtime.get("framework", {}).get("name") != "Microsoft.NETCore.App" or runtime["framework"]["version"] != "10.0.0":
         raise ValueError("Frontend no longer matches the existing .NET 10 runtime requirement")
     profile = None if candidate else release_profile()
+    license_path = source / "LICENSE"
+    if hashlib.sha256(license_path.read_bytes()).hexdigest() != release_profile()["license_sha256"]:
+        raise ValueError("Frontend license differs from the pinned upstream source")
     shutil.copytree(published, output)
+    notices = output / "licenses"
+    notices.mkdir(exist_ok=True)
+    shutil.copy2(license_path, notices / "MFAAvalonia-LICENSE.txt")
+    project_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    (notices / "MFAAvalonia-SOURCE.md").write_text(
+        "# MFAAvalonia 2.16.2 — modified for TKFMaa\n\n"
+        f"Upstream source: https://github.com/{manifest['repository']}/tree/{manifest['revision']}\n\n"
+        f"Pinned source ZIP SHA256: {manifest['source_archive_sha256']}\n\n"
+        f"TKFMaa patches and build instructions: https://github.com/cccrx1/TKFMaa/tree/{project_commit}/tools/frontend_candidate/\n\n"
+        f"Patch SHA256: {manifest['patch_sha256']}\n\n"
+        "The upstream GPL-3.0 license is included in MFAAvalonia-LICENSE.txt.\n",
+        encoding="utf-8", newline="\n")
     files = {}
     for path in sorted(output.rglob("*")):
         relative = path.relative_to(output).as_posix()
         if path.is_file() and (
             relative in required
+            or relative in {"licenses/MFAAvalonia-LICENSE.txt", "licenses/MFAAvalonia-SOURCE.md"}
             or (len(path.relative_to(output).parts) == 1 and path.suffix in {".exe", ".dll"})
             or (relative.startswith("libs/") and not relative.startswith("libs/MaaAgentBinary/")
                 and path.suffix in {".dll", ".so", ".dylib"})
