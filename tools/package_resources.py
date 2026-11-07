@@ -21,6 +21,43 @@ def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def check_payload_references(files: dict[str, bytes]) -> None:
+    """Check explicit template references in this standalone Interface bundle."""
+    for required in ("interface.json", "agent/main.py"):
+        if required not in files:
+            raise ValueError(f"Required package file missing: {required}")
+    if not any(name.startswith("resource/") for name in files):
+        raise ValueError("Required package directory missing: resource")
+
+    def visit(value, source: str) -> None:
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key == "template":
+                    templates = [child] if isinstance(child, str) else child
+                    if not isinstance(templates, list) or not all(isinstance(item, str) for item in templates):
+                        raise ValueError(f"Invalid template reference in {source}")
+                    for template in templates:
+                        path = PurePosixPath(template)
+                        if (not template or "\\" in template or ":" in template
+                                or path.is_absolute() or ".." in path.parts):
+                            raise ValueError(f"Unsafe template reference {template!r} in {source}")
+                        name = (PurePosixPath("resource/image") / path).as_posix()
+                        directory = name.rstrip("/") + "/"
+                        if name not in files and not any(
+                            item.startswith(directory) and PurePosixPath(item).suffix.lower()
+                            in {".png", ".jpg", ".jpeg", ".webp", ".bmp"} for item in files
+                        ):
+                            raise ValueError(f"Missing template {template!r} referenced by {source}")
+                visit(child, source)
+        elif isinstance(value, list):
+            for child in value:
+                visit(child, source)
+
+    for name, data in files.items():
+        if name == "interface.json" or (name.startswith("resource/pipeline/") and name.endswith((".json", ".jsonc"))):
+            visit(jsonc.loads(data.decode("utf-8-sig")), name)
+
+
 def safe_name(name: str) -> None:
     path = PurePosixPath(name)
     if (not name or "\\" in name or ":" in name or path.is_absolute()
@@ -89,6 +126,7 @@ def collect_resources(root: Path, version: str, os_name: str, update_repository:
             raise ValueError("OCR model is missing or differs from its lock; run tools/configure.py --download")
     if len({name.casefold() for name in files}) != len(files):
         raise ValueError("Case-colliding resource names")
+    check_payload_references(files)
     return files
 
 
@@ -129,6 +167,7 @@ def verify_archive(path: Path, manifest: dict) -> dict[str, bytes]:
         raise ValueError("Case-colliding archive entries")
     if {name: digest(data) for name, data in files.items()} != manifest["files"]:
         raise ValueError("Archive content differs from its manifest")
+    check_payload_references(files)
     interface = json.loads(files["interface.json"])
     if interface["version"] != manifest["version"] or interface["github"] != manifest["update_source"]:
         raise ValueError("Packaged Interface identity differs")
