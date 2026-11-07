@@ -51,69 +51,70 @@ activities:
       cost: 4
 
 activity_groups:
-  halloween_deer_rerun:
-    case_prefix: "万圣鹿娘大横行！"
-    description_template: "复刻活动二维地图：选择 {activity}，进入{stage}并扫荡。"
+  new_world_adventure:
+    case_prefix: "新大陆历险记"
+    description_template: "常规活动分页列表：选择 {activity}，进入关卡列表后寻找{stage}并扫荡。"
     base:
-      template: rerun_activity_map
+      template: regular_paged_list
       activity_name:
-        expected: ["万圣鹿娘大横行！"]
+        expected: ["新大陆历险记", "新大陸歷險記"]
         roi: [70, 770, 580, 80]
-      rerun:
-        marker:
-          expected: ["Story", "Free Quest"]
-          roi: [0, 160, 720, 1000]
-        column: left
+      stage:
+        any_selectable:
+          expected: ["新大陆历险记", "新大陸歷險記", "活动挑战还有", "活動挑戰還有"]
+          roi: [0, 90, 720, 180]
       stamina:
         cost: 30
+      extra_overrides:
+        DailyStaminaPresetFirstPageMarker:
+          enabled: true
+          recognition:
+            type: OCR
+            param:
+              expected:
+                [
+                  "访查-01",
+                  "访查01",
+                  "訪查-01",
+                  "记录-01",
+                  "记录01",
+                  "纪录-01",
+                  "纪录01",
+                  "紀錄-01",
+                  "撰写-01",
+                  "撰写01",
+                  "撰寫-01",
+                  "锻造-01",
+                  "锻造01",
+                  "鍛造-01",
+                  "获取-01",
+                  "获取01",
+                  "獲取-01",
+                  "拍摄-01",
+                  "拍摄01",
+                  "拍攝-01",
+                ]
+              roi: [0, 160, 720, 1000]
     cases:
-      - case_suffix: "关卡-1"
+      - case_suffix: "访查-01"
         stage:
-          expected: ["关卡-1"]
-      - case_suffix: "关卡-2"
-        stage:
-          expected: ["关卡-2"]
-      - case_suffix: "关卡-3"
-        stage:
-          expected: ["关卡-3"]
-      - case_suffix: "关卡-4"
-        stage:
-          expected: ["关卡-4"]
-      - case_suffix: "关卡-5"
-        stage:
-          expected: ["关卡-5"]
-      - case_suffix: "陷阱-1"
-        rerun:
-          column: right
-        stage:
-          expected: ["陷阱-1"]
+          expected: ["访查-01", "访查01", "訪查-01"]
         stamina:
-          cost: 50
-      - case_suffix: "陷阱-2"
-        rerun:
-          column: right
+          cost: 25
+      - case_suffix: "记录-01"
         stage:
-          expected: ["陷阱-2"]
-        stamina:
-          cost: 50
-      - case_suffix: "陷阱-3"
-        rerun:
-          column: right
+          expected: ["记录-01", "记录01", "纪录-01", "纪录01", "紀錄-01"]
+      - case_suffix: "撰写-01"
         stage:
-          expected: ["陷阱-3"]
-        stamina:
-          cost: 50
-      - case_suffix: "陷阱-4"
-        rerun:
-          column: right
+          expected: ["撰写-01", "撰写01", "撰寫-01"]
+      - case_suffix: "锻造-01"
         stage:
-          expected: ["陷阱-4"]
-        stamina:
-          cost: 50
-      - case_suffix: "陷阱-5"
-        rerun:
-          column: right
+          expected: ["锻造-01", "锻造01", "鍛造-01"]
+      - case_suffix: "获取-01"
         stage:
-          expected: ["陷阱-5"]
+          expected: ["获取-01", "获取01", "獲取-01"]
+      - case_suffix: "拍摄-01"
+        stage:
+          expected: ["拍摄-01", "拍摄01", "拍攝-01"]
         stamina:
-          cost: 50
+          cost: 45
