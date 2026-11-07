@@ -1,0 +1,42 @@
+{
+    "schema_version": 1,
+    "status": "candidate-not-enabled-in-release-build",
+    "repository": "MaaXYZ/MFAAvalonia",
+    "revision": "1080d3e1500f3439ac896ab2eca9aeb8e885f1f4",
+    "source_archive_sha256": "351ecf655c7bfeb2b70e3285f727d7bb44061a136a215df095eeefd3bab5eb64",
+    "patch": "tkfmaa-mfa-2.16.2.patch",
+    "patch_sha256": "112fb6b5cc42d677cbe40e2aad338272eeb80a0e52b15f634a79f60a69eb21af",
+    "sdk": "10.0.403",
+    "frontend": "2.16.2",
+    "maafw": "5.14.3",
+    "files": {
+        "MFAAvalonia/Extensions/MaaFW/AgentHelper.cs": {
+            "before_sha256": "b3dd98808f96445c85507ddf426f5640659346e1e5657bb9119a130b1b3b4bc6",
+            "after_sha256": "919013eb0f0a336196de0ae0c2f048249b8395d8df93d17766ca33f2220ac0a5"
+        },
+        "MFAAvalonia/Helper/TkfmPackagePreflight.cs": {
+            "before_sha256": null,
+            "after_sha256": "6ba27195232426807e6cb040d66e40296fac88cf0ea9136e0cbc82651e4cb85b"
+        },
+        "MFAAvalonia/Helper/TkfmRuntimeEnvironment.cs": {
+            "before_sha256": null,
+            "after_sha256": "0569958e512bf4342ae8fca99cc24c057fc47d29071b8bde9f8128440fae78ea"
+        },
+        "MFAAvalonia/Helper/UniversalExtractor.cs": {
+            "before_sha256": "d5f2f8656b03f7a2846a2e20b88ae36b63dd1ccf2c5ba6fd4a4d6729833c9b88",
+            "after_sha256": "1092658f90e40c59cb269817501860ca1a3ceaaf5a9dd390be6cedd6e6472afe"
+        },
+        "MFAAvalonia/Helper/VersionChecker.cs": {
+            "before_sha256": "277c0aed62f6e62618d0efe6813c0bc6d28642167fbbb70167b830980d1fd6f8",
+            "after_sha256": "9df94b43736dd7a27766c19ea06ec80a4b67044adbe60edf23b7e8dd146e6512"
+        },
+        "MFAAvalonia/MFAAvalonia.csproj": {
+            "before_sha256": "1b99177b143b0bf30b11a745e41ffcaabfbe06df87c1be91f0884231548e3ee5",
+            "after_sha256": "fe414795a17b863c4e7c7da7573a243b8c4eb4651f12b2cf556b04c3b88715c9"
+        },
+        "MFAAvalonia.Desktop/Program.cs": {
+            "before_sha256": "a705296ec3907452e581fd0a63f6a638bc8a35d4c843f86e3ee9c137bcf80fcd",
+            "after_sha256": "401a3ba37b940cb7c05fdb01b5e8a38949a9280be3cd249da36204cda299d334"
+        }
+    }
+}

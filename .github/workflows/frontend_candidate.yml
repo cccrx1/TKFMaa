@@ -1,0 +1,64 @@
+name: frontend-candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.403"
+
+      - name: Prepare pinned frontend source
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path build -Force | Out-Null
+          $candidate = Get-Content tools/frontend_candidate/manifest.json -Raw | ConvertFrom-Json
+          $uri = "https://github.com/$($candidate.repository)/archive/$($candidate.revision).zip"
+          Invoke-WebRequest -Uri $uri -OutFile build/frontend-source.zip
+          python tools/prepare_frontend_candidate.py --source-zip build/frontend-source.zip --output build/frontend-source
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Compile Windows x64 candidate
+        shell: pwsh
+        env:
+          DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+        run: |
+          dotnet publish build/frontend-source/MFAAvalonia.Desktop/MFAAvalonia.Desktop.csproj -c Release -r win-x64 -o build/frontend-candidate-bin -p:UsedAvaloniaProducts=
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item build/frontend-source/tkfmaa-candidate-source.json build/frontend-candidate-bin/
+
+      - name: Record candidate file hashes
+        shell: python
+        run: |
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          root = Path("build/frontend-candidate-bin")
+          record = {
+              "publishable": False,
+              "repository_commit": os.environ["GITHUB_SHA"],
+              "files": {
+                  p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                  for p in sorted(root.rglob("*")) if p.is_file()
+              },
+          }
+          (root / "candidate-files.json").write_text(json.dumps(record, indent=4) + "\n", encoding="utf-8")
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TKFMaa-frontend-candidate-win-x64
+          path: build/frontend-candidate-bin/
+          retention-days: 7

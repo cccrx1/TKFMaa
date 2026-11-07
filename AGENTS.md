@@ -25,6 +25,9 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 - `python tools/sync_schemas.py`：按 requirements 固定的 MaaFramework 版本同步六份 Schema，不跟随上游 main。
 - `npm ci`：安装 CI 使用的锁定版本 Node.js 工具。
 - `npx @nekosu/maa-tools check`：校验 Maa Pipeline 与 Interface 资源。
+- 本地默认 GPU 资源加载崩溃时，先保留日志，再运行 `node --require ./tools/maa_check_cpu.cjs node_modules/@nekosu/maa-tools/bin/maa-tools check`；它使用同一固定版本缓存和原版校验器，仅把资源加载改为 CPU，不跳过结构诊断或资源加载。须记录默认命令失败与 CPU 模式结果，不据此宣称 GPU 验收通过。
+- `python tools/prepare_frontend_candidate.py --source-zip <固定源码ZIP> --output build/<新目录>`：离线核验并应用 `tools/frontend_candidate/` 的固定前端候选补丁，拒绝覆盖现有目录。候选工作流 `.github/workflows/frontend_candidate.yml` 仅手工生成 Windows x64 Artifact，不发布，也不会自动替换完整包流程或兼容基线。
+- `python tools/stage_frontend_candidate.py --source <已核验源码目录> --published <编译输出> --output <新目录>`：为 Windows x64 候选前端生成组装目录及来源、文件哈希记录。`install` 手工输入 `frontend_candidate` 可生成组合验收完整包，强制标记演练并禁止进入发布；标签推送仍使用原上游前端，兼容基线不变。
 - `python -m pip install -r tools/requirements.txt`：安装 Maa Agent、配置生成和 Schema 校验所需的 Python 依赖。
 - `python tools/validate_schema.py --schema-dir deps/tools --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json`：执行与 CI 相同的 JSON Schema 校验。
 - `python tools/build_stamina_activities.py`：修改 `assets/stamina/active.yaml` 后重新生成体力活动配置。

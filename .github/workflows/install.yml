@@ -48,6 +48,11 @@ on:
       - ".python-version"
   workflow_dispatch:
     inputs:
+      frontend_candidate:
+        description: Windows x64 组合验收使用固定补丁前端（仅演练 Artifact，不可发布）
+        required: false
+        default: false
+        type: boolean
       update_repository:
         description: 可选更新源，仅影响生成包；不迁移已有客户端
         required: false
@@ -64,7 +69,7 @@ jobs:
       - id: set_tag
         run: |
           # 检查标签格式
-          is_release=${{ startsWith(github.ref, 'refs/tags/v') }}
+          is_release=${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
           tag=$(git describe --long --tags --match "v*" ${{ github.ref }} || true)
           if [[ $tag != v* ]]; then
             tag=$(curl -sX GET "https://api.github.com/repos/${{ github.repository }}/releases/latest" --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | awk '/tag_name/{print $4}' FS='["]')
@@ -171,7 +176,7 @@ jobs:
           extract: true
 
       - name: Download MFAAvalonia
-        if: matrix.os != 'android'
+        if: matrix.os != 'android' && !(inputs.frontend_candidate && matrix.os == 'win' && matrix.arch == 'x86_64')
         id: download_mfa
         uses: robinraju/release-downloader@v1
         with:
@@ -181,6 +186,12 @@ jobs:
           tag: ${{ env.MFAA_VERSION }}
           out-file-path: "MFA"
           extract: true
+
+      - name: Set up candidate SDK
+        if: inputs.frontend_candidate && matrix.os == 'win' && matrix.arch == 'x86_64'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.403"
 
       - name: Download portable Python
         if: matrix.os != 'android'
@@ -199,12 +210,28 @@ jobs:
           python-version: "${{ env.PYTHON_VERSION }}"
 
       - name: Clean up MFAAvalonia archive
-        if: matrix.os != 'android'
+        if: matrix.os != 'android' && !(inputs.frontend_candidate && matrix.os == 'win' && matrix.arch == 'x86_64')
         shell: bash
         run: |
           ARCHIVE_FILE_PATH="${{ fromJson(steps.download_mfa.outputs.downloaded_files)[0] }}"
           rm -f "${ARCHIVE_FILE_PATH}"
           echo "Archive cleanup command executed for MFAAvalonia."
+
+      - name: Build and stage candidate frontend
+        if: inputs.frontend_candidate && matrix.os == 'win' && matrix.arch == 'x86_64'
+        shell: pwsh
+        env:
+          DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+        run: |
+          New-Item -ItemType Directory -Path build -Force | Out-Null
+          $candidate = Get-Content tools/frontend_candidate/manifest.json -Raw | ConvertFrom-Json
+          Invoke-WebRequest -Uri "https://github.com/$($candidate.repository)/archive/$($candidate.revision).zip" -OutFile build/frontend-source.zip
+          python tools/prepare_frontend_candidate.py --source-zip build/frontend-source.zip --output build/frontend-source
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet publish build/frontend-source/MFAAvalonia.Desktop/MFAAvalonia.Desktop.csproj -c Release -r win-x64 -o build/frontend-published -p:UsedAvaloniaProducts=
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/stage_frontend_candidate.py --source build/frontend-source --published build/frontend-published --output MFA
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Remove built-in runtime in MFA
         if: matrix.os != 'android'
@@ -306,7 +333,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: TKFMaa-${{ matrix.os }}-${{ matrix.arch }}
+          name: TKFMaa-${{ matrix.os }}-${{ matrix.arch }}${{ inputs.frontend_candidate && matrix.os == 'win' && matrix.arch == 'x86_64' && '-frontend-candidate-DO-NOT-PUBLISH' || '' }}
           path: "install"
           include-hidden-files: true
 
@@ -337,7 +364,7 @@ jobs:
           GITHUB_REPO: ${{ github.repository }}
 
   release:
-    if: ${{ needs.meta.outputs.is_release == 'true' }}
+    if: ${{ needs.meta.outputs.is_release == 'true' && !inputs.frontend_candidate }}
     needs: [meta, install, changelog]
     runs-on: ubuntu-latest
     steps:

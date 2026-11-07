@@ -1,0 +1,447 @@
+--- a/MFAAvalonia/Extensions/MaaFW/AgentHelper.cs
++++ b/MFAAvalonia/Extensions/MaaFW/AgentHelper.cs
+@@ -98,6 +98,7 @@
+                     // an automatically selected loopback port and is supported natively by
+                     // MaaAgentServer, so make it the Android default without changing Desktop.
+                     var useTcp = OperatingSystem.IsAndroid()
++                                 || TkfmRuntimeEnvironment.UseTcpAgent
+                                  || instanceConfig.GetValue(ConfigurationKeys.AgentTcpMode, false);
+                     // Do not register Android's continuously active controller/tasker
+                     // event sinks before the startup handshake. The virtual-display
+--- /dev/null
++++ b/MFAAvalonia/Helper/TkfmPackagePreflight.cs
+@@ -0,0 +1,79 @@
++using System;
++using System.IO;
++using System.Linq;
++using Newtonsoft.Json.Linq;
++
++namespace MFAAvalonia.Helper;
++
++// Candidate for the pinned MFAAvalonia 2.16.2 build. Requires compilation and UI acceptance.
++internal static class TkfmPackagePreflight
++{
++    internal static void Validate(string root, string interfacePath)
++    {
++        var project = JObject.Parse(File.ReadAllText(interfacePath));
++        if (!string.Equals(project["name"]?.ToString(), "TKFMaa", StringComparison.Ordinal))
++            return;
++
++        RequireFile(root, "agent/main.py");
++        CheckTemplates(root, project, "interface.json");
++        var pipeline = Path.Combine(root, "resource", "pipeline");
++        if (!Directory.Exists(pipeline))
++            throw new InvalidDataException("TKFMaa package is missing resource/pipeline");
++        foreach (var file in Directory.EnumerateFiles(pipeline, "*", SearchOption.AllDirectories)
++                     .Where(file => Path.GetExtension(file) is ".json" or ".jsonc"))
++            CheckTemplates(root, JObject.Parse(File.ReadAllText(file)), Path.GetRelativePath(root, file));
++    }
++
++    private static string ResolveInside(string root, string relative)
++    {
++        if (string.IsNullOrWhiteSpace(relative) || Path.IsPathRooted(relative)
++            || relative.Contains(':') || relative.Contains('\\')
++            || relative.Split('/').Contains(".."))
++            throw new InvalidDataException($"Unsafe TKFMaa package reference: {relative}");
++        var prefix = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
++        var full = Path.GetFullPath(Path.Combine(root, relative));
++        if (!full.StartsWith(prefix, StringComparison.Ordinal)
++            && !full.Equals(prefix.TrimEnd(Path.DirectorySeparatorChar), StringComparison.Ordinal))
++            throw new InvalidDataException($"TKFMaa package reference escapes root: {relative}");
++        return full;
++    }
++
++    private static void RequireFile(string root, string relative)
++    {
++        if (!File.Exists(ResolveInside(root, relative)))
++            throw new InvalidDataException($"TKFMaa package file missing: {relative}");
++    }
++
++    private static void CheckTemplates(string root, JToken value, string source)
++    {
++        if (value is JObject obj)
++        {
++            foreach (var property in obj.Properties())
++            {
++                if (property.Name == "template")
++                {
++                    var references = property.Value is JArray array ? array.ToArray() : new[] { property.Value };
++                    foreach (var reference in references)
++                    {
++                        if (reference.Type != JTokenType.String)
++                            throw new InvalidDataException($"Invalid template reference in {source}");
++                        var template = reference.Value<string>()!;
++                        // Validate before prefixing so absolute paths are rejected on every platform.
++                        ResolveInside(Path.Combine(root, "resource", "image"), template);
++                        var path = ResolveInside(root, "resource/image/" + template);
++                        if (!File.Exists(path) && !(Directory.Exists(path)
++                            && Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).Any(IsImage)))
++                            throw new InvalidDataException($"Missing template {template} referenced by {source}");
++                    }
++                }
++                CheckTemplates(root, property.Value, source);
++            }
++        }
++        else if (value is JArray array)
++            foreach (var child in array)
++                CheckTemplates(root, child, source);
++    }
++
++    private static bool IsImage(string file) => Path.GetExtension(file).ToLowerInvariant()
++        is ".png" or ".jpg" or ".jpeg" or ".webp" or ".bmp";
++}
+--- /dev/null
++++ b/MFAAvalonia/Helper/TkfmRuntimeEnvironment.cs
+@@ -0,0 +1,32 @@
++using System;
++using System.IO;
++using Newtonsoft.Json.Linq;
++
++namespace MFAAvalonia.Helper;
++
++public static class TkfmRuntimeEnvironment
++{
++    public static bool UseTcpAgent { get; private set; }
++
++    // Configure before loading Maa native libraries: ZeroMQ's internal signaler
++    // also uses TMP, independently of MaaAgent's public IPC endpoint.
++    public static void Prepare(string root)
++    {
++        if (!OperatingSystem.IsWindows()) return;
++        var interfacePath = Path.Combine(root, "interface.json");
++        if (!File.Exists(interfacePath)) return;
++        JObject definition;
++        try { definition = JObject.Parse(File.ReadAllText(interfacePath)); }
++        catch (Newtonsoft.Json.JsonException) { return; }
++        if (!string.Equals(definition["name"]?.ToString(), "TKFMaa", StringComparison.Ordinal)) return;
++
++        var directory = Path.GetFullPath(Path.Combine(root, "logs", "runtime-temp"));
++        Directory.CreateDirectory(directory);
++        var probe = Path.Combine(directory, $"write-probe-{Guid.NewGuid():N}");
++        using (new FileStream(probe, FileMode.CreateNew, FileAccess.Write, FileShare.None,
++                   1, FileOptions.DeleteOnClose)) { }
++        Environment.SetEnvironmentVariable("TEMP", directory);
++        Environment.SetEnvironmentVariable("TMP", directory);
++        UseTcpAgent = true;
++    }
++}
+--- a/MFAAvalonia/Helper/UniversalExtractor.cs
++++ b/MFAAvalonia/Helper/UniversalExtractor.cs
+@@ -53,7 +53,7 @@
+     // 解压ZIP文件
+     private static void ExtractZip(string zipFilePath, string destinationDirectory)
+     {
+-        using (var archive = ArchiveFactory.Open(zipFilePath))
++        using (var archive = ArchiveFactory.OpenArchive(zipFilePath))
+         {
+             foreach (var entry in archive.Entries)
+             {
+@@ -74,7 +74,7 @@
+     private static void ExtractTgz(string tgzFilePath, string destinationDirectory)
+     {
+         using Stream stream = File.OpenRead(tgzFilePath);
+-        using var reader = ReaderFactory.Open(stream);
++        using var reader = ReaderFactory.OpenReader(stream);
+ 
+         while (reader.MoveToNextEntry())
+         {
+@@ -93,7 +93,7 @@
+     // 解压TAR文件
+     private static void ExtractTar(string tarFilePath, string destinationDirectory)
+     {
+-        using (var archive = TarArchive.Open(tarFilePath))
++        using (var archive = TarArchive.OpenArchive(tarFilePath))
+         {
+             foreach (var entry in archive.Entries)
+             {
+@@ -113,7 +113,7 @@
+     // 解压RAR文件
+     private static void ExtractRar(string rarFilePath, string destinationDirectory)
+     {
+-        using (var archive = ArchiveFactory.Open(rarFilePath))
++        using (var archive = ArchiveFactory.OpenArchive(rarFilePath))
+         {
+             foreach (var entry in archive.Entries)
+             {
+@@ -170,7 +170,7 @@
+     // 异步解压ZIP文件（带进度）
+     async private static Task ExtractZipAsync(string zipFilePath, string destinationDirectory, ProgressBar? progressBar = null)
+     {
+-        using (var archive = ArchiveFactory.Open(zipFilePath))
++        using (var archive = ArchiveFactory.OpenArchive(zipFilePath))
+         {
+             var totalEntries = archive.Entries.Count();
+             int processedEntries = 0;
+@@ -200,9 +200,9 @@
+     // 异步解压TarGz文件（带进度）
+     async private static Task ExtractTgzAsync(string tgzFilePath, string destinationDirectory, ProgressBar? progressBar = null)
+     {
+-        using (var archive = TarArchive.Open(tgzFilePath))
+-        {
+-            var totalEntries = archive.Entries.Count;
++        using (var archive = TarArchive.OpenArchive(tgzFilePath))
++        {
++            var totalEntries = archive.Entries.Count();
+             int processedEntries = 0;
+ 
+             foreach (var entry in archive.Entries)
+@@ -231,9 +231,9 @@
+     // 异步解压Tar文件（带进度）
+     private static async Task ExtractTarAsync(string tarFilePath, string destinationDirectory, ProgressBar? progressBar = null)
+     {
+-        using (var archive = TarArchive.Open(tarFilePath))
+-        {
+-            var totalEntries = archive.Entries.Count;
++        using (var archive = TarArchive.OpenArchive(tarFilePath))
++        {
++            var totalEntries = archive.Entries.Count();
+             int processedEntries = 0;
+ 
+             foreach (var entry in archive.Entries)
+@@ -261,7 +261,7 @@
+     // 异步解压RAR文件（带进度）
+     private static async Task ExtractRarAsync(string rarFilePath, string destinationDirectory, ProgressBar? progressBar = null)
+     {
+-        using (var archive = ArchiveFactory.Open(rarFilePath))
++        using (var archive = ArchiveFactory.OpenArchive(rarFilePath))
+         {
+             var totalEntries = archive.Entries.Count();
+             int processedEntries = 0;
+@@ -301,7 +301,7 @@
+             // 第一次遍历：获取总条目数（用于进度计算）
+             int totalEntries = 0;
+             using (Stream stream = File.OpenRead(compressedFilePath))
+-            using (var reader = ReaderFactory.Open(stream))
++            using (var reader = ReaderFactory.OpenReader(stream))
+             {
+                 while (reader.MoveToNextEntry())
+                 {
+@@ -311,7 +311,7 @@
+ 
+             // 第二次遍历：实际解压并更新进度
+             using (Stream stream = File.OpenRead(compressedFilePath))
+-            using (var reader = ReaderFactory.Open(stream))
++            using (var reader = ReaderFactory.OpenReader(stream))
+             {
+                 int processedEntries = 0;
+                 while (reader.MoveToNextEntry())
+@@ -359,7 +359,7 @@
+             // 第一次遍历：获取总条目数（用于进度计算）
+             int totalEntries = 0;
+             using (Stream stream = File.OpenRead(compressedFilePath))
+-            using (var reader = ReaderFactory.Open(stream))
++            using (var reader = ReaderFactory.OpenReader(stream))
+             {
+                 while (reader.MoveToNextEntry())
+                 {
+@@ -369,7 +369,7 @@
+ 
+             // 第二次遍历：实际解压并更新进度
+             using (Stream stream = File.OpenRead(compressedFilePath))
+-            using (var reader = ReaderFactory.Open(stream))
++            using (var reader = ReaderFactory.OpenReader(stream))
+             {
+                 int processedEntries = 0;
+                 while (reader.MoveToNextEntry())
+--- a/MFAAvalonia/Helper/VersionChecker.cs
++++ b/MFAAvalonia/Helper/VersionChecker.cs
+@@ -67,6 +67,8 @@
+     private static readonly object StartupCheckLock = new();
+     private static Task? _startupCheckTask;
+     private static int _restartPending;
++    private static readonly ConcurrentDictionary<string, (JToken Data, string Field)> PendingChangelogs = new();
++    private static bool IsTkfmResource => string.Equals(MaaProcessor.Interface?.Name, "TKFMaa", StringComparison.Ordinal);
+ 
+     public static bool IsRestartPending => Volatile.Read(ref _restartPending) != 0;
+ 
+@@ -105,7 +107,7 @@
+             if (!File.Exists(packagePath) || !IsSupportedLocalResourcePackage(packagePath))
+                 return new(false, false, string.Empty, currentVersion, string.Empty, string.Empty);
+ 
+-            using var archive = ArchiveFactory.Open(packagePath);
++            using var archive = ArchiveFactory.OpenArchive(packagePath);
+             var entries = archive.Entries
+                 .Where(entry => !entry.IsDirectory)
+                 .Select(entry => new
+@@ -675,12 +677,36 @@
+ 
+     public async static Task UpdateResource(bool isGithub = true, bool closeDialog = false, bool noDialog = false, Action action = null, string currentVersion = "", string? localPackagePath = null)
+     {
++        ISukiToast? updateToast = null;
++        try
++        {
++            await UpdateResourceCore(isGithub, closeDialog, noDialog, action, currentVersion, localPackagePath,
++                toast => updateToast = toast);
++        }
++        catch
++        {
++            Dismiss(updateToast);
++            await DispatcherHelper.RunOnMainThreadAsync(() =>
++            {
++                Instances.RootViewModel.SetUpdating(false);
++                Instances.InstanceTabBarViewModel.ActiveTab?.TaskQueueViewModel.ClearDownloadProgress();
++                ToastHelper.Warn(LangKeys.Warning.ToLocalization(),
++                    "更新未完成，请查看日志并解决问题后重试。", -1);
++            });
++            throw;
++        }
++    }
++
++    private async static Task UpdateResourceCore(bool isGithub, bool closeDialog, bool noDialog,
++        Action action, string currentVersion, string? localPackagePath, Action<ISukiToast?> captureToast)
++    {
+         shouldShowToast = false;
+         Instances.RootViewModel.SetUpdating(true);
+         var debugEnabled = IsEnvEnabled(ResourceUpdateDebugEnv);
+         var dryRun = debugEnabled && IsEnvEnabled(ResourceUpdateDryRunEnv);
+         var keepArtifacts = debugEnabled || IsEnvEnabled(ResourceUpdateKeepArtifactsEnv);
+         var isLocalPackage = !string.IsNullOrWhiteSpace(localPackagePath);
++        PendingChangelogs.Clear();
+         ProgressBar? progress = null;
+         TextBlock? textBlock = null;
+         TextBlock? downloadSpeedTextBlock = null;
+@@ -722,6 +748,7 @@
+                 .WithTitle(LangKeys.UpdateResource.ToLocalization())
+                 .WithContent(stackPanel).Queue()
+         );
++        captureToast(sukiToast);
+         var localVersion = string.IsNullOrWhiteSpace(currentVersion) ? MaaProcessor.Interface?.Version ?? string.Empty : currentVersion;
+ 
+         if (string.IsNullOrWhiteSpace(localVersion))
+@@ -815,6 +842,15 @@
+         {
+             Dismiss(sukiToast);
+             ToastHelper.Warn(LangKeys.FailToGetDownloadUrl.ToLocalization());
++            Instances.RootViewModel.SetUpdating(false);
++            Instances.InstanceTabBarViewModel.ActiveTab?.TaskQueueViewModel.ClearDownloadProgress();
++            return;
++        }
++        if (IsTkfmResource && !isLocalPackage && !Regex.IsMatch(sha256 ?? string.Empty, @"\A[0-9a-fA-F]{64}\z"))
++        {
++            Dismiss(sukiToast);
++            LoggerHelper.Warning("TKFMaa 更新附件缺少有效 SHA256，已拒绝下载。");
++            ToastHelper.Warn(LangKeys.Warning.ToLocalization(), "更新附件缺少有效 SHA256，已拒绝下载。", -1);
+             Instances.RootViewModel.SetUpdating(false);
+             Instances.InstanceTabBarViewModel.ActiveTab?.TaskQueueViewModel.ClearDownloadProgress();
+             return;
+@@ -955,6 +991,20 @@
+         {
+             Dismiss(sukiToast);
+             ToastHelper.Warn(LangKeys.Warning.ToLocalization(), validationMessage, -1);
++            Instances.RootViewModel.SetUpdating(false);
++            return;
++        }
++
++        try
++        {
++            if (!isIncrementalPackage)
++                TkfmPackagePreflight.Validate(originPath, interfacePath);
++        }
++        catch (Exception ex)
++        {
++            LoggerHelper.Error($"TKFMaa 更新包预检失败：{ex.Message}", ex);
++            Dismiss(sukiToast);
++            ToastHelper.Warn(LangKeys.Warning.ToLocalization(), ex.Message, -1);
+             Instances.RootViewModel.SetUpdating(false);
+             return;
+         }
+@@ -1176,6 +1226,9 @@
+ 
+         updateTransaction.Commit();
+ 
++        if (PendingChangelogs.TryRemove(latestVersion, out var pendingChangelog))
++            SaveChangelog(pendingChangelog.Data, pendingChangelog.Field);
++
+         if (containsCoreApplicationFiles && HasExecutableFileNameChanged(exeName, restartExecutablePath))
+             TryRenameExecutableToBackup(exeName, allowCurrentProcessExecutable: true);
+ 
+@@ -1312,6 +1365,9 @@
+             }
+             return;
+         }
++
++        // The instance mutex belongs to the UI thread. Wait for its release before launching.
++        await DispatcherHelper.RunOnMainThreadAsync(AppRuntime.ReleaseMutex);
+ 
+         if (OperatingSystem.IsMacOS())
+         {
+@@ -2650,7 +2706,7 @@
+                                 if (onlyCheck && repo != "MFAAvalonia")
+                                     SaveRelease(tag, "body");
+                                 if (!onlyCheck && repo != "MFAAvalonia")
+-                                    SaveChangelog(tag, "body");
++                                    SaveOrStageChangelog(tag, "body", latestVersion);
+                             }
+                             (url, sha256) = await GetDownloadUrlFromGitHubReleaseAsync(latestVersion, owner, repo).ConfigureAwait(false);
+                             return (url, latestVersion, sha256);
+@@ -2695,7 +2751,7 @@
+                 if (onlyCheck && repo != "MFAAvalonia")
+                     SaveRelease(bestRelease, "body");
+                 if (!onlyCheck && repo != "MFAAvalonia")
+-                    SaveChangelog(bestRelease, "body");
++                    SaveOrStageChangelog(bestRelease, "body", latestVersion);
+             }
+             (url, sha256) = await GetDownloadUrlFromGitHubReleaseAsync(latestVersion, owner, repo).ConfigureAwait(false);
+         }
+@@ -3075,7 +3131,7 @@
+                 }
+                 if (!onlyCheck && !isUI && data != null)
+                 {
+-                    SaveChangelog(data, "release_note");
++                    SaveOrStageChangelog(data, "release_note", latestVersion);
+                 }
+             }
+             if (exception != null)
+@@ -4059,6 +4115,14 @@
+         {
+             LoggerHelper.Error($"保存发布说明文件失败：文件={ChangelogViewModel.ReleaseFileName}，原因={ex.Message}", ex);
+         }
++    }
++
++    private static void SaveOrStageChangelog(JToken releaseData, string from, string version)
++    {
++        if (IsTkfmResource)
++            PendingChangelogs[version] = (releaseData.DeepClone(), from);
++        else
++            SaveChangelog(releaseData, from);
+     }
+ 
+     private static void SaveChangelog(JToken? releaseData, string from)
+--- a/MFAAvalonia/MFAAvalonia.csproj
++++ b/MFAAvalonia/MFAAvalonia.csproj
+@@ -62,7 +62,10 @@
+         <PackageReference Include="Maa.AgentBinary" Version="1.2.0" />
+         <PackageReference Include="Maa.Framework" Version="5.10.0" />
+         <PackageReference Include="Maa.Framework.Runtimes" Version="5.12.3" />
+-        <PackageReference Include="MailKit" Version="4.14.1" />
++        <PackageReference Include="MailKit" Version="4.16.0" />
++        <PackageReference Include="MimeKit" Version="4.16.0" />
++        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
++        <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
+         <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
+         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
+         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0">
+@@ -82,7 +85,7 @@
+         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+         <PackageReference Include="Sentry" Version="6.8.0" />
+-        <PackageReference Include="SharpCompress" Version="0.42.1" />
++        <PackageReference Include="SharpCompress" Version="0.48.0" />
+         <PackageReference Include="SharpHook" Version="7.1.1" Condition="'$(TargetFramework)' == 'net10.0'" />
+         <PackageReference Include="SkiaSharp" Version="3.119.1" />
+         <PackageReference Include="SoundFlow" Version="1.4.0" />
+@@ -169,3 +172,4 @@
+     </ItemGroup>
+     <!-- 根据发布的目标系统，仅复制对应脚本到publish目录 -->
+ </Project>
++
+--- a/MFAAvalonia.Desktop/Program.cs
++++ b/MFAAvalonia.Desktop/Program.cs
+@@ -46,6 +46,7 @@
+ 
+         try
+         {
++            TkfmRuntimeEnvironment.Prepare(AppContext.BaseDirectory);
+             var executablePath = Environment.ProcessPath ?? Path.Combine(AppContext.BaseDirectory, "MFAAvalonia.exe");
+             var instanceKey = AppRuntime.CreateInstanceKey(executablePath);
+             AppRuntime.Initialize(args, instanceKey);

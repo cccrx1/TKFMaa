@@ -49,10 +49,30 @@ def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allo
         raise ValueError("Missing packaged Python or native runtime")
     if not any(Path(name).name.lower() in {"mfaavalonia.exe", "mfaavalonia", "mfaavalonia.dll"} for name in files):
         raise ValueError("Missing frontend")
+    frontend_build = None
+    proof_path = stage / "frontend-candidate-provenance.json"
+    if proof_path.exists():
+        frontend_build = json.loads(proof_path.read_text(encoding="utf-8"))
+        expected_frontend = json.loads((ROOT / "tools/frontend_candidate/manifest.json").read_text(encoding="utf-8"))
+        required_frontend_files = {"MFAAvalonia.exe", "MFAAvalonia.dll", "libs/MFAAvalonia.Core.dll"}
+        if (platform != "win-x64" or frontend_build.get("schema_version") != 1
+                or frontend_build.get("platform") != platform or frontend_build.get("source") != expected_frontend
+                or frontend_build.get("publishable") is not False or not frontend_build.get("files")):
+            raise ValueError("Invalid candidate frontend provenance")
+        if not required_frontend_files.issubset(frontend_build["files"]):
+            raise ValueError("Candidate frontend provenance omits required binaries")
+        for name, expected_hash in frontend_build["files"].items():
+            if files.get(name) != expected_hash:
+                raise ValueError(f"Candidate frontend file changed: {name}")
+        # Source still must be clean above. This marks the resulting package as
+        # a rehearsal, so the public Release mirror's exact source check rejects it.
+        source = {**source, "rehearsal": True}
     value = {"schema_version": 1, "kind": "full", "version": version, "platform": platform,
              "source": source, "baseline": policy, "update_source": update_source,
              "installed_distributions": inventory, "distribution_metadata_versions": raw_versions, "files": files,
              "runtime_evidence": "dependency METADATA and file inventory; framework/frontend versions declared by pinned build workflow"}
+    if frontend_build is not None:
+        value["frontend_build"] = frontend_build
     write_json(stage / "package-provenance.json", value)
     return value
 
