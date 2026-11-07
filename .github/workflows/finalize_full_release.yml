@@ -1,0 +1,123 @@
+name: finalize-full-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 已存在且明确授权发布的稳定版本标签
+        required: true
+        type: string
+      run_id:
+        description: 同一标签提交的失败 install 运行编号（八目标构建和验包必须已成功）
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: tkfmaa-full-release-publish
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+      SOURCE_RUN: ${{ inputs.run_id }}
+    steps:
+      - name: Verify tag, source build and absent Release
+        id: source
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          import json
+          import os
+          import re
+          import urllib.error
+          import urllib.request
+
+          version, run_id = os.environ["RELEASE_VERSION"], os.environ["SOURCE_RUN"]
+          if not re.fullmatch(r"v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)", version) or not run_id.isdigit():
+              raise ValueError("Require a stable version and numeric source run")
+          prefix = "https://api.github.com/repos/" + os.environ["REPOSITORY"] + "/"
+          def api(path):
+              request = urllib.request.Request(prefix + path, headers={
+                  "Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                  "Accept": "application/vnd.github+json"})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+          run = api("actions/runs/" + run_id)
+          if (run["status"] != "completed" or run["conclusion"] != "failure" or run["event"] != "push"
+                  or run["head_branch"] != version or run["path"].split("@")[0] != ".github/workflows/install.yml"):
+              raise ValueError("Source must be a failed tag install run")
+          reference = api("git/ref/tags/" + version)["object"]
+          for _ in range(3):
+              if reference["type"] == "commit":
+                  break
+              reference = api("git/tags/" + reference["sha"])["object"]
+          if reference["type"] != "commit" or reference["sha"] != run["head_sha"]:
+              raise ValueError("Tag no longer matches the source run")
+          jobs = api("actions/runs/" + run_id + "/jobs?per_page=100")["jobs"]
+          builds = [job for job in jobs if job["name"].startswith("install (")]
+          if len(builds) != 8 or any(job["conclusion"] != "success" for job in builds):
+              raise ValueError("All eight original build jobs must have succeeded")
+          release = next(job for job in jobs if job["name"] == "release")
+          if not any(step["name"] == "Verify release plan and all desktop artifacts" and step["conclusion"] == "success"
+                     for step in release["steps"]):
+              raise ValueError("Original artifact gate did not pass")
+          try:
+              api("releases/tags/" + version)
+          except urllib.error.HTTPError as error:
+              if error.code != 404:
+                  raise
+          else:
+              raise ValueError("Release already exists; refuse to overwrite")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("commit=" + run["head_sha"] + "\n")
+          print("Verified existing tag and eight immutable source build artifacts")
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.version }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          path: build/full-release-assets
+      - name: Verify original full artifacts again
+        env:
+          SOURCE_COMMIT: ${{ steps.source.outputs.commit }}
+        run: >-
+          python tools/release_preflight.py --version "$RELEASE_VERSION"
+          --artifacts build/full-release-assets --source-sha "$SOURCE_COMMIT"
+      - name: Archive the eight original staging trees
+        shell: bash
+        run: |
+          destination="$PWD/build/full-release-zips"
+          mkdir -p "$destination"
+          count=0
+          for directory in build/full-release-assets/TKFMaa-*; do
+            test -d "$directory"
+            name="${directory##*/}-$RELEASE_VERSION.zip"
+            (cd "$directory" && zip -q -r "$destination/$name" .)
+            count=$((count + 1))
+          done
+          test "$count" -eq 8
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: build/full-release-zips/*.zip
+          tag_name: ${{ inputs.version }}
+          body_path: docs/zh_cn/releases/${{ inputs.version }}.md
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: true

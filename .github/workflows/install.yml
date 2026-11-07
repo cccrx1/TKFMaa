@@ -408,6 +408,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    concurrency:
+      group: tkfmaa-full-release-publish
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -415,22 +418,28 @@ jobs:
           python-version: "3.12"
       - uses: actions/download-artifact@v4
         with:
-          path: assets
+          path: build/full-release-assets
 
       - name: Verify release plan and all desktop artifacts
         run: >-
           python tools/release_preflight.py --version ${{ needs.meta.outputs.tag }}
-          --artifacts assets --source-sha ${{ github.sha }}
+          --artifacts build/full-release-assets --source-sha ${{ github.sha }}
 
       - run: |
-          cd assets
-          for f in *; do
-            (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
+          destination="$PWD/build/full-release-zips"
+          mkdir -p "$destination"
+          count=0
+          for directory in build/full-release-assets/TKFMaa-*; do
+            test -d "$directory"
+            name="${directory##*/}-${{ needs.meta.outputs.tag }}.zip"
+            (cd "$directory" && zip -q -r "$destination/$name" .)
+            count=$((count + 1))
           done
+          test "$count" -eq 8
 
       - uses: softprops/action-gh-release@v2
         with:
-          files: assets/*
+          files: build/full-release-zips/*.zip
           tag_name: ${{ needs.meta.outputs.tag }}
           body_path: docs/zh_cn/releases/${{ needs.meta.outputs.tag }}.md
           draft: false

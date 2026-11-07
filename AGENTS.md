@@ -47,6 +47,8 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 
 完整包前端构建配置位于 `tools/frontend_release.json`，与资源通道最旧客户端基线分开记录。v1.0.8 为完整更新，保持主仓库更新源，不部署正式资源通道或提高其兼容指纹。`install` 手工输入 `preview_version: v1.0.8` 可生成准确版本的预演包，源码仍须干净且匹配 SHA，所有非标签构建均记录 rehearsal；即使手工选择版本标签也不发布。正式标签需要对应的 `tools/releases/<版本>.json` 和 `docs/zh_cn/releases/<版本>.md`，发布 job 在上传前核对六个桌面完整包的版本、更新源、来源、前端及全部文件摘要。完整包保留 `licenses/MFAAvalonia-LICENSE.txt` 和绑定源码提交的来源说明，禁止在清理中删除。编译与依赖恢复仍可能联网；前端继续要求系统 .NET 10，与原上游成品一致。
 
+完整发布下载目录固定为 `build/full-release-assets/`，输出ZIP到 `build/full-release-zips/`，不能使用仓库已有的 `assets/`。若标签 install 在上传前失败，但八目标构建和原发布验包已成功，可在用户已明确授权该版本发布的前提下手工运行 `finalize_full_release.yml`，提供既有版本与源运行编号；它核对标签提交、原运行与验收，重复验包后仅发布同批Artifact，不移动标签、不重新编译，已有Release时拒绝执行。两个发布入口共用 `tkfmaa-full-release-publish` 并发组。
+
 完整构建下载目录 `/MFA/`、`/python-runtime/` 以及 Python 字节码由 `.gitignore` 排除，不能纳入源码提交；完整包 CI 禁止生成字节码。来源检查仍拒绝真实源码改动，并输出有限的脏路径供定位，不使用 `--allow-dirty` 绕过云端发布来源检查。
 
 分支完整包使用 `git describe --long` 生成 CI 版本：预发布基准追加 `.ci.<距离>.g<提交>`，稳定基准追加 `-ci.<距离>.g<提交>`；版本标签构建保留标签原文。不得把 `beta.1` 改成 `beta.1-ci`，否则数字预发布序号变为文本，可能阻挡后续 beta 资源更新。CI 产物只用于开发验收，不作为已发布完整包镜像来源。
