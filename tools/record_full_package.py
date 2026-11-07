@@ -7,13 +7,17 @@ from pathlib import Path
 import re
 
 from package_resources import ROOT, collect_resources, digest
+from frontend_build import verify_proof
 from release_support import baseline, source_identity, version_key, write_json
 
 
-def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allow_dirty: bool = False) -> dict:
+def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allow_dirty: bool = False,
+           rehearsal: bool = False, require_frontend_build: bool = False) -> dict:
     version_key(version)
     policy = baseline()
     source = source_identity(ROOT, commit, allow_dirty)
+    if rehearsal:
+        source = {**source, "rehearsal": True}
     platform = {"win": "win", "macos": "osx", "linux": "linux"}[os_name] + "-" + {"x86_64": "x64", "aarch64": "arm64"}[arch]
     paths = sorted(stage.rglob("*"))
     if stage.is_symlink() or any(path.is_symlink() and (not path.is_file() or not path.resolve().is_relative_to(stage.resolve())) for path in paths):
@@ -51,19 +55,17 @@ def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allo
         raise ValueError("Missing frontend")
     frontend_build = None
     proof_path = stage / "frontend-candidate-provenance.json"
+    release_proof = stage / "frontend-build-provenance.json"
+    if proof_path.exists() and release_proof.exists():
+        raise ValueError("Mixed candidate and release frontend provenance")
+    if require_frontend_build and not release_proof.is_file():
+        raise ValueError("Pinned release frontend provenance is required")
+    if release_proof.exists():
+        frontend_build = json.loads(release_proof.read_text(encoding="utf-8"))
+        verify_proof(frontend_build, files, platform)
     if proof_path.exists():
         frontend_build = json.loads(proof_path.read_text(encoding="utf-8"))
-        expected_frontend = json.loads((ROOT / "tools/frontend_candidate/manifest.json").read_text(encoding="utf-8"))
-        required_frontend_files = {"MFAAvalonia.exe", "MFAAvalonia.dll", "libs/MFAAvalonia.Core.dll"}
-        if (platform != "win-x64" or frontend_build.get("schema_version") != 1
-                or frontend_build.get("platform") != platform or frontend_build.get("source") != expected_frontend
-                or frontend_build.get("publishable") is not False or not frontend_build.get("files")):
-            raise ValueError("Invalid candidate frontend provenance")
-        if not required_frontend_files.issubset(frontend_build["files"]):
-            raise ValueError("Candidate frontend provenance omits required binaries")
-        for name, expected_hash in frontend_build["files"].items():
-            if files.get(name) != expected_hash:
-                raise ValueError(f"Candidate frontend file changed: {name}")
+        verify_proof(frontend_build, files, platform, candidate=True)
         # Source still must be clean above. This marks the resulting package as
         # a rehearsal, so the public Release mirror's exact source check rejects it.
         source = {**source, "rehearsal": True}
@@ -85,8 +87,11 @@ def main() -> None:
     parser.add_argument("--arch", choices=("x86_64", "aarch64"), required=True)
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--allow-dirty", action="store_true")
+    parser.add_argument("--rehearsal", action="store_true", help="Mark an otherwise clean preview build as non-release")
+    parser.add_argument("--require-frontend-build", action="store_true")
     args = parser.parse_args()
-    record(args.stage, args.version, args.os, args.arch, args.source_sha, args.allow_dirty)
+    record(args.stage, args.version, args.os, args.arch, args.source_sha, args.allow_dirty,
+           args.rehearsal, args.require_frontend_build)
     print("Full package provenance recorded; target execution not tested")
 
 

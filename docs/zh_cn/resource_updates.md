@@ -1,6 +1,6 @@
 # 资源包与完整包构建
 
-前端候选补丁及固定来源清单保存在 [`tools/frontend_candidate/`](../../tools/frontend_candidate/README.md)。`frontend-candidate` 手工工作流只生成 Windows x64 前端 Artifact；`install` 手工输入 `frontend_candidate` 可将其编译并组装为 Windows x64 完整包，附来源及文件摘要，强制标记演练且禁止发布。手工运行即使选择版本标签也不进入发布步骤；标签推送的正式包仍使用原上游前端。候选在线更新要求有效 SHA256，并在安装成功后保存更新日志；Windows 启动采用独立进程临时目录与 Agent TCP 兼容处理。正式接入仍需完整包和兼容基线审核。
+固定前端补丁及来源清单保存在 [`tools/frontend_candidate/`](../../tools/frontend_candidate/README.md)。完整包默认按 `tools/frontend_release.json` 从固定源码编译六种桌面目标，不再下载上游原前端成品。在线更新要求有效 SHA256，更新日志在安装成功后保存；Windows 启动使用独立进程临时目录和 Agent TCP。独立 `frontend-candidate` 工作流仍仅生成不可发布的诊断 Artifact。
 
 活动配置、图片、识别流程和兼容现有环境的 Agent 逻辑可以通过资源包更新。前端、MaaFramework、Python 或运行依赖变化时，需要完整包。
 
@@ -14,6 +14,12 @@
 | `install`   | 完整包工具/运行环境配置变更、手工运行或 `v*` 标签 | 带前端与运行环境的完整包             | 只有版本标签进入现有 Release 步骤 |
 
 纯活动更新不再触发完整包构建。需要验证前端、Agent 和运行环境的完整组合时，可手工运行 `install`。两个流程使用相同的资源收集与 Agent 路径转换代码，避免两套资源布局不一致。
+
+版本标签本身不自动识别改动类型：主仓库 `v*` 标签走完整包流程，资源发布使用单独的准备/发布流程。v1.0.8 的[发布说明](releases/v1.0.8.md)及 `tools/releases/v1.0.8.json` 明确指定完整更新，保留主仓库更新源；正式资源通道后续迁移。
+
+手工 `install` 的 `preview_version` 可指定已有发布计划中的版本，例如 `v1.0.8`。预演只生成 Artifact，包内来源标记 rehearsal，汇总 job 检查六个桌面包；手工运行即使选择版本标签也不发布。实际标签推送在 Release 上传前检查发布计划、说明、来源 SHA、前端构建配置和文件哈希。每次新版本须准备对应计划与公开说明，不允许将预演包当正式镜像来源。
+
+打包阶段只清理可再生的字节码、缓存、调试符号和日志，不裁剪运行依赖。出现用户配置、运行日志目录或 Git 数据时拒绝继续。仓库 `build/` 和本地验证资料不进入完整包，历史活动归档也不进入运行资源 ZIP。
 
 ## 本机构建资源包
 

@@ -1,0 +1,18 @@
+{
+    "schema_version": 1,
+    "id": "tkfmaa-mfa2162-patch1",
+    "manifest_sha256": "4436c99dc28428bd82bcb48dfa3e658ac195c888889b8e09f4a45bfd89714d8e",
+    "python": "3.12",
+    "maafw": "5.14.3",
+    "frontend": "2.16.2",
+    "platforms": [
+        "win-x64",
+        "win-arm64",
+        "osx-x64",
+        "osx-arm64",
+        "linux-x64",
+        "linux-arm64"
+    ],
+    "system_dotnet_requirement": "Microsoft.NETCore.App 10.0; unchanged from upstream 2.16.2",
+    "migration": "Full package required; existing update source retained; resource channel baseline unchanged"
+}

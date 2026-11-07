@@ -1,6 +1,6 @@
 {
     "schema_version": 1,
-    "status": "candidate-not-enabled-in-release-build",
+    "status": "pinned-patched-source",
     "repository": "MaaXYZ/MFAAvalonia",
     "revision": "1080d3e1500f3439ac896ab2eca9aeb8e885f1f4",
     "source_archive_sha256": "351ecf655c7bfeb2b70e3285f727d7bb44061a136a215df095eeefd3bab5eb64",

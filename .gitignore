@@ -471,3 +471,11 @@ tmp
 /tools/test_*.py
 /docs/zh_cn/develop/
 /docs/zh_cn/records/
+
+# Versioned source release plans and public notes, not compiled Release outputs
+!/tools/releases/
+/tools/releases/*
+!/tools/releases/*.json
+!/docs/zh_cn/releases/
+/docs/zh_cn/releases/*
+!/docs/zh_cn/releases/*.md

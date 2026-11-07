@@ -10,6 +10,7 @@ from urllib.parse import quote
 import zipfile
 
 from package_resources import ROOT, collect_resources, digest
+from frontend_build import verify_proof
 from release_github import GitHub
 from release_support import TARGETS, baseline, check_selection, file_entry, source_identity, version_key, write_json
 
@@ -46,6 +47,8 @@ def verify_full_archive(path: Path, version: str, target: str, source: dict, pol
             or provenance["update_source"] != "https://github.com/" + repository
             or provenance["files"] != hashes):
         raise ValueError("Full archive provenance, baseline or content mismatch")
+    if "frontend_build" in provenance:
+        verify_proof(provenance["frontend_build"], hashes, target)
     for name, required in policy["dependencies"].items():
         if provenance["installed_distributions"].get(name) != required:
             raise ValueError("Full archive dependency baseline differs")

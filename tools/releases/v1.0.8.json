@@ -1,0 +1,9 @@
+{
+    "schema_version": 1,
+    "version": "v1.0.8",
+    "kind": "full",
+    "update_repository": "cccrx1/TKFMaa",
+    "frontend_profile": "tkfmaa-mfa2162-patch1",
+    "release_notes": "docs/zh_cn/releases/v1.0.8.md",
+    "resource_channel_migration": false
+}

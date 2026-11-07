@@ -24,6 +24,15 @@ on:
       - "tools/release_support.py"
       - "tools/release_baseline.json"
       - "tools/record_full_package.py"
+      - "tools/frontend_build.py"
+      - "tools/frontend_release.json"
+      - "tools/frontend_candidate/**"
+      - "tools/prepare_frontend_candidate.py"
+      - "tools/stage_frontend_release.py"
+      - "tools/release_preflight.py"
+      - "tools/clean_package_stage.py"
+      - "tools/releases/**"
+      - "docs/zh_cn/releases/**"
       - "tools/configure.py"
       - "tools/check_environment.py"
       - "tools/requirements.txt"
@@ -40,6 +49,15 @@ on:
       - "tools/release_support.py"
       - "tools/release_baseline.json"
       - "tools/record_full_package.py"
+      - "tools/frontend_build.py"
+      - "tools/frontend_release.json"
+      - "tools/frontend_candidate/**"
+      - "tools/prepare_frontend_candidate.py"
+      - "tools/stage_frontend_release.py"
+      - "tools/release_preflight.py"
+      - "tools/clean_package_stage.py"
+      - "tools/releases/**"
+      - "docs/zh_cn/releases/**"
       - "tools/configure.py"
       - "tools/check_environment.py"
       - "tools/requirements.txt"
@@ -48,16 +66,19 @@ on:
       - ".python-version"
   workflow_dispatch:
     inputs:
-      frontend_candidate:
-        description: Windows x64 组合验收使用固定补丁前端（仅演练 Artifact，不可发布）
+      preview_version:
+        description: 发布前预演版本（如 v1.0.8），仅 Artifact，必须有对应发布计划
         required: false
-        default: false
-        type: boolean
+        default: ""
+        type: string
       update_repository:
         description: 可选更新源，仅影响生成包；不迁移已有客户端
         required: false
         default: ""
         type: string
+
+permissions:
+  contents: read
 
 jobs:
   meta:
@@ -66,7 +87,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - id: set_tag
+        env:
+          PREVIEW_VERSION: ${{ inputs.preview_version }}
         run: |
           # 检查标签格式
           is_release=${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
@@ -88,6 +114,11 @@ jobs:
             separator="-"
             [[ "$prefix" == *-* ]] && separator="."
             tag="$prefix${separator}ci.${suffix//-/.}"
+          fi
+
+          if [[ -n "$PREVIEW_VERSION" ]]; then
+            python tools/release_preflight.py --version "$PREVIEW_VERSION"
+            tag="$PREVIEW_VERSION"
           fi
 
           # 检查是否为预发布版本
@@ -175,20 +206,8 @@ jobs:
           out-file-path: "deps"
           extract: true
 
-      - name: Download MFAAvalonia
-        if: matrix.os != 'android' && !(inputs.frontend_candidate && matrix.os == 'win' && matrix.arch == 'x86_64')
-        id: download_mfa
-        uses: robinraju/release-downloader@v1
-        with:
-          repository: MaaXYZ/MFAAvalonia
-          fileName: "MFAAvalonia-*-${{ (matrix.os == 'win' && 'win') || (matrix.os == 'macos' && 'osx') || (matrix.os == 'linux' && 'linux') }}-${{ (matrix.arch == 'x86_64' && 'x64') || (matrix.arch == 'aarch64' && 'arm64') }}*"
-          latest: ${{ env.MFAA_VERSION == '' }}
-          tag: ${{ env.MFAA_VERSION }}
-          out-file-path: "MFA"
-          extract: true
-
-      - name: Set up candidate SDK
-        if: inputs.frontend_candidate && matrix.os == 'win' && matrix.arch == 'x86_64'
+      - name: Set up frontend SDK
+        if: matrix.os != 'android'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.403"
@@ -209,28 +228,21 @@ jobs:
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
 
-      - name: Clean up MFAAvalonia archive
-        if: matrix.os != 'android' && !(inputs.frontend_candidate && matrix.os == 'win' && matrix.arch == 'x86_64')
-        shell: bash
-        run: |
-          ARCHIVE_FILE_PATH="${{ fromJson(steps.download_mfa.outputs.downloaded_files)[0] }}"
-          rm -f "${ARCHIVE_FILE_PATH}"
-          echo "Archive cleanup command executed for MFAAvalonia."
-
-      - name: Build and stage candidate frontend
-        if: inputs.frontend_candidate && matrix.os == 'win' && matrix.arch == 'x86_64'
+      - name: Build and stage pinned patched frontend
+        if: matrix.os != 'android'
         shell: pwsh
         env:
           DOTNET_CLI_TELEMETRY_OPTOUT: "1"
         run: |
           New-Item -ItemType Directory -Path build -Force | Out-Null
-          $candidate = Get-Content tools/frontend_candidate/manifest.json -Raw | ConvertFrom-Json
-          Invoke-WebRequest -Uri "https://github.com/$($candidate.repository)/archive/$($candidate.revision).zip" -OutFile build/frontend-source.zip
+          $frontend = Get-Content tools/frontend_candidate/manifest.json -Raw | ConvertFrom-Json
+          Invoke-WebRequest -Uri "https://github.com/$($frontend.repository)/archive/$($frontend.revision).zip" -OutFile build/frontend-source.zip
           python tools/prepare_frontend_candidate.py --source-zip build/frontend-source.zip --output build/frontend-source
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          dotnet publish build/frontend-source/MFAAvalonia.Desktop/MFAAvalonia.Desktop.csproj -c Release -r win-x64 -o build/frontend-published -p:UsedAvaloniaProducts=
+          $platform = "${{ (matrix.os == 'macos' && 'osx') || matrix.os }}-${{ (matrix.arch == 'x86_64' && 'x64') || 'arm64' }}"
+          dotnet publish build/frontend-source/MFAAvalonia.Desktop/MFAAvalonia.Desktop.csproj -c Release -r $platform -o build/frontend-published -p:UsedAvaloniaProducts=
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tools/stage_frontend_candidate.py --source build/frontend-source --published build/frontend-published --output MFA
+          python tools/stage_frontend_release.py --source build/frontend-source --published build/frontend-published --platform $platform --output MFA
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Remove built-in runtime in MFA
@@ -312,6 +324,10 @@ jobs:
 
           rm -rf "${{ matrix.python_site_packages }}/maa/bin"
 
+      - name: Remove disposable package files
+        if: matrix.os != 'android'
+        run: python tools/clean_package_stage.py --stage install
+
       - name: Verify packaged runtime
         if: matrix.os != 'android'
         shell: bash
@@ -329,11 +345,12 @@ jobs:
           python tools/record_full_package.py
           --version ${{ needs.meta.outputs.tag }}
           --os ${{ matrix.os }} --arch ${{ matrix.arch }}
-          --source-sha ${{ github.sha }}
+          --source-sha ${{ github.sha }} --require-frontend-build
+          ${{ needs.meta.outputs.is_release != 'true' && '--rehearsal' || '' }}
 
       - uses: actions/upload-artifact@v4
         with:
-          name: TKFMaa-${{ matrix.os }}-${{ matrix.arch }}${{ inputs.frontend_candidate && matrix.os == 'win' && matrix.arch == 'x86_64' && '-frontend-candidate-DO-NOT-PUBLISH' || '' }}
+          name: TKFMaa-${{ matrix.os }}-${{ matrix.arch }}
           path: "install"
           include-hidden-files: true
 
@@ -363,14 +380,47 @@ jobs:
           OUTPUT: CHANGES.md
           GITHUB_REPO: ${{ github.repository }}
 
-  release:
-    if: ${{ needs.meta.outputs.is_release == 'true' && !inputs.frontend_candidate }}
-    needs: [meta, install, changelog]
+  preview-verification:
+    if: ${{ inputs.preview_version != '' }}
+    needs: [meta, install]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          path: build/release-preview
+      - name: Verify preview identities and hashes
+        run: >-
+          python tools/release_preflight.py --version ${{ needs.meta.outputs.tag }}
+          --artifacts build/release-preview --source-sha ${{ github.sha }}
+          --expect-rehearsal --output build/release-preview-verification.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-preflight-${{ needs.meta.outputs.tag }}
+          path: build/release-preview-verification.json
+
+  release:
+    if: ${{ needs.meta.outputs.is_release == 'true' }}
+    needs: [meta, install, changelog]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - uses: actions/download-artifact@v4
         with:
           path: assets
+
+      - name: Verify release plan and all desktop artifacts
+        run: >-
+          python tools/release_preflight.py --version ${{ needs.meta.outputs.tag }}
+          --artifacts assets --source-sha ${{ github.sha }}
 
       - run: |
           cd assets
@@ -382,6 +432,6 @@ jobs:
         with:
           files: assets/*
           tag_name: ${{ needs.meta.outputs.tag }}
-          body: ${{ needs.changelog.outputs.release_body }}
+          body_path: docs/zh_cn/releases/${{ needs.meta.outputs.tag }}.md
           draft: false
           prerelease: ${{ needs.meta.outputs.is_prerelease == 'true' }}
