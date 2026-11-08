@@ -1,124 +1,58 @@
 # Repository Guidelines
 
-## 项目结构与模块组织
+## 开始工作前
 
-本仓库是基于 MaaFramework 的自动化助手。Python 自定义动作逻辑位于 `agent/`，其中 `agent/main.py` 负责注册处理器并启动 Maa Agent 服务。声明式自动化流程位于 `assets/resource/pipeline/`，识别模板应放入 `assets/resource/image/` 下对应的功能目录。面向用户的任务与选项在 `assets/interface.json` 中声明。通用 OCR 模型来自 MaaCommonAssets；当前提交仅保留 `.gitmodules` 声明、缺少 gitlink，模型来源由 `tools/ocr_model.json` 固定，通过 `tools/configure.py --download` 恢复，详情见开发环境文档。构建、Schema 校验和数据生成脚本位于 `tools/`，贡献者文档位于 `docs/zh_cn/develop/`，统一任务流程位于 `docs/zh_cn/tasks/`，实机验证与调试记录位于 `docs/zh_cn/records/`。公开文档总入口为 `docs/zh_cn/README.md`。目前没有独立的单元测试目录。
+本仓库是基于 MaaFramework 的自动化助手。先检查工作区状态，只修改本次任务涉及的内容。
+按下表读取对应专题；专题规则是仓库协作规则的一部分，无需每次读取全部发布细节。
 
-## 公开内容与本地资料
+| 工作类型                                       | 必读文档                                                                                                             |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 所有修改                                       | 本文件；[开发与验收](docs/zh_cn/contributing/development.md)                                                         |
+| 文档、提示词或验证记录                         | [文档与验证资料](docs/zh_cn/contributing/documentation.md)、[模板](docs/zh_cn/templates/README.md)                   |
+| Pipeline、Interface、Agent、活动配置、设备测试 | [Maa 开发规则](docs/zh_cn/contributing/maa.md)及对应[任务说明](docs/zh_cn/tasks/README.md)                           |
+| 环境、依赖或版本升级                           | [运行环境与版本](docs/zh_cn/contributing/runtime.md)                                                                 |
+| 构建、工作流、资源通道或发布                   | [构建与发布操作约束](docs/zh_cn/contributing/build_release.md)、[资源包与完整包构建](docs/zh_cn/resource_updates.md) |
 
-Git 跟踪运行代码、资源、构建与校验工具、功能流程说明和协作规则。`docs/zh_cn/develop/`、`docs/zh_cn/records/` 与 `tools/test_*.py` 仅保留在维护者本地，由 `.gitignore` 排除；不要强制暂存这些路径。本文引用的开发说明和验证记录属于可选本地资料，新检出不存在时以当前源码、本文规则及官方文档为准。
+## 项目地图与事实来源
 
-修改功能后仍须同步本地开发资料与实机记录，但不将其纳入提交。公开文档不得链接仅本地保存的资料。单元测试在具备本地测试文件的环境中运行 `python -m unittest discover -s tools -p 'test_*.py'`；远端 CI 保留资源、Schema、生成配置、交互稳定性、运行环境和 Agent 注册检查，不执行本地单元测试。
+- `agent/`：Python 自定义逻辑；新增模块须由 `agent/main.py` 导入以触发注册。
+- `assets/resource/pipeline/`：Pipeline v2；`assets/resource/image/`：识别模板，统一 720x1280 竖屏基准。
+- `assets/interface.json`：任务与选项；体力活动生成字段只能通过 `assets/stamina/active.yaml` 和 `tools/build_stamina_activities.py` 修改。
+- `tools/`：构建、生成与校验脚本；`deps/tools/`：固定版本 Schema。
+- `docs/zh_cn/`：公开入口；`contributing/` 为通用规范，`tasks/` 为行为说明，`templates/` 为空白模板。
+- `docs/zh_cn/develop/`、`docs/zh_cn/records/`、`tools/test_*.py`：被忽略的本地资料；新检出可不存在，不得强制暂存。
+- `basic_info.md`：本地扫描缓存；存在时先看接力章节，路径、节点和状态仍须与当前源码核对，不自动覆盖旧缓存。
 
-## Python 版本基线
+代码与配置描述当前实现；任务文档描述功能行为；实测记录只证明指定环境和路径的结果。出现冲突时核对源码与证据，不以过期文档覆盖当前实现，也不把静态检查当作实机验证。
 
-本项目开发与发布统一使用 Python 3.12；`tools/requirements.txt` 中的 `maafw` 版本必须与 CI 的 `MAAFW_VERSION` 以及插件使用的 MaaFramework native runtime 保持一致。当前评估并切换到 MaaFramework 5.14.3 与 MFAAvalonia 2.16.2，升级后仍须完成本地资源校验和实机回归。Python 3.14 可用于其他项目，但不作为本项目首选验证环境。
+## 不可省略的约束
 
-Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端均指向该目录；新终端设置 `PYTHONUTF8=1`，避免中文 Windows 控制台编码导致校验输出异常。`.python-version` 声明 Python 3.12，`maatools.config.mts` 固定校验运行时 5.14.3，资源校验 CI 也显式使用 Python 3.12。环境搭建与验收见 `docs/zh_cn/develop/development_environment.md`。虚拟环境、日志、截图和本地配置只保存在被 Git 忽略的路径中，不自动上传。
+- 新增或重构跨页面主流程前观察实际游戏流程；页面流转优先用 Pipeline 状态机表达，不凭需求描述推测界面。
+- 交互遵循“识别 → 动作 → 再识别”；带识别的交互默认 `pre_wait_freezes: 300`，豁免须登记原因；重试与滚动有上限。
+- 新增选项同步定义、任务注册和预先存在的 Override 目标；自定义注册名必须与 Pipeline 一致。
+- 生成配置与源数据同改同验，禁止手工修补生成字段。节点名及跨文件引用保持稳定。
+- `maa-tools check` 与 JSON Schema 校验均须执行；行为修改还须验证受影响路径。购买、资源消耗及账号操作在合并前完成端到端实机验证。
+- 未执行、失败、受阻与通过分开报告。纯文档修改无需设备测试，不会自动获得发布或远端操作授权。
+- 功能说明与逐次测试记录分开；公开文档不得链接本地资料。远端仅保留必要且脱敏的验证摘要，日志、截图、缓存、模型和个人配置不自动上传。
 
-## 构建、测试与开发命令
+## 常用检查
 
-- `git submodule update --init --recursive`：存在 gitlink 时初始化 Maa 通用资源；当前缺少 gitlink，须按开发环境文档恢复本地 OCR。
-- `python tools/configure.py --download`：下载固定修订的 OCR 缺失文件，逐文件校验大小和 SHA256，不覆盖不匹配的已有文件。
-- `python tools/configure.py --check`：只读检查 OCR 模型完整性与来源一致性。
-- `python tools/check_environment.py --load-resource`：核对 Python、maafw、native runtime、构建和 maa-tools 版本，并在不连接设备的情况下加载完整资源包。Agent 导入注册须在另一个独立进程检查。
-- `python tools/sync_schemas.py`：按 requirements 固定的 MaaFramework 版本同步六份 Schema，不跟随上游 main。
-- `npm ci`：安装 CI 使用的锁定版本 Node.js 工具。
-- `npx @nekosu/maa-tools check`：校验 Maa Pipeline 与 Interface 资源。
-- 本地默认 GPU 资源加载崩溃时，先保留日志，再运行 `node --require ./tools/maa_check_cpu.cjs node_modules/@nekosu/maa-tools/bin/maa-tools check`；它使用同一固定版本缓存和原版校验器，仅把资源加载改为 CPU，不跳过结构诊断或资源加载。须记录默认命令失败与 CPU 模式结果，不据此宣称 GPU 验收通过。
-- `python tools/prepare_frontend_candidate.py --source-zip <固定源码ZIP> --output build/<新目录>`：离线核验并应用 `tools/frontend_candidate/` 的固定补丁源码，拒绝覆盖已有目录。正式完整包和独立候选工作流共用该源码；后者仍只手工生成不可发布的 Windows x64 Artifact。
-- `python tools/stage_frontend_release.py --source <已核验源码目录> --published <编译输出> --platform win-x64 --output <新目录>`：按 `tools/frontend_release.json` 校验固定前端并记录平台、源码及文件哈希，支持六种桌面目标。完整包默认使用此补丁前端，不再下载上游原前端成品。
-- `python tools/stage_frontend_candidate.py --source <已核验源码目录> --published <编译输出> --output <新目录>`：保留 Windows x64 诊断候选组装，强制标记不可发布，不能作为正式完整包来源。
-- `python tools/clean_package_stage.py --stage install`：仅清理新打包目录中的字节码、缓存、调试符号和日志；拒绝带用户配置、运行日志目录或越界路径的目录。`--check` 只读核对，不能用该工具清理正在运行的客户端或本地验收证据。
-- `python tools/release_preflight.py --version v1.0.8`：只读核对 `tools/releases/` 中的发布计划、固定前端与公开发布说明；加 `--artifacts <下载目录> --source-sha <明确SHA> --expect-rehearsal` 验证六目标预演完整包。不会打标签或发布。
-- `python -m pip install -r tools/requirements.txt`：安装 Maa Agent、配置生成和 Schema 校验所需的 Python 依赖。
-- `python tools/validate_schema.py --schema-dir deps/tools --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json`：执行与 CI 相同的 JSON Schema 校验。
-- `python tools/build_stamina_activities.py`：修改 `assets/stamina/active.yaml` 后重新生成体力活动配置。
-- `python tools/build_stamina_activities.py --check`：只检查体力活动配置与 `assets/interface.json` 是否同步，不写文件。
-- `python tools/add_interaction_stability.py --check`：检查带识别结果的交互动作是否配置点击前稳定等待。
-- `python tools/package_resources.py --version v1.2.3 --os win --arch x86_64`：从当前源码与已核验 OCR 生成独立资源 ZIP、SHA256 和清单，默认输出到被忽略的 `build/resources/`；不下载前端或运行环境，不发布。
-- `python tools/check_resource_package.py --manifest build/resources/TKFMaa-resource-win-x64-v1.2.3.zip.manifest.json`：核验资源包路径、文件清单、哈希、Schema、资源加载及 Agent 注册/导入，不连接设备。
-- `python tools/release_support.py`：核对桌面发布基线与 Python、MaaFramework、完整包构建声明的一致性。
-- `python tools/prepare_resource_release.py --help`：查看六目标资源发布附件准备参数；默认要求干净且匹配明确 SHA 的源码，`--allow-dirty` 仅生成不可发布的本机演练产物。
-- `python tools/publish_resource_release.py --help`：查看离线演练与显式发布参数；`--dry-run` 只读本地快照，`--publish` 仅允许在目标仓库串行 Actions 中执行，要求明确版本、源码、发布说明及绑定附件清单摘要的验收记录。
-- `python tools/mirror_full_release.py --help`：查看完整包镜像准备参数；只读下载主仓库已公开 Release，核对标签提交、远端摘要、包内来源和文件哈希，不重新打包、不发布。
+使用 Python 3.12；Windows 优先 `.venv312/`，设置 `PYTHONUTF8=1`。版本及构建锁定范围以[运行环境与版本](docs/zh_cn/contributing/runtime.md)所列配置为准。
+首次配置按[本地开发环境](docs/zh_cn/contributing/setup.md)创建独立环境；明确调用环境内解释器，避免将依赖误装进系统的其他 Python 版本。
 
-桌面资源发布基线位于 `tools/release_baseline.json`，完整包中的 numpy、maaagentbinary、strenum 按此固定版本安装。新增依赖或变更 Python、框架、前端基线时须安排整体更新与迁移审核，不得仅修改基线继续向旧客户端投放小包。桌面完整包在依赖安装后通过 `tools/record_full_package.py` 生成来源和逐文件哈希记录；实际运行验收与构建声明分别记录。基线允许名单当前仅含测试仓库，正式源变更仍需明确授权。
+- `python tools/build_stamina_activities.py --check`：生成配置一致性。
+- `python tools/add_interaction_stability.py --check`：交互稳定等待。
+- `npx prettier --check .`：格式；`npm ci` 安装锁定的 Node 工具。
+- `npx @nekosu/maa-tools check`：结构诊断与资源加载。
+- `python tools/validate_schema.py --schema-dir deps/tools --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json`：Schema。
+- `python tools/check_environment.py --load-resource`：环境与资源加载；Agent 注册在独立进程检查。
+- 本地测试文件存在时运行 `python -m unittest discover -s tools -p 'test_*.py'`；远端 CI 不执行这些本地单元测试。
 
-完整包前端构建配置位于 `tools/frontend_release.json`，与资源通道最旧客户端基线分开记录。v1.0.8 为完整更新，保持主仓库更新源，不部署正式资源通道或提高其兼容指纹。`install` 手工输入 `preview_version: v1.0.8` 可生成准确版本的预演包，源码仍须干净且匹配 SHA，所有非标签构建均记录 rehearsal；即使手工选择版本标签也不发布。正式标签需要对应的 `tools/releases/<版本>.json` 和 `docs/zh_cn/releases/<版本>.md`，发布 job 在上传前核对六个桌面完整包的版本、更新源、来源、前端及全部文件摘要。完整包保留 `licenses/MFAAvalonia-LICENSE.txt` 和绑定源码提交的来源说明，禁止在清理中删除。编译与依赖恢复仍可能联网；前端继续要求系统 .NET 10，与原上游成品一致。
+OCR 缺失时按 `tools/ocr_model.json` 使用 `python tools/configure.py --download` 恢复，不能仅依赖当前缺少 gitlink 的子模块声明。默认 GPU 检查崩溃时先保留日志，再按[构建命令索引](docs/zh_cn/contributing/build_release.md)执行 CPU 检查，不能据此宣称 GPU 验收通过。
 
-完整发布下载目录固定为 `build/full-release-assets/`，输出ZIP到 `build/full-release-zips/`，不能使用仓库已有的 `assets/`。若标签 install 在上传前失败，但八目标构建和原发布验包已成功，可在用户已明确授权该版本发布的前提下手工运行 `finalize_full_release.yml`，提供既有版本与源运行编号；它核对标签提交、原运行与验收，重复验包后仅发布同批Artifact，不移动标签、不重新编译，已有Release时拒绝执行。两个发布入口共用 `tkfmaa-full-release-publish` 并发组。
+## 文档同步
 
-完整构建下载目录 `/MFA/`、`/python-runtime/` 以及 Python 字节码由 `.gitignore` 排除，不能纳入源码提交；完整包 CI 禁止生成字节码。来源检查仍拒绝真实源码改动，并输出有限的脏路径供定位，不使用 `--allow-dirty` 绕过云端发布来源检查。
-
-分支完整包使用 `git describe --long` 生成 CI 版本：预发布基准追加 `.ci.<距离>.g<提交>`，稳定基准追加 `-ci.<距离>.g<提交>`；版本标签构建保留标签原文。不得把 `beta.1` 改成 `beta.1-ci`，否则数字预发布序号变为文本，可能阻挡后续 beta 资源更新。CI 产物只用于开发验收，不作为已发布完整包镜像来源。
-
-资源仓库工作流模板位于 `tools/resource_repository/publish.yml`，部署后默认只生成 Artifact，发布 job 使用仓库级 `tkfmaa-release-publish` 并发组和本仓库 Token。资源发布还要求仓库变量 `TKFM_CHANNEL_BASELINE_SHA256` 与固定兼容基线一致；它代表该通道最旧受支持客户端的环境，不可随一次完整包升级而直接提高。模板部署、变量变更、远端运行和正式源切换均不由本地实现或提交自动授权。完整包标签构建可通过显式仓库变量 `TKFM_UPDATE_REPOSITORY` 选择更新源，未设置时保持默认源。
-
-`.github/workflows/resources.yml` 在资源/Agent 等路径的分支推送、PR 或手工运行时生成独立资源 Artifact，只有读取权限，无标签或 Release 发布步骤。完整包继续由 `.github/workflows/install.yml` 在 `v1.2.3` 等版本标签时构建发布；其普通分支/PR 构建仅匹配完整包工具、运行环境与依赖配置等路径，纯活动或 Agent 逻辑改动不触发完整包构建，需要前端组合验收时手工运行完整包流程。两个流程共用 `tools/package_resources.py` 中的资源收集和布局逻辑；完整包仍包含前端、Python 与 native runtime。前端验收须使用对应提交的完整包，步骤见开发环境文档。本地完整打包需要预先下载 MaaFramework 运行时，不属于常规开发验证流程。
-
-## 生成配置与派生产物
-
-`assets/stamina/active.yaml` 是“体力消耗关卡”选项的唯一源数据，`assets/interface.json` 中对应的选项键、任务选项引用、`default_case` 和 `cases` 由 `tools/build_stamina_activities.py` 生成，不应手工修改。选项键包含列表布局及有序关卡名称的摘要，列表增删或重排时使旧序号失效并默认选中第一个真实关卡；显示名称固定，不添加重选占位项或入口拦截。仅修正 ROI 等而关卡名称和顺序不变时不重置选择。修改 YAML，或修改生成脚本中会影响输出的模板、校验和 Override 逻辑后，必须运行生成命令，并将源文件、脚本改动和生成后的 `assets/interface.json` 放在同一提交中。
-
-同一活动包含多个关卡时使用 `activity_groups`：活动名称、页面 marker 和公共 Override 放入 `base`，各关卡差异放入 `cases`；`templates` 仅描述可跨活动复用的内部 UI 路线，不写具体活动名称。四类模板、字段要求和示例见 `docs/zh_cn/develop/stamina_activity_config.md`。
-
-不确定是否需要重新生成时，先运行 `python tools/build_stamina_activities.py --check`：退出码为 0 表示已同步，无需生成；提示 `is not in sync` 时运行不带 `--check` 的生成命令，再次执行 `--check`。仅修改其他任务、文档或不影响输出的脚本注释时不需要生成，但提交前仍建议执行检查。生成后还必须运行 Prettier、`maa-tools check` 和 JSON Schema 校验，生成成功不等于 Pipeline 行为已通过实机验证。
-
-## 代码风格与命名约定
-
-统一使用 LF 换行和空格缩进。Prettier 配置为 4 空格、每行最多 120 字符，YAML 使用 2 空格；配置类改动提交前运行 `npx prettier --check .`。Python 使用 4 空格缩进，函数和模块采用 `snake_case`，类采用 `PascalCase`，在接口含义不明确时补充类型标注，并将导入集中放在文件顶部。Pipeline JSON 和图片目录按功能命名，例如 `daily_shop.json`、`DailyRecruitment/`。节点使用带功能前缀的 `PascalCase`，例如 `DailyShopOpenExchangeTab`；仅供文件内部使用的节点以 `__` 开头。节点名必须保持稳定，因为 Pipeline、Interface Override 和 Agent 均可能通过名称引用。
-
-## MaaFramework Pipeline 开发规范
-
-- 延续仓库现有的 Pipeline v2 结构，将 `type` 和参数分别放入 `recognition`、`action` 的 `param` 中。流程遵循“识别 -> 动作 -> 再识别”，不能假设点击后一定进入目标页面。
-- `next` 按命中优先级覆盖成功、加载、弹窗和异常页面；可恢复的中断使用 `[JumpBack]` 返回父节点继续判断。滚动或重试节点应设置 `max_hit`，避免无限循环和重复点击。
-- 跨页面流程优先用 `next` 与 `[JumpBack]` 组成 JSON 状态机。只有复杂运行时计算或 Pipeline 难以表达的识别决策才放入 `agent/`，不要用 Python `for`/`while` 串行调用任务来模拟页面状态机。
-- 不滥用 `pre_delay`、`post_delay` 和长 `timeout`。确需等待动画或加载稳定时使用 `pre_wait_freezes`/`post_wait_freezes`，动作后仍须识别目标状态。
-- 带明确识别结果的 `Click`、`Swipe`、`LongPress` 等交互动作默认配置 `pre_wait_freezes: 300`，确认识别区域连续稳定后再操作。只在控件仅短暂出现或页面持续动画时豁免，并在 `tools/add_interaction_stability.py` 中记录原因。
-- 坐标、ROI 和模板统一基于 720x1280 竖屏基准。ROI 应尽量缩小但完整包围目标；OCR 的 `expected` 优先填写完整界面文本，需要兼容误识别时显式列出变体。OCR 不稳定时先调整 ROI 并多次验证，不要立即改用图片匹配。
-- 新增 TemplateMatch 素材时使用无损原图裁剪，路径相对 `assets/resource/image/`。提交前检查图片、节点引用及大小写完全一致。
-
-## 任务开发流程
-
-- 新增任务或重构跨页面主流程前，必须先在模拟器中观察实际游戏流程，并在 `docs/zh_cn/tasks/` 建立流程记录。
-- 流程记录至少包含前置状态、页面流转、识别依据、异常分支和完成状态；不能只按需求描述推测界面行为。任务文档只描述流程与实现，实测结论写入 `docs/zh_cn/records/` 下的对应记录。
-- 任务文档保留跨活动通用路线和选项规则；当期活动名单、具体关卡编号、消耗数值及换期快照保存在本地 `docs/zh_cn/records/`。运行配置仍以 `assets/stamina/active.yaml` 等源数据为准，公开任务文档不链接仅本地保存的记录。
-- 局部识别或动作修复只需复现并验证受影响路径，可将截图、日志和结果记录在 Issue 或 PR 中；纯文档及非行为改动无需运行模拟器。
-- 涉及购买、资源消耗、账号操作等高风险行为时，合并前必须完成端到端实机验证。
-- 从其他项目或旧分支迁入的文档只能作为线索；必须核对本仓库路径、节点、选项和当前客户端，未经本项目复测的“已验证”记录统一标为待验证。
-- 具体分级、操作步骤、记录模板和验收要求见 `docs/zh_cn/develop/project_guide.md`。
-
-## 文档同步时机
-
-- 仓库目录、必需命令、编码约定、验证门槛或协作规则改变时，必须在同一 PR 更新 `AGENTS.md`；具体功能实现变化不写入本文件。
-- 流程采集方法、变更分级、记录模板或验收标准改变时，更新 `docs/zh_cn/develop/project_guide.md`。
-- 新增任务，或现有任务的页面顺序、识别依据、Option 行为、Agent 决策、异常恢复、资源消耗或结束条件改变时，更新 `docs/zh_cn/tasks/` 下对应的任务文档。
-- ROI、OCR 文本或模板调整如果改变识别目标、适用页面或已知风险，需要同步任务文档；仅微调数值且流程含义不变时，在 PR 验证记录中说明即可。
-- 完成新的实机验证后，把结论写入 `docs/zh_cn/records/` 下对应的记录，注明日期、客户端版本、设备和覆盖路径；未覆盖分支继续保留在记录的覆盖状态里。任务文档不再保留“当前状态”节。
-- 纯格式化、无行为重构或未被文档引用的内部节点重命名通常无需更新任务文档；若文档引用的路径、节点或命令发生变化，必须同步修正。
-
-## Interface、Option 与 Agent 联动
-
-新增运行时选项必须同步完成三处修改：在 `assets/interface.json` 的 `option` 字典定义选项、在对应 `task.option` 数组注册选项、在 `assets/resource/pipeline/` 预先定义 Override 的目标节点。`pipeline_override` 只合并属性，不会创建节点。仅切换 `next`、`enabled`、识别文本或动作参数时优先使用纯 Override；确需 Python 决策时，再通过 `context.get_node_data()` 读取预定义配置节点。
-
-自定义识别和动作使用 `@AgentServer.custom_recognition`、`@AgentServer.custom_action` 注册，注册名必须与 Pipeline 中的 `custom_recognition`、`custom_action` 完全一致。返回失败结果时保留可诊断的 `detail`，并为缺失或非法参数提供安全默认值。新增 Agent 模块后须在 `agent/main.py` 中导入以触发注册。
-
-## Maa MCP 使用规范
-
-`maa-mcp` 不是 TKFMaa 的运行依赖，仅在本地环境提供该工具时用于辅助采集和调试。使用时先通过 `find_adb_device_list` 与 `connect_adb_device` 明确连接设备；首次缺少模型时运行 `check_and_download_ocr`。`ocr` 已包含截图步骤，不要在调用前重复截图。通过 `load_pipeline`/`save_pipeline` 读写结构化 JSON，保留原有节点；遇到同名节点默认停止，只有明确确认后才覆盖。
-
-`run_pipeline` 应设置人工超时；长时间无返回时停止任务并截图确认实际页面。验证单节点或无跨文件依赖的子流程时可只加载目标文件；验证跨文件流程时必须按依赖顺序传入完整的 Pipeline 文件列表，并指定项目资源目录。切换测试集合前先执行 `stop_pipeline` 和 `clear_pipeline_resources`，避免已驻留节点污染结果。验证 Interface Case 时还须提供对应的 `pipeline_override`，涉及自定义逻辑时启动并绑定 Agent。MCP 结果用于定位 ROI、识别文本和流程问题，不能替代 `maa-tools check`、Schema 校验及端到端验证。
-
-## Agent 技能使用指引
-
-完整技能路由、MCP 可用性分级与验收步骤见 `docs/zh_cn/develop/maa_workflow.md`。`basic_info.md` 为被 Git 忽略的本地扫描缓存，存在时先读取接力章节，再核对当前源码；不要把静态图中的孤立节点直接当作可删除节点，Option 配置节点可能没有入边。
-
-处理 MaaFramework API、控制器或自定义逻辑前参考 `maa-wiki`，再按需使用 `maa-pipeline-guide`；编写或审查 Pipeline JSON 使用 `maa-pipeline-guide`，新增 UI 选项使用 `maa-pipeline-option`，通过设备 OCR 生成节点或扫描 ROI 使用 `maa-pipeline-generate`，测试与验收使用 `maa-pipeline-testing`，跨页面新流程使用 `maa-workflow-build`，项目上下文扫描使用 `maa-project-init`。重复性设备检查可用固定版本 `maafw-cli`，长连接探索使用已配置的 `maa-mcp==1.2.3`；两者不要同时控制同一设备会话。技能中的示例路径可能来自其他仓库，落地时必须换成本仓库的 `assets/resource/pipeline/`、`assets/resource/image/` 和 `assets/interface.json`，并以当前代码及 Schema 为准。
-
-## 测试规范
-
-`maa-tools check` 与 JSON Schema 校验均为必做检查。修改识别或动作逻辑后，还应在当前开发环境中运行受影响任务；本地提供 MaaMCP 时优先使用其多文件 `run_pipeline` 完成设备集成测试，并记录相关日志、截图或修改前后行为。坐标、ROI 和模板须遵循 MaaFramework 的 720p 基准。不要提交运行日志、调试截图、缓存或下载的大型模型文件。
+协作规则、目录或验证门槛变化时同步本文件及对应专题；行为变化时同步对应任务说明；完成实机测试后写本地验证记录。公开模板不填写个人数据。具体触发条件见[开发与验收](docs/zh_cn/contributing/development.md)。
 
 ## 提交与 Pull Request 规范
 
@@ -130,7 +64,7 @@ Windows 本地开发环境使用 `.venv312/`，VS Code 默认解释器和终端�
 
 一个提交只处理一个可独立说明和验证的改动。若同时修改多个任务，必须按任务分别提交，不得用一个 `feat` 或 `fix` 混合商城、体力、派遣等多个任务；被多个任务复用的公共节点、工具或基础设施改动单独提交，再分别提交各任务适配。仅属于同一任务且必须同时生效的 Pipeline、Interface、Agent、素材和文档应放在同一提交中，避免产生无法运行的中间状态。
 
-分支使用 `feat/<name>`、`fix/<name>` 等明确格式。PR 目标分支为 `main`，每个 PR 只处理一个主题，并说明动机、影响范围、提交拆分和实际执行的验证命令。适用时使用 `Closes #123` 关联 Issue；涉及 UI、识别、工作流或行为变化时附上日志或截图。未完成的改动请提交为 Draft PR。
+分支使用 `feat/<name>`、`fix/<name>` 等明确格式。PR 目标分支为 `main`，每个 PR 只处理一个主题，并说明动机、影响范围、提交拆分和实际执行的验证命令。适用时使用 `Closes #123` 关联 Issue；涉及 UI、识别、工作流或行为变化时提供验证摘要；必要日志片段或截图经脱敏并获得上传授权后附上。未完成的改动请提交为 Draft PR。
 
 ## 版本控制安全
 

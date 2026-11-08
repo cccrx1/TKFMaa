@@ -6,6 +6,10 @@
 
 `manifest.json` 固定上游提交、源码 ZIP 与补丁的 SHA256、SDK，以及七个变更文件的应用前后内容摘要。文件摘要统一按 UTF-8、LF 计算；补丁不含本机更新服务地址。
 
+## 使用前提
+
+本页面向修改前端的维护者；普通使用者直接下载完整包。需具备指定 .NET SDK、Python 工具环境和可用的 NuGet 来源。项目环境及依赖区别见[运行环境说明](../../docs/zh_cn/contributing/runtime.md)。
+
 ## 本地复现
 
 先取得清单指定提交的 [上游源码 ZIP](https://github.com/MaaXYZ/MFAAvalonia/archive/1080d3e1500f3439ac896ab2eca9aeb8e885f1f4.zip)，然后从本仓库根目录运行：
@@ -20,7 +24,7 @@ python tools/stage_frontend_release.py --source build/frontend-source --publishe
 
 Windows TKFMaa 会在加载 native 库之前把进程 TEMP/TMP 指向安装目录内 `logs/runtime-temp`，并采用 Agent TCP。目录必须可写；不会修改系统环境变量。此目录与日志、配置一样属于运行数据，不应加入资源包或候选源码。
 
-## 构建与验收边界
+## 完整包与诊断候选的区别
 
 `frontend-candidate` 手工工作流仅构建 Windows x64，输出来源清单和文件哈希；没有标签或 Release 写权限。Artifact 仍需与同一源码资源、Python 及 native runtime 组装验证。候选的日志/摘要修复、资源更新重启、完整包回滚及本地升级链路已有 Windows x64 验收；在线真实仓库发布闭环、其他平台及游戏任务仍须单独验收。
 
@@ -28,6 +32,12 @@ Windows TKFMaa 会在加载 native 库之前把进程 TEMP/TMP 指向安装目�
 
 正式标签流程使用相同的补丁前端，发布前检查版本计划、发布说明及六个桌面完整包的来源和哈希。v1.0.8 保持主仓库更新源，不迁移正式资源通道；资源通道最旧客户端兼容指纹不随前端构建配置修改。独立候选仍用 `stage_frontend_candidate.py` 生成不可发布的来源记录，不能替代正式构建记录。预演和本地假版本不得发布。
 
+## 系统依赖与清理边界
+
 前端保持与上游 2.16.2 相同的系统 .NET 10 要求，不在本次改成独立运行时分发。打包仅清理缓存、字节码、符号和日志，不删除 DLL 或按文件名裁剪动态依赖。
 
 组装目录的 `licenses/` 保存上游 GPL-3.0 许可证及绑定 TKFMaa 源码提交的补丁/构建说明链接，文件哈希进入来源清单。TKFMaa 根目录原有许可证保持不变。
+
+## 验证记录
+
+源码准备、编译、包内核验和目标系统运行分别记录。上述历史验收范围不能替代新产物验证；使用[验证模板](../../docs/zh_cn/templates/verification.md)记录本地结果，公开时只提供必要的脱敏摘要。
