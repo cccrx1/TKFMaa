@@ -38,7 +38,28 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "[JumpBack]GameWaitResourceCheck",
-            "[JumpBack]GameCloseGift",
+            "GameCloseGift",
+            "[JumpBack]GameCloseAnnouncement",
+            "[JumpBack]GameCloseSignIn",
+            "[JumpBack]GameTapTitleScreen"
+        ],
+        "on_error": [
+            "GameLoginRestartOnce",
+            "GameLoginStopAfterTimeout"
+        ]
+    },
+    "GameLoginAfterGiftDispatch": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "action": {
+            "type": "DoNothing"
+        },
+        "timeout": 360000,
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]GameWaitResourceCheck",
+            "GameCloseGift",
             "[JumpBack]GameCloseAnnouncement",
             "[JumpBack]GameCloseSignIn",
             "[JumpBack]GameTapTitleScreen",
@@ -207,6 +228,9 @@
                 ]
             }
         },
+        "next": [
+            "GameLoginAfterGiftDispatch"
+        ],
         "max_hit": 3,
         "post_delay": 800,
         "pre_wait_freezes": 300
@@ -257,7 +281,7 @@
         "next": [
             "GameLoginMainInterrupted",
             "GameMainReady",
-            "GameLoginDispatch"
+            "GameLoginAfterGiftDispatch"
         ],
         "max_hit": 5
     },
@@ -279,7 +303,7 @@
             "type": "DoNothing"
         },
         "next": [
-            "GameLoginDispatch"
+            "GameLoginAfterGiftDispatch"
         ],
         "max_hit": 5
     }
