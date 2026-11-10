@@ -128,24 +128,14 @@ def _text_results(results):
     return texts
 
 
-def _longest_ascii_letter_run(text):
-    longest = 0
-    current = 0
-    for ch in _normalize_text(text):
-        if "a" <= ch <= "z":
-            current += 1
-            longest = max(longest, current)
-        else:
-            current = 0
-    return longest
-
-
 def _sold_out_texts(texts):
+    # Card artwork also contains English (for example ROLE HIRE). Prefer
+    # trying the detail page unless the OCR contains a known sold-out banner.
     normalized = _normalize_text("".join(texts))
-    if "soldout" not in normalized and "currently" not in normalized and _longest_ascii_letter_run(normalized) < 3:
+    if "soldout" not in normalized and "currently" not in normalized:
         return []
 
-    markers = [text for text in texts if _longest_ascii_letter_run(text) >= 3]
+    markers = [text for text in texts if any(marker in _normalize_text(text) for marker in ("soldout", "currently"))]
     return markers or texts
 
 
