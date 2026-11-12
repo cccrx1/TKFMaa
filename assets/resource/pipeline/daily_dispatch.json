@@ -431,1069 +431,6 @@
             }
         }
     },
-    "DailyDispatchSelectLocationStart": {
-        "next": [
-            "DailyDispatchSelectBedroom",
-            "DailyDispatchSelectDungeon",
-            "DailyDispatchSelectTraining",
-            "DailyDispatchSelectTreasureVault",
-            "DailyDispatchSelectSealRoom",
-            "DailyDispatchSwipeLocationListDown",
-            "DailyDispatchSelectBedroomAfterSwipe",
-            "DailyDispatchSelectDungeonAfterSwipe",
-            "DailyDispatchSelectTrainingAfterSwipe",
-            "DailyDispatchSelectTreasureVaultAfterSwipe",
-            "DailyDispatchSelectSealRoomAfterSwipe"
-        ],
-        "timeout": 8000,
-        "on_error": [
-            "DailyDispatchReturnOverviewFromSelection"
-        ]
-    },
-    "DailyDispatchSelectBedroom": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "魔王寝室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchSelectBedroomTime1",
-            "DailyDispatchSelectBedroomTime2",
-            "DailyDispatchSelectBedroomTime3",
-            "DailyDispatchSelectBedroomTime4"
-        ]
-    },
-    "DailyDispatchSelectDungeon": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "地牢"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchSelectDungeonTime1",
-            "DailyDispatchSelectDungeonTime2",
-            "DailyDispatchSelectDungeonTime3",
-            "DailyDispatchSelectDungeonTime4"
-        ]
-    },
-    "DailyDispatchSelectTraining": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "训练所"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchSelectTrainingTime1",
-            "DailyDispatchSelectTrainingTime2",
-            "DailyDispatchSelectTrainingTime3",
-            "DailyDispatchSelectTrainingTime4"
-        ]
-    },
-    "DailyDispatchSelectTreasureVault": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "宝藏库"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchSelectTreasureVaultTime1",
-            "DailyDispatchSelectTreasureVaultTime2",
-            "DailyDispatchSelectTreasureVaultTime3",
-            "DailyDispatchSelectTreasureVaultTime4"
-        ]
-    },
-    "DailyDispatchSelectSealRoom": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "封印密室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchSelectSealRoomTime1",
-            "DailyDispatchSelectSealRoomTime2",
-            "DailyDispatchSelectSealRoomTime3",
-            "DailyDispatchSelectSealRoomTime4"
-        ]
-    },
-    "DailyDispatchSelectBedroomAfterSwipe": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "魔王寝室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchSelectBedroomTime1",
-            "DailyDispatchSelectBedroomTime2",
-            "DailyDispatchSelectBedroomTime3",
-            "DailyDispatchSelectBedroomTime4"
-        ]
-    },
-    "DailyDispatchSelectDungeonAfterSwipe": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "地牢"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchSelectDungeonTime1",
-            "DailyDispatchSelectDungeonTime2",
-            "DailyDispatchSelectDungeonTime3",
-            "DailyDispatchSelectDungeonTime4"
-        ]
-    },
-    "DailyDispatchSelectTrainingAfterSwipe": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "训练所"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchSelectTrainingTime1",
-            "DailyDispatchSelectTrainingTime2",
-            "DailyDispatchSelectTrainingTime3",
-            "DailyDispatchSelectTrainingTime4"
-        ]
-    },
-    "DailyDispatchSelectTreasureVaultAfterSwipe": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "宝藏库"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchSelectTreasureVaultTime1",
-            "DailyDispatchSelectTreasureVaultTime2",
-            "DailyDispatchSelectTreasureVaultTime3",
-            "DailyDispatchSelectTreasureVaultTime4"
-        ]
-    },
-    "DailyDispatchSelectSealRoomAfterSwipe": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "封印密室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "next": [
-            "DailyDispatchSelectSealRoomTime1",
-            "DailyDispatchSelectSealRoomTime2",
-            "DailyDispatchSelectSealRoomTime3",
-            "DailyDispatchSelectSealRoomTime4"
-        ]
-    },
-    "DailyDispatchSelectBedroomTime1": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "魔王寝室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    -155,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectBedroomTime2": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "魔王寝室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    -50,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectBedroomTime3": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "魔王寝室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    55,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectBedroomTime4": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "魔王寝室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    160,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectDungeonTime1": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "地牢"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    -155,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectDungeonTime2": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "地牢"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    -50,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectDungeonTime3": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "地牢"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    55,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectDungeonTime4": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "地牢"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    160,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectTrainingTime1": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "训练所"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    -155,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam",
-            "DailyDispatchSelectTrainingTime2"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectTrainingTime2": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "训练所"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    -50,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam",
-            "DailyDispatchSelectTrainingTime3"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectTrainingTime3": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "训练所"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    55,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam",
-            "DailyDispatchSelectTrainingTime4"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectTrainingTime4": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "训练所"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    160,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam",
-            "DailyDispatchReturnOverviewFromSelection"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectTreasureVaultTime1": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "宝藏库"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    -155,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectTreasureVaultTime2": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "宝藏库"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    -50,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectTreasureVaultTime3": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "宝藏库"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    55,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectTreasureVaultTime4": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "宝藏库"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    160,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectSealRoomTime1": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "封印密室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    -155,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectSealRoomTime2": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "封印密室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    -50,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectSealRoomTime3": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "封印密室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    55,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
-    "DailyDispatchSelectSealRoomTime4": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "封印密室"
-                ],
-                "roi": [
-                    130,
-                    200,
-                    470,
-                    560
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true,
-                "target_offset": [
-                    160,
-                    125,
-                    0,
-                    0
-                ]
-            }
-        },
-        "post_wait_freezes": {
-            "time": 500,
-            "target": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-        "next": [
-            "DailyDispatchCheckPreconfiguredTeam"
-        ],
-        "pre_wait_freezes": 300
-    },
     "DailyDispatchSwipeLocationListDown": {
         "recognition": {
             "type": "DirectHit"
@@ -1502,12 +439,12 @@
             "type": "Swipe",
             "param": {
                 "begin": [
-                    625,
-                    490
+                    360,
+                    700
                 ],
                 "end": [
-                    625,
-                    220
+                    360,
+                    300
                 ],
                 "duration": 1500
             }
@@ -1522,11 +459,11 @@
             ]
         },
         "next": [
-            "DailyDispatchSelectBedroomAfterSwipe",
-            "DailyDispatchSelectDungeonAfterSwipe",
-            "DailyDispatchSelectTrainingAfterSwipe",
-            "DailyDispatchSelectTreasureVaultAfterSwipe",
-            "DailyDispatchSelectSealRoomAfterSwipe"
+            "DailyDispatchSelectLocationStart"
+        ],
+        "max_hit": 12,
+        "on_error": [
+            "DailyDispatchReturnOverviewFromSelection"
         ]
     },
     "DailyDispatchCheckPreconfiguredTeam": {
@@ -1849,5 +786,274 @@
         ],
         "timeout": 6000,
         "max_hit": 3
+    },
+    "DailyDispatchPick6h": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "6hrs",
+                    "6小時",
+                    "6小时"
+                ],
+                "roi": [
+                    100,
+                    200,
+                    530,
+                    570
+                ],
+                "order_by": "Vertical",
+                "index": 0
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "next": [
+            "DailyDispatchVerify6h"
+        ],
+        "pre_wait_freezes": 300,
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "DailyDispatchPick9h": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "9hrs",
+                    "9小時",
+                    "9小时"
+                ],
+                "roi": [
+                    100,
+                    200,
+                    530,
+                    570
+                ],
+                "order_by": "Vertical",
+                "index": 0
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "next": [
+            "DailyDispatchVerify9h"
+        ],
+        "pre_wait_freezes": 300,
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "DailyDispatchPick12h": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "12hrs",
+                    "12小時",
+                    "12小时"
+                ],
+                "roi": [
+                    100,
+                    200,
+                    530,
+                    570
+                ],
+                "order_by": "Vertical",
+                "index": 0
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "next": [
+            "DailyDispatchVerify12h"
+        ],
+        "pre_wait_freezes": 300,
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "DailyDispatchPick22h": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "22hrs",
+                    "22小時",
+                    "22小时"
+                ],
+                "roi": [
+                    100,
+                    200,
+                    530,
+                    570
+                ],
+                "order_by": "Vertical",
+                "index": 0
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "next": [
+            "DailyDispatchVerify22h"
+        ],
+        "pre_wait_freezes": 300,
+        "post_wait_freezes": {
+            "time": 700,
+            "target": [
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "DailyDispatchVerify6h": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "Bonus奖励条件",
+                    "Bonus獎勵條件",
+                    "Bonus"
+                ],
+                "roi": [
+                    80,
+                    760,
+                    560,
+                    470
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "timeout": 3000,
+        "on_error": [
+            "DailyDispatchReturnOverviewFromSelection"
+        ]
+    },
+    "DailyDispatchVerify9h": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "Bonus奖励条件",
+                    "Bonus獎勵條件",
+                    "Bonus"
+                ],
+                "roi": [
+                    80,
+                    760,
+                    560,
+                    470
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "timeout": 3000,
+        "on_error": [
+            "DailyDispatchPick6h"
+        ]
+    },
+    "DailyDispatchVerify12h": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "Bonus奖励条件",
+                    "Bonus獎勵條件",
+                    "Bonus"
+                ],
+                "roi": [
+                    80,
+                    760,
+                    560,
+                    470
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "timeout": 3000,
+        "on_error": [
+            "DailyDispatchPick9h"
+        ]
+    },
+    "DailyDispatchVerify22h": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "Bonus奖励条件",
+                    "Bonus獎勵條件",
+                    "Bonus"
+                ],
+                "roi": [
+                    80,
+                    760,
+                    560,
+                    470
+                ]
+            }
+        },
+        "next": [
+            "DailyDispatchCheckPreconfiguredTeam"
+        ],
+        "timeout": 3000,
+        "on_error": [
+            "DailyDispatchPick12h"
+        ]
+    },
+    "DailyDispatchSelectLocationStart": {
+        "next": [
+            "DailyDispatchPick22h",
+            "DailyDispatchPick12h",
+            "DailyDispatchPick9h",
+            "DailyDispatchPick6h",
+            "DailyDispatchSwipeLocationListDown"
+        ],
+        "timeout": 8000,
+        "on_error": [
+            "DailyDispatchReturnOverviewFromSelection"
+        ]
     }
 }
