@@ -46,6 +46,8 @@ SHOP_SLOTS = [
 ]
 
 _HANDLED_ITEM_KEYS = set()
+_PURCHASE_ATTEMPT_SLOTS = set()
+_PURCHASED_SLOTS = set()
 _PENDING_TARGET = None
 _VERIFICATION_PASSES = 0
 _SCAN_POSITION = "top"
@@ -233,7 +235,13 @@ def _analyze_target_item(context, argv, default_shop_id):
                     continue
 
                 key = _item_key(shop_id, target, item)
-                if key in _HANDLED_ITEM_KEYS:
+                slot_key = (shop_id, _SCAN_POSITION, item["slot"])
+                if slot_key in _PURCHASE_ATTEMPT_SLOTS:
+                    skipped.append(
+                        {"target": target["raw"], "slot": item["slot"], "reason": "purchase_limit_reached"}
+                    )
+                    continue
+                if key in _HANDLED_ITEM_KEYS or slot_key in _PURCHASED_SLOTS:
                     skipped.append(
                         {
                             "target": target["raw"],
@@ -293,6 +301,8 @@ class DailyShopResetExchangeSession(CustomAction):
     def run(self, context, argv):
         global _HANDLED_ITEM_KEYS, _PENDING_TARGET, _VERIFICATION_PASSES, _SCAN_POSITION
         _HANDLED_ITEM_KEYS = set()
+        _PURCHASE_ATTEMPT_SLOTS.clear()
+        _PURCHASED_SLOTS.clear()
         _PENDING_TARGET = None
         _VERIFICATION_PASSES = 0
         _SCAN_POSITION = "top"
@@ -323,6 +333,8 @@ class DailyShopSetScanPosition(CustomAction):
 class DailyShopMarkVerificationPass(CustomAction):
     def run(self, context, argv):
         global _VERIFICATION_PASSES
+        if _VERIFICATION_PASSES == 0:
+            _PURCHASE_ATTEMPT_SLOTS.clear()
         _VERIFICATION_PASSES += 1
         return True
 
@@ -342,12 +354,30 @@ class DailyShopVerifyPurchaseDetail(CustomRecognition):
         return _pending_detail_matches(context, argv.image)
 
 
+@AgentServer.custom_action("DailyShopPurchaseOnce")
+class DailyShopPurchaseOnce(CustomAction):
+    def run(self, context, argv):
+        if not _PENDING_TARGET:
+            return False
+        shop_id, _, position, slot = _PENDING_TARGET
+        slot_key = (shop_id, position, slot)
+        if slot_key in _PURCHASE_ATTEMPT_SLOTS or slot_key in _PURCHASED_SLOTS:
+            return False
+        # Reserve before dispatch: a failed/uncertain click must not be retried
+        # in this pass, even when reward recognition never records a purchase.
+        _PURCHASE_ATTEMPT_SLOTS.add(slot_key)
+        result = context.run_action("__DailyShopPurchaseClick", box=argv.box)
+        return bool(result and result.success)
+
+
 @AgentServer.custom_action("DailyShopMarkTargetPurchased")
 class DailyShopMarkTargetPurchased(CustomAction):
     def run(self, context, argv):
         global _PENDING_TARGET
         if _PENDING_TARGET:
             _HANDLED_ITEM_KEYS.add(_PENDING_TARGET)
+            shop_id, _, position, slot = _PENDING_TARGET
+            _PURCHASED_SLOTS.add((shop_id, position, slot))
             _PENDING_TARGET = None
         return True
 

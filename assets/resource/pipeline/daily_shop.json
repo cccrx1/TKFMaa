@@ -361,9 +361,10 @@
             }
         },
         "action": {
-            "type": "Click",
+            "type": "Custom",
             "param": {
-                "target": true
+                "custom_action": "DailyShopPurchaseOnce",
+                "custom_action_param": {}
             }
         },
         "post_wait_freezes": {
@@ -394,9 +395,10 @@
             }
         },
         "action": {
-            "type": "Click",
+            "type": "Custom",
             "param": {
-                "target": true
+                "custom_action": "DailyShopPurchaseOnce",
+                "custom_action_param": {}
             }
         },
         "post_wait_freezes": {
@@ -1008,5 +1010,14 @@
                 ]
             }
         }
+    },
+    "__DailyShopPurchaseClick": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "pre_wait_freezes": 300
     }
 }
