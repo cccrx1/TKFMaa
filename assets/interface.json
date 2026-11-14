@@ -1764,329 +1764,108 @@
             "cases": [
                 {
                     "name": "寝室-地牢-训练所-宝藏库-封印密室",
-                    "description": "按房间列表从上到下选可用档位。魔王寝室恒为列表第一项，因此本选项即「寝室优先」；房间被占用时会自动跳过。",
-                    "pipeline_override": {}
+                    "description": "按选项列出的房间名称顺序搜索；忙碌或没有可选档位时尝试下一房间。",
+                    "pipeline_override": {
+                        "DailyDispatchSelectLocationStart": {
+                            "next": [
+                                "DailyDispatchSelectBedroom"
+                            ]
+                        },
+                        "DailyDispatchSelectBedroom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectDungeon"
+                            }
+                        },
+                        "DailyDispatchSelectDungeon": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTraining"
+                            }
+                        },
+                        "DailyDispatchSelectTraining": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTreasureVault"
+                            }
+                        },
+                        "DailyDispatchSelectTreasureVault": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectSealRoom"
+                            }
+                        },
+                        "DailyDispatchSelectSealRoom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSkipUnavailable"
+                            }
+                        }
+                    }
                 },
                 {
                     "name": "地牢-训练所-宝藏库-封印密室-寝室",
-                    "description": "跳过列表最上方 1 个可派遣房间后再选，用于把地牢/后续房间排在前面。",
+                    "description": "按选项列出的房间名称顺序搜索；忙碌或没有可选档位时尝试下一房间。",
                     "pipeline_override": {
-                        "DailyDispatchPick6h": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "6hrs",
-                                        "6小時",
-                                        "6小时"
-                                    ],
-                                    "roi": [
-                                        100,
-                                        200,
-                                        530,
-                                        570
-                                    ],
-                                    "order_by": "Vertical",
-                                    "index": 1
-                                }
-                            },
-                            "action": {
-                                "type": "Click",
-                                "param": {
-                                    "target": true
-                                }
-                            },
+                        "DailyDispatchSelectLocationStart": {
                             "next": [
-                                "DailyDispatchVerify6h"
-                            ],
-                            "pre_wait_freezes": 300,
-                            "post_wait_freezes": {
-                                "time": 700,
-                                "target": [
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
+                                "DailyDispatchSelectDungeon"
+                            ]
+                        },
+                        "DailyDispatchSelectDungeon": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTraining"
                             }
                         },
-                        "DailyDispatchPick9h": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "9hrs",
-                                        "9小時",
-                                        "9小时"
-                                    ],
-                                    "roi": [
-                                        100,
-                                        200,
-                                        530,
-                                        570
-                                    ],
-                                    "order_by": "Vertical",
-                                    "index": 1
-                                }
-                            },
-                            "action": {
-                                "type": "Click",
-                                "param": {
-                                    "target": true
-                                }
-                            },
-                            "next": [
-                                "DailyDispatchVerify9h"
-                            ],
-                            "pre_wait_freezes": 300,
-                            "post_wait_freezes": {
-                                "time": 700,
-                                "target": [
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
+                        "DailyDispatchSelectTraining": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTreasureVault"
                             }
                         },
-                        "DailyDispatchPick12h": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "12hrs",
-                                        "12小時",
-                                        "12小时"
-                                    ],
-                                    "roi": [
-                                        100,
-                                        200,
-                                        530,
-                                        570
-                                    ],
-                                    "order_by": "Vertical",
-                                    "index": 1
-                                }
-                            },
-                            "action": {
-                                "type": "Click",
-                                "param": {
-                                    "target": true
-                                }
-                            },
-                            "next": [
-                                "DailyDispatchVerify12h"
-                            ],
-                            "pre_wait_freezes": 300,
-                            "post_wait_freezes": {
-                                "time": 700,
-                                "target": [
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
+                        "DailyDispatchSelectTreasureVault": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectSealRoom"
                             }
                         },
-                        "DailyDispatchPick22h": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "22hrs",
-                                        "22小時",
-                                        "22小时"
-                                    ],
-                                    "roi": [
-                                        100,
-                                        200,
-                                        530,
-                                        570
-                                    ],
-                                    "order_by": "Vertical",
-                                    "index": 1
-                                }
-                            },
-                            "action": {
-                                "type": "Click",
-                                "param": {
-                                    "target": true
-                                }
-                            },
-                            "next": [
-                                "DailyDispatchVerify22h"
-                            ],
-                            "pre_wait_freezes": 300,
-                            "post_wait_freezes": {
-                                "time": 700,
-                                "target": [
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
+                        "DailyDispatchSelectSealRoom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectBedroom"
+                            }
+                        },
+                        "DailyDispatchSelectBedroom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSkipUnavailable"
                             }
                         }
                     }
                 },
                 {
                     "name": "训练所-宝藏库-封印密室-地牢-寝室",
-                    "description": "跳过列表最上方 2 个可派遣房间后再选，用于把训练所/后续房间排在前面。",
+                    "description": "按选项列出的房间名称顺序搜索；忙碌或没有可选档位时尝试下一房间。",
                     "pipeline_override": {
-                        "DailyDispatchPick6h": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "6hrs",
-                                        "6小時",
-                                        "6小时"
-                                    ],
-                                    "roi": [
-                                        100,
-                                        200,
-                                        530,
-                                        570
-                                    ],
-                                    "order_by": "Vertical",
-                                    "index": 2
-                                }
-                            },
-                            "action": {
-                                "type": "Click",
-                                "param": {
-                                    "target": true
-                                }
-                            },
+                        "DailyDispatchSelectLocationStart": {
                             "next": [
-                                "DailyDispatchVerify6h"
-                            ],
-                            "pre_wait_freezes": 300,
-                            "post_wait_freezes": {
-                                "time": 700,
-                                "target": [
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
+                                "DailyDispatchSelectTraining"
+                            ]
+                        },
+                        "DailyDispatchSelectTraining": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTreasureVault"
                             }
                         },
-                        "DailyDispatchPick9h": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "9hrs",
-                                        "9小時",
-                                        "9小时"
-                                    ],
-                                    "roi": [
-                                        100,
-                                        200,
-                                        530,
-                                        570
-                                    ],
-                                    "order_by": "Vertical",
-                                    "index": 2
-                                }
-                            },
-                            "action": {
-                                "type": "Click",
-                                "param": {
-                                    "target": true
-                                }
-                            },
-                            "next": [
-                                "DailyDispatchVerify9h"
-                            ],
-                            "pre_wait_freezes": 300,
-                            "post_wait_freezes": {
-                                "time": 700,
-                                "target": [
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
+                        "DailyDispatchSelectTreasureVault": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectSealRoom"
                             }
                         },
-                        "DailyDispatchPick12h": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "12hrs",
-                                        "12小時",
-                                        "12小时"
-                                    ],
-                                    "roi": [
-                                        100,
-                                        200,
-                                        530,
-                                        570
-                                    ],
-                                    "order_by": "Vertical",
-                                    "index": 2
-                                }
-                            },
-                            "action": {
-                                "type": "Click",
-                                "param": {
-                                    "target": true
-                                }
-                            },
-                            "next": [
-                                "DailyDispatchVerify12h"
-                            ],
-                            "pre_wait_freezes": 300,
-                            "post_wait_freezes": {
-                                "time": 700,
-                                "target": [
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
+                        "DailyDispatchSelectSealRoom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectDungeon"
                             }
                         },
-                        "DailyDispatchPick22h": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "22hrs",
-                                        "22小時",
-                                        "22小时"
-                                    ],
-                                    "roi": [
-                                        100,
-                                        200,
-                                        530,
-                                        570
-                                    ],
-                                    "order_by": "Vertical",
-                                    "index": 2
-                                }
-                            },
-                            "action": {
-                                "type": "Click",
-                                "param": {
-                                    "target": true
-                                }
-                            },
-                            "next": [
-                                "DailyDispatchVerify22h"
-                            ],
-                            "pre_wait_freezes": 300,
-                            "post_wait_freezes": {
-                                "time": 700,
-                                "target": [
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
+                        "DailyDispatchSelectDungeon": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectBedroom"
+                            }
+                        },
+                        "DailyDispatchSelectBedroom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSkipUnavailable"
                             }
                         }
                     }
@@ -2099,70 +1878,206 @@
             "cases": [
                 {
                     "name": "最大时间优先",
-                    "description": "优先 22 小时，失败依次降级 12 / 9 / 6 小时；全部不可用则退回派遣总览。",
+                    "description": "在当前优先房间内依次尝试 22/12/9/6 小时；已选中不重复点击，选中验证失败继续后续档位。",
                     "pipeline_override": {
-                        "DailyDispatchSelectLocationStart": {
+                        "DailyDispatchSearchScan0": {
                             "next": [
+                                "DailyDispatchSelected22h",
                                 "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
                                 "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
                                 "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
                                 "DailyDispatchPick6h",
-                                "DailyDispatchSwipeLocationListDown"
+                                "DailyDispatchSearchScroll0"
                             ]
                         },
-                        "DailyDispatchVerify22h": {
-                            "on_error": [
-                                "DailyDispatchPick12h"
+                        "DailyDispatchSearchScan1": {
+                            "next": [
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll1"
                             ]
                         },
-                        "DailyDispatchVerify12h": {
-                            "on_error": [
-                                "DailyDispatchPick9h"
+                        "DailyDispatchSearchScan2": {
+                            "next": [
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll2"
                             ]
                         },
-                        "DailyDispatchVerify9h": {
-                            "on_error": [
-                                "DailyDispatchPick6h"
+                        "DailyDispatchSearchScan3": {
+                            "next": [
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll3"
                             ]
                         },
-                        "DailyDispatchVerify6h": {
+                        "DailyDispatchSearchScan4": {
+                            "next": [
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
+                            ]
+                        },
+                        "DailyDispatchPick22h": {
                             "on_error": [
-                                "DailyDispatchReturnOverviewFromSelection"
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
+                            ]
+                        },
+                        "DailyDispatchPick12h": {
+                            "on_error": [
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
+                            ]
+                        },
+                        "DailyDispatchPick9h": {
+                            "on_error": [
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
+                            ]
+                        },
+                        "DailyDispatchPick6h": {
+                            "on_error": [
+                                "[Anchor]DispatchNextRoom"
                             ]
                         }
                     }
                 },
                 {
                     "name": "短时间优先",
-                    "description": "优先 6 小时，失败依次降级 9 / 12 / 22 小时；全部不可用则退回派遣总览。",
+                    "description": "在当前优先房间内依次尝试 6/9/12/22 小时；已选中不重复点击，选中验证失败继续后续档位。",
                     "pipeline_override": {
-                        "DailyDispatchSelectLocationStart": {
+                        "DailyDispatchSearchScan0": {
                             "next": [
+                                "DailyDispatchSelected6h",
                                 "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
                                 "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
                                 "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
                                 "DailyDispatchPick22h",
-                                "DailyDispatchSwipeLocationListDown"
+                                "DailyDispatchSearchScroll0"
                             ]
                         },
-                        "DailyDispatchVerify6h": {
-                            "on_error": [
-                                "DailyDispatchPick9h"
+                        "DailyDispatchSearchScan1": {
+                            "next": [
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll1"
                             ]
                         },
-                        "DailyDispatchVerify9h": {
-                            "on_error": [
-                                "DailyDispatchPick12h"
+                        "DailyDispatchSearchScan2": {
+                            "next": [
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll2"
                             ]
                         },
-                        "DailyDispatchVerify12h": {
-                            "on_error": [
-                                "DailyDispatchPick22h"
+                        "DailyDispatchSearchScan3": {
+                            "next": [
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll3"
                             ]
                         },
-                        "DailyDispatchVerify22h": {
+                        "DailyDispatchSearchScan4": {
+                            "next": [
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
+                            ]
+                        },
+                        "DailyDispatchPick6h": {
                             "on_error": [
-                                "DailyDispatchReturnOverviewFromSelection"
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
+                            ]
+                        },
+                        "DailyDispatchPick9h": {
+                            "on_error": [
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
+                            ]
+                        },
+                        "DailyDispatchPick12h": {
+                            "on_error": [
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
+                            ]
+                        },
+                        "DailyDispatchPick22h": {
+                            "on_error": [
+                                "[Anchor]DispatchNextRoom"
                             ]
                         }
                     }
