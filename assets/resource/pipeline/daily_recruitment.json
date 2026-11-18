@@ -272,6 +272,23 @@
             "DailyRecruitmentAfterSlots"
         ]
     },
+    "__DailyRecruitmentSetupTitle": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    80,
+                    165,
+                    180,
+                    55
+                ],
+                "expected": [
+                    "招募时间",
+                    "招募時間"
+                ]
+            }
+        }
+    },
     "DailyRecruitmentCancelSetupOnError": {
         "recognition": {
             "type": "OCR",
@@ -509,7 +526,10 @@
             "DailyRecruitmentSlot1Refresh",
             "DailyRecruitmentSlot1RecruitFallback"
         ],
-        "timeout": 10000
+        "timeout": 10000,
+        "on_error": [
+            "DailyRecruitmentCancelSetupOnError"
+        ]
     },
     "DailyRecruitmentSlot1SkipLeader": {
         "recognition": {
@@ -834,7 +854,10 @@
             "DailyRecruitmentSlot2Refresh",
             "DailyRecruitmentSlot2RecruitFallback"
         ],
-        "timeout": 10000
+        "timeout": 10000,
+        "on_error": [
+            "DailyRecruitmentCancelSetupOnError"
+        ]
     },
     "DailyRecruitmentSlot2SkipLeader": {
         "recognition": {
@@ -1159,7 +1182,10 @@
             "DailyRecruitmentSlot3Refresh",
             "DailyRecruitmentSlot3RecruitFallback"
         ],
-        "timeout": 10000
+        "timeout": 10000,
+        "on_error": [
+            "DailyRecruitmentCancelSetupOnError"
+        ]
     },
     "DailyRecruitmentSlot3SkipLeader": {
         "recognition": {
@@ -1484,7 +1510,10 @@
             "DailyRecruitmentSlot4Refresh",
             "DailyRecruitmentSlot4RecruitFallback"
         ],
-        "timeout": 10000
+        "timeout": 10000,
+        "on_error": [
+            "DailyRecruitmentCancelSetupOnError"
+        ]
     },
     "DailyRecruitmentSlot4SkipLeader": {
         "recognition": {
