@@ -119,28 +119,13 @@
     },
     "DailyAlchemyOrdersDeliverVisibleOrder": {
         "recognition": {
-            "type": "ColorMatch",
+            "type": "And",
             "param": {
-                "roi": [
-                    25,
-                    940,
-                    670,
-                    70
+                "all_of": [
+                    "__DailyAlchemyOrdersTitle",
+                    "__DailyAlchemyOrdersDeliverable"
                 ],
-                "method": 40,
-                "lower": [
-                    15,
-                    80,
-                    120
-                ],
-                "upper": [
-                    45,
-                    255,
-                    255
-                ],
-                "count": 120,
-                "connected": true,
-                "order_by": "Horizontal"
+                "box_index": 1
             }
         },
         "action": {
@@ -280,9 +265,9 @@
             "param": {
                 "roi": [
                     25,
-                    940,
+                    942,
                     670,
-                    70
+                    41
                 ],
                 "method": 40,
                 "lower": [
@@ -295,7 +280,7 @@
                     255,
                     255
                 ],
-                "count": 120,
+                "count": 420,
                 "connected": true,
                 "order_by": "Horizontal"
             }
