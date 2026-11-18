@@ -14,20 +14,21 @@ py -3.12 --version
 也可以从 [Python 官方下载](https://www.python.org/downloads/windows/)取得 3.12 安装程序。安装后重新打开终端，用 `py -3.12 --version` 确认。
 如果该命令找不到解释器，先解决 Python 3.12 安装或启动器识别问题，不要退回普通 `python` 命令创建项目环境。
 
-从仓库根目录执行以下 PowerShell 命令，逐条确认成功后继续。已有 `.venv312` 时先检查其中解释器版本，不覆盖或删除已有环境。
+安装 Node.js 22.x（至少 22.9.0，建议使用该系列近期版本）和随附的 npm，以便和 CI 对齐。在仓库根目录执行以下 PowerShell 命令。已有 `.venv312` 时，跳过第一行并确认环境中的 Python 版本。
 
 ```powershell
 py -3.12 -m venv .venv312
 $env:PYTHONUTF8 = "1"
 .\.venv312\Scripts\python.exe --version
 .\.venv312\Scripts\python.exe -m pip install -r tools/requirements.txt
+node --version
 npm ci
 ```
 
-`tools/requirements.txt` 已包含固定的 maafw 及配置、Schema 工具依赖，pip 会解析并安装其依赖。无需先向系统 Python 3.15 安装一份 maafw，也不要另行安装未固定的最新版覆盖项目版本。
+`tools/requirements.txt` 已包含固定的 maafw 及配置、Schema 工具依赖。用项目环境的 pip 安装即可。
 安装成功不等于版本及 native 库均可用，下一步仍须检查。
 
-这些命令直接指定环境内的解释器，无需激活环境，也无需修改 PowerShell 执行策略。Node.js/npm 是单独的开发工具；`npm ci` 使用仓库锁文件安装。
+这些命令直接指定环境内的解释器。`npm ci` 通过 `package-lock.json` 安装锁定的工具依赖。
 使用 VS Code 时，在环境创建后选择 `.venv312` 中的解释器；新终端中确认 `PYTHONUTF8=1` 和 Python 路径符合预期。
 
 ## 验证安装

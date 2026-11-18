@@ -16,5 +16,4 @@ assets/MaaCommonAssets
 deps/tools/
 
 # 锁文件
-pnpm-lock.yaml
 package-lock.json
