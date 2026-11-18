@@ -86,7 +86,7 @@ RECRUITMENT_POOL = [
     {"name": "猎犬小队 安雅", "stars": 0, "tags": {"风属性", "妨碍者", "士兵", "人类"}},
 ]
 
-KNOWN_TAGS = sorted({tag for item in RECRUITMENT_POOL for tag in item["tags"]}, key=len, reverse=True)
+KNOWN_TAGS = {tag for item in RECRUITMENT_POOL for tag in item["tags"]}
 
 _CYCLE_HIT_COUNT_NODES = (
     "DailyRecruitmentSlot1SkipLeader",
@@ -116,20 +116,9 @@ _CYCLE_HIT_COUNT_NODES = (
 def _clean_text(text):
     text = re.sub(r"\s+", "", text or "")
     text = text.replace("暗属性", "闇属性").replace("间属性", "闇属性")
-    text = text.replace("菁英", "菁英").replace("精英", "菁英")
+    text = text.replace("精英", "菁英").replace("領袖", "领袖")
     text = text.replace("防御者", "守护者")
     return text
-
-
-def _tags_in_text(text):
-    text = _clean_text(text)
-    found = []
-    for tag in KNOWN_TAGS:
-        index = text.find(tag)
-        if index >= 0:
-            found.append((index, tag))
-    found.sort(key=lambda item: item[0])
-    return [tag for _, tag in found]
 
 
 def _ocr_results(context, image, roi, *, only_rec=True):
@@ -147,58 +136,35 @@ def _intersects(a, b):
     return ax < bx + bw and bx < ax + aw and ay < by + bh and by < ay + ah
 
 
-def _slot_boxes_for_result(box, count):
-    if count <= 1:
-        return [box]
-    matched = [slot for slot in TAG_SLOT_ROIS if _intersects(box, slot)]
-    if len(matched) < count:
-        matched = TAG_SLOT_ROIS
-    if len(matched) > count:
-        last = len(matched) - 1
-        return [matched[round(last * index / (count - 1))] for index in range(count)]
-    return matched[:count]
-
-
-def _append_tag(tags, tag, box):
-    if any(existing["tag"] == tag for existing in tags):
-        return
+def _tag_with_box(tag, box):
     x, y, w, h = [int(v) for v in list(box)]
     center_box = [x + w // 2 - 8, y + h // 2 - 8, 16, 16]
-    tags.append({"tag": tag, "box": center_box})
-
-
-def _read_tags_by_slots(context, image):
-    tags = []
-    for roi in TAG_SLOT_ROIS:
-        slot_tags = []
-        for result in _ocr_results(context, image, roi):
-            slot_tags.extend(_tags_in_text(getattr(result, "text", "")))
-        for tag in slot_tags:
-            _append_tag(tags, tag, roi)
-            break
-    return tags
-
-
-def _read_tags_whole_roi(context, image, existing_tags):
-    tags = list(existing_tags)
-    known = {entry["tag"] for entry in tags}
-    for result in _ocr_results(context, image, TAG_ROI, only_rec=False):
-        box = getattr(result, "box", None)
-        result_tags = _tags_in_text(getattr(result, "text", ""))
-        if not result_tags or not box:
-            continue
-        tag_boxes = _slot_boxes_for_result(box, len(result_tags))
-        for index, tag in enumerate(result_tags):
-            if tag in known:
-                continue
-            tag_box = tag_boxes[min(index, len(tag_boxes) - 1)]
-            _append_tag(tags, tag, tag_box)
-            known.add(tag)
-    return tags
+    return {"tag": tag, "box": center_box}
 
 
 def _read_visible_tags(context, image):
-    return _read_tags_whole_roi(context, image, _read_tags_by_slots(context, image))
+    candidates = []
+    leader = False
+    for roi in TAG_SLOT_ROIS:
+        texts = {_clean_text(result.text) for result in _ocr_results(context, image, roi)}
+        leader |= any("领袖" in text for text in texts)
+        candidates.append(texts & KNOWN_TAGS)
+
+    # A wide read can catch a leader missed by the individual buttons. It can
+    # fill a button only when the entire result belongs to one known button.
+    for result in _ocr_results(context, image, TAG_ROI, only_rec=False):
+        text = _clean_text(result.text)
+        leader |= "领袖" in text
+        if text not in KNOWN_TAGS or not result.box:
+            continue
+        matching_slots = [index for index, roi in enumerate(TAG_SLOT_ROIS) if _intersects(result.box, roi)]
+        if len(matching_slots) == 1:
+            candidates[matching_slots[0]].add(text)
+
+    tags = [_tag_with_box(next(iter(choices)), roi)
+            for choices, roi in zip(candidates, TAG_SLOT_ROIS) if len(choices) == 1]
+    names = {entry["tag"] for entry in tags}
+    return tags, leader, len(names) == len(TAG_SLOT_ROIS)
 
 
 def _read_refresh_count(context, image):
@@ -256,15 +222,19 @@ def _choose_combo(tags):
 
 
 def _decision(context, image):
-    tags = _read_visible_tags(context, image)
+    title = context.run_recognition("__DailyRecruitmentSetupTitle", image)
+    if not title or not title.hit:
+        return {"action": "not_setup"}
+
+    tags, leader, complete = _read_visible_tags(context, image)
     visible = [entry["tag"] for entry in tags]
-    leader = "领袖" in visible
+    if leader or not complete:
+        return {"action": "skip_leader" if leader else "unconfirmed_tags", "visible_tags": visible}
+
     refresh_count = _read_refresh_count(context, image)
     choice, ranked = _choose_combo(tags)
 
-    if leader:
-        action = "skip_leader"
-    elif choice and choice["guaranteed_2_star"]:
+    if choice and choice["guaranteed_2_star"]:
         action = "recruit_guaranteed"
     elif refresh_count > 0:
         action = "refresh"
@@ -307,11 +277,16 @@ class DailyRecruitOverviewComplete(CustomRecognition):
 
         states = []
         for slot in range(1, 5):
-            if context.get_hit_count(f"DailyRecruitmentSlot{slot}SkipLeader") > 0:
-                states.append("skipped_leader")
-                continue
             occupied = context.run_recognition(f"__DailyRecruitmentSlot{slot}Occupied", argv.image)
-            states.append("recruiting" if occupied and occupied.hit else "unconfirmed")
+            if occupied and occupied.hit:
+                states.append("recruiting")
+                continue
+            skipped = context.get_hit_count(f"DailyRecruitmentSlot{slot}SkipLeader") > 0
+            empty = context.run_recognition(f"__DailyRecruitmentSlot{slot}Empty", argv.image) if skipped else None
+            if empty and empty.hit:
+                states.append("skipped_leader")
+            else:
+                states.append("unconfirmed")
         complete = "unconfirmed" not in states
         return CustomRecognition.AnalyzeResult(
             box=(80, 90, 160, 80) if complete else None,
