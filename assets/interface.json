@@ -1764,64 +1764,109 @@
             "cases": [
                 {
                     "name": "寝室-地牢-训练所-宝藏库-封印密室",
-                    "description": "优先选择魔王寝室，其次地牢、训练所、宝藏库、封印密室。",
+                    "description": "按选项列出的房间名称顺序搜索；忙碌或没有可选档位时尝试下一房间。",
                     "pipeline_override": {
                         "DailyDispatchSelectLocationStart": {
                             "next": [
-                                "DailyDispatchSelectBedroom",
-                                "DailyDispatchSelectDungeon",
-                                "DailyDispatchSelectTraining",
-                                "DailyDispatchSelectTreasureVault",
-                                "DailyDispatchSelectSealRoom",
-                                "DailyDispatchSwipeLocationListDown",
-                                "DailyDispatchSelectBedroomAfterSwipe",
-                                "DailyDispatchSelectDungeonAfterSwipe",
-                                "DailyDispatchSelectTrainingAfterSwipe",
-                                "DailyDispatchSelectTreasureVaultAfterSwipe",
-                                "DailyDispatchSelectSealRoomAfterSwipe"
+                                "DailyDispatchSelectBedroom"
                             ]
+                        },
+                        "DailyDispatchSelectBedroom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectDungeon"
+                            }
+                        },
+                        "DailyDispatchSelectDungeon": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTraining"
+                            }
+                        },
+                        "DailyDispatchSelectTraining": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTreasureVault"
+                            }
+                        },
+                        "DailyDispatchSelectTreasureVault": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectSealRoom"
+                            }
+                        },
+                        "DailyDispatchSelectSealRoom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSkipUnavailable"
+                            }
                         }
                     }
                 },
                 {
                     "name": "地牢-训练所-宝藏库-封印密室-寝室",
-                    "description": "优先选择地牢，其次训练所、宝藏库、封印密室、魔王寝室。",
+                    "description": "按选项列出的房间名称顺序搜索；忙碌或没有可选档位时尝试下一房间。",
                     "pipeline_override": {
                         "DailyDispatchSelectLocationStart": {
                             "next": [
-                                "DailyDispatchSelectDungeon",
-                                "DailyDispatchSelectTraining",
-                                "DailyDispatchSelectTreasureVault",
-                                "DailyDispatchSelectSealRoom",
-                                "DailyDispatchSelectBedroom",
-                                "DailyDispatchSwipeLocationListDown",
-                                "DailyDispatchSelectDungeonAfterSwipe",
-                                "DailyDispatchSelectTrainingAfterSwipe",
-                                "DailyDispatchSelectTreasureVaultAfterSwipe",
-                                "DailyDispatchSelectSealRoomAfterSwipe",
-                                "DailyDispatchSelectBedroomAfterSwipe"
+                                "DailyDispatchSelectDungeon"
                             ]
+                        },
+                        "DailyDispatchSelectDungeon": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTraining"
+                            }
+                        },
+                        "DailyDispatchSelectTraining": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTreasureVault"
+                            }
+                        },
+                        "DailyDispatchSelectTreasureVault": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectSealRoom"
+                            }
+                        },
+                        "DailyDispatchSelectSealRoom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectBedroom"
+                            }
+                        },
+                        "DailyDispatchSelectBedroom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSkipUnavailable"
+                            }
                         }
                     }
                 },
                 {
                     "name": "训练所-宝藏库-封印密室-地牢-寝室",
-                    "description": "优先选择训练所，其次宝藏库、封印密室、地牢、魔王寝室。",
+                    "description": "按选项列出的房间名称顺序搜索；忙碌或没有可选档位时尝试下一房间。",
                     "pipeline_override": {
                         "DailyDispatchSelectLocationStart": {
                             "next": [
-                                "DailyDispatchSelectTraining",
-                                "DailyDispatchSelectTreasureVault",
-                                "DailyDispatchSelectSealRoom",
-                                "DailyDispatchSelectDungeon",
-                                "DailyDispatchSelectBedroom",
-                                "DailyDispatchSwipeLocationListDown",
-                                "DailyDispatchSelectTrainingAfterSwipe",
-                                "DailyDispatchSelectTreasureVaultAfterSwipe",
-                                "DailyDispatchSelectSealRoomAfterSwipe",
-                                "DailyDispatchSelectDungeonAfterSwipe",
-                                "DailyDispatchSelectBedroomAfterSwipe"
+                                "DailyDispatchSelectTraining"
                             ]
+                        },
+                        "DailyDispatchSelectTraining": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTreasureVault"
+                            }
+                        },
+                        "DailyDispatchSelectTreasureVault": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectSealRoom"
+                            }
+                        },
+                        "DailyDispatchSelectSealRoom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectDungeon"
+                            }
+                        },
+                        "DailyDispatchSelectDungeon": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectBedroom"
+                            }
+                        },
+                        "DailyDispatchSelectBedroom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSkipUnavailable"
+                            }
                         }
                     }
                 }
@@ -1833,172 +1878,206 @@
             "cases": [
                 {
                     "name": "最大时间优先",
-                    "description": "优先选择每个地点从左向右第一个时间按钮。",
+                    "description": "在当前优先房间内依次尝试 22/12/9/6 小时；已选中不重复点击，选中验证失败继续后续档位。",
                     "pipeline_override": {
-                        "DailyDispatchSelectBedroom": {
+                        "DailyDispatchSearchScan0": {
                             "next": [
-                                "DailyDispatchSelectBedroomTime1",
-                                "DailyDispatchSelectBedroomTime2",
-                                "DailyDispatchSelectBedroomTime3",
-                                "DailyDispatchSelectBedroomTime4"
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll0"
                             ]
                         },
-                        "DailyDispatchSelectBedroomAfterSwipe": {
+                        "DailyDispatchSearchScan1": {
                             "next": [
-                                "DailyDispatchSelectBedroomTime1",
-                                "DailyDispatchSelectBedroomTime2",
-                                "DailyDispatchSelectBedroomTime3",
-                                "DailyDispatchSelectBedroomTime4"
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll1"
                             ]
                         },
-                        "DailyDispatchSelectDungeon": {
+                        "DailyDispatchSearchScan2": {
                             "next": [
-                                "DailyDispatchSelectDungeonTime1",
-                                "DailyDispatchSelectDungeonTime2",
-                                "DailyDispatchSelectDungeonTime3",
-                                "DailyDispatchSelectDungeonTime4"
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll2"
                             ]
                         },
-                        "DailyDispatchSelectDungeonAfterSwipe": {
+                        "DailyDispatchSearchScan3": {
                             "next": [
-                                "DailyDispatchSelectDungeonTime1",
-                                "DailyDispatchSelectDungeonTime2",
-                                "DailyDispatchSelectDungeonTime3",
-                                "DailyDispatchSelectDungeonTime4"
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll3"
                             ]
                         },
-                        "DailyDispatchSelectTraining": {
+                        "DailyDispatchSearchScan4": {
                             "next": [
-                                "DailyDispatchSelectTrainingTime1",
-                                "DailyDispatchSelectTrainingTime2",
-                                "DailyDispatchSelectTrainingTime3",
-                                "DailyDispatchSelectTrainingTime4"
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTrainingAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectTrainingTime1",
-                                "DailyDispatchSelectTrainingTime2",
-                                "DailyDispatchSelectTrainingTime3",
-                                "DailyDispatchSelectTrainingTime4"
+                        "DailyDispatchPick22h": {
+                            "on_error": [
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTreasureVault": {
-                            "next": [
-                                "DailyDispatchSelectTreasureVaultTime1",
-                                "DailyDispatchSelectTreasureVaultTime2",
-                                "DailyDispatchSelectTreasureVaultTime3",
-                                "DailyDispatchSelectTreasureVaultTime4"
+                        "DailyDispatchPick12h": {
+                            "on_error": [
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTreasureVaultAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectTreasureVaultTime1",
-                                "DailyDispatchSelectTreasureVaultTime2",
-                                "DailyDispatchSelectTreasureVaultTime3",
-                                "DailyDispatchSelectTreasureVaultTime4"
+                        "DailyDispatchPick9h": {
+                            "on_error": [
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectSealRoom": {
-                            "next": [
-                                "DailyDispatchSelectSealRoomTime1",
-                                "DailyDispatchSelectSealRoomTime2",
-                                "DailyDispatchSelectSealRoomTime3",
-                                "DailyDispatchSelectSealRoomTime4"
-                            ]
-                        },
-                        "DailyDispatchSelectSealRoomAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectSealRoomTime1",
-                                "DailyDispatchSelectSealRoomTime2",
-                                "DailyDispatchSelectSealRoomTime3",
-                                "DailyDispatchSelectSealRoomTime4"
+                        "DailyDispatchPick6h": {
+                            "on_error": [
+                                "[Anchor]DispatchNextRoom"
                             ]
                         }
                     }
                 },
                 {
                     "name": "短时间优先",
-                    "description": "优先选择每个地点从右向左第一个时间按钮。",
+                    "description": "在当前优先房间内依次尝试 6/9/12/22 小时；已选中不重复点击，选中验证失败继续后续档位。",
                     "pipeline_override": {
-                        "DailyDispatchSelectBedroom": {
+                        "DailyDispatchSearchScan0": {
                             "next": [
-                                "DailyDispatchSelectBedroomTime4",
-                                "DailyDispatchSelectBedroomTime3",
-                                "DailyDispatchSelectBedroomTime2",
-                                "DailyDispatchSelectBedroomTime1"
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll0"
                             ]
                         },
-                        "DailyDispatchSelectBedroomAfterSwipe": {
+                        "DailyDispatchSearchScan1": {
                             "next": [
-                                "DailyDispatchSelectBedroomTime4",
-                                "DailyDispatchSelectBedroomTime3",
-                                "DailyDispatchSelectBedroomTime2",
-                                "DailyDispatchSelectBedroomTime1"
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll1"
                             ]
                         },
-                        "DailyDispatchSelectDungeon": {
+                        "DailyDispatchSearchScan2": {
                             "next": [
-                                "DailyDispatchSelectDungeonTime4",
-                                "DailyDispatchSelectDungeonTime3",
-                                "DailyDispatchSelectDungeonTime2",
-                                "DailyDispatchSelectDungeonTime1"
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll2"
                             ]
                         },
-                        "DailyDispatchSelectDungeonAfterSwipe": {
+                        "DailyDispatchSearchScan3": {
                             "next": [
-                                "DailyDispatchSelectDungeonTime4",
-                                "DailyDispatchSelectDungeonTime3",
-                                "DailyDispatchSelectDungeonTime2",
-                                "DailyDispatchSelectDungeonTime1"
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll3"
                             ]
                         },
-                        "DailyDispatchSelectTraining": {
+                        "DailyDispatchSearchScan4": {
                             "next": [
-                                "DailyDispatchSelectTrainingTime4",
-                                "DailyDispatchSelectTrainingTime3",
-                                "DailyDispatchSelectTrainingTime2",
-                                "DailyDispatchSelectTrainingTime1"
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTrainingAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectTrainingTime4",
-                                "DailyDispatchSelectTrainingTime3",
-                                "DailyDispatchSelectTrainingTime2",
-                                "DailyDispatchSelectTrainingTime1"
+                        "DailyDispatchPick6h": {
+                            "on_error": [
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTreasureVault": {
-                            "next": [
-                                "DailyDispatchSelectTreasureVaultTime4",
-                                "DailyDispatchSelectTreasureVaultTime3",
-                                "DailyDispatchSelectTreasureVaultTime2",
-                                "DailyDispatchSelectTreasureVaultTime1"
+                        "DailyDispatchPick9h": {
+                            "on_error": [
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTreasureVaultAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectTreasureVaultTime4",
-                                "DailyDispatchSelectTreasureVaultTime3",
-                                "DailyDispatchSelectTreasureVaultTime2",
-                                "DailyDispatchSelectTreasureVaultTime1"
+                        "DailyDispatchPick12h": {
+                            "on_error": [
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectSealRoom": {
-                            "next": [
-                                "DailyDispatchSelectSealRoomTime4",
-                                "DailyDispatchSelectSealRoomTime3",
-                                "DailyDispatchSelectSealRoomTime2",
-                                "DailyDispatchSelectSealRoomTime1"
-                            ]
-                        },
-                        "DailyDispatchSelectSealRoomAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectSealRoomTime4",
-                                "DailyDispatchSelectSealRoomTime3",
-                                "DailyDispatchSelectSealRoomTime2",
-                                "DailyDispatchSelectSealRoomTime1"
+                        "DailyDispatchPick22h": {
+                            "on_error": [
+                                "[Anchor]DispatchNextRoom"
                             ]
                         }
                     }
