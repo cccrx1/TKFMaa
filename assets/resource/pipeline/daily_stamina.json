@@ -1,5 +1,14 @@
 {
     "DailyStaminaStart": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "DailyStaminaConfigureCustom",
+                "custom_action_param": {
+                    "enabled": false
+                }
+            }
+        },
         "next": [
             "[JumpBack]CommonWaitLoading",
             "[JumpBack]CommonCloseMainGift",
@@ -885,6 +894,7 @@
     },
     "DailyStaminaStageNotFoundGiveUp": {
         "next": [
+            "DailyStaminaReturnMainFromActivityList",
             "CommonEnsureMain"
         ]
     },

@@ -41,6 +41,7 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaRouteActivityListEnterSelected",
+            "DailyStaminaRouteActivityListSkipChallengeSlot2",
             "DailyStaminaRouteActivityListSelectSlot2"
         ],
         "timeout": 12000
@@ -50,7 +51,8 @@
             "type": "And",
             "param": {
                 "all_of": [
-                    "DailyStaminaPresetActivityName"
+                    "DailyStaminaPresetActivityName",
+                    "__DailyStaminaActivityListReady"
                 ]
             }
         },
@@ -80,6 +82,30 @@
         ],
         "max_hit": 4,
         "pre_wait_freezes": 300
+    },
+    "DailyStaminaRouteActivityListSkipChallengeSlot2": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "协会共斗",
+                    "協會共鬥",
+                    "挑战活动",
+                    "挑戰活動",
+                    "活动挑战",
+                    "活動挑戰"
+                ],
+                "roi": [
+                    270,
+                    662,
+                    180,
+                    80
+                ]
+            }
+        },
+        "next": [
+            "DailyStaminaRouteActivityListSelectSlot3"
+        ]
     },
     "DailyStaminaRouteActivityListSelectSlot2": {
         "recognition": {
@@ -131,6 +157,31 @@
             "DailyStaminaStageNotFoundGiveUp"
         ],
         "post_delay": 500,
+        "pre_wait_freezes": 300
+    },
+    "DailyStaminaReturnMainFromActivityList": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyStaminaActivityListReady",
+                    "DailyStaminaPresetActivitySection"
+                ],
+                "box_index": 0
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    74
+                ]
+            }
+        },
+        "next": [
+            "CommonStopOnMainWithRetries"
+        ],
         "pre_wait_freezes": 300
     },
     "DailyStaminaRouteInnerSpecialUiStart": {
@@ -452,53 +503,324 @@
             }
         },
         "next": [
-            "DailyStaminaRouteRegularPagedFirstPageReady",
+            "[JumpBack]CommonWaitLoading",
             "DailyStaminaRouteRegularPagedPreviousPage",
+            "DailyStaminaRouteRegularPagedScanPage",
             "DailyStaminaStageNotFoundGiveUp"
         ],
         "timeout": 6000
-    },
-    "DailyStaminaRouteRegularPagedFirstPageReady": {
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    "DailyStaminaPresetFirstPageMarker"
-                ]
-            }
-        },
-        "next": [
-            "DailyStaminaRouteInnerNormalListStart"
-        ]
     },
     "DailyStaminaRouteRegularPagedPreviousPage": {
         "recognition": {
             "type": "And",
             "param": {
                 "all_of": [
-                    "DailyStaminaPresetStageListAnySelectable"
-                ]
+                    "DailyStaminaPresetStageListAnySelectable",
+                    "__DailyStaminaPreviousPageArrow"
+                ],
+                "box_index": 1
             }
         },
         "action": {
             "type": "Click",
             "param": {
-                "target": [
-                    40,
-                    610
-                ]
+                "target": true
             }
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaRouteRegularPagedFirstPageStart"
         ],
-        "max_hit": 4,
+        "pre_wait_freezes": 300,
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                240,
+                318,
+                240,
+                680
+            ],
+            "rate_limit": 100,
+            "timeout": 2800
+        },
+        "post_delay": 500,
+        "max_hit": 8,
         "on_error": [
+            "DailyStaminaStageNotFoundGiveUp"
+        ]
+    },
+    "DailyStaminaRouteRegularPagedScanPage": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetStageListAnySelectable"
+                ],
+                "box_index": 0
+            }
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyStaminaOpenPagedTargetStage",
+            "DailyStaminaRouteRegularPagedScanUp",
+            "DailyStaminaStageNotFoundGiveUp"
+        ]
+    },
+    "DailyStaminaOpenPagedTargetStage": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetStageListAnySelectable",
+                    "DailyStaminaPresetStageListTarget"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    100,
+                    18,
+                    0,
+                    -12
+                ]
+            }
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyStaminaRerunStageDetailReady",
+            "DailyStaminaOpenPagedTargetStage"
+        ],
+        "pre_wait_freezes": 300,
+        "post_delay": 500,
+        "max_hit": 3,
+        "on_error": [
+            "DailyStaminaStageNotFoundGiveUp"
+        ]
+    },
+    "DailyStaminaRouteRegularPagedScanUp": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetStageListAnySelectable"
+                ],
+                "box_index": 0
+            }
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    360,
+                    330
+                ],
+                "end": [
+                    360,
+                    980
+                ],
+                "duration": 750
+            }
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyStaminaOpenPagedTargetStage",
+            "DailyStaminaRouteRegularPagedScanUpAgain",
             "DailyStaminaStageNotFoundGiveUp"
         ],
         "pre_wait_freezes": 300,
-        "post_delay": 500
+        "post_delay": 500,
+        "on_error": [
+            "CommonEnsureMain"
+        ]
+    },
+    "DailyStaminaRouteRegularPagedScanUpAgain": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetStageListAnySelectable"
+                ],
+                "box_index": 0
+            }
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    360,
+                    330
+                ],
+                "end": [
+                    360,
+                    980
+                ],
+                "duration": 750
+            }
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyStaminaOpenPagedTargetStage",
+            "DailyStaminaRouteRegularPagedScanDown",
+            "DailyStaminaStageNotFoundGiveUp"
+        ],
+        "pre_wait_freezes": 300,
+        "post_delay": 500,
+        "on_error": [
+            "CommonEnsureMain"
+        ]
+    },
+    "DailyStaminaRouteRegularPagedScanDown": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetStageListAnySelectable"
+                ],
+                "box_index": 0
+            }
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    360,
+                    980
+                ],
+                "end": [
+                    360,
+                    330
+                ],
+                "duration": 750
+            }
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyStaminaOpenPagedTargetStage",
+            "DailyStaminaRouteRegularPagedScanDownAgain",
+            "DailyStaminaStageNotFoundGiveUp"
+        ],
+        "pre_wait_freezes": 300,
+        "post_delay": 500,
+        "on_error": [
+            "CommonEnsureMain"
+        ]
+    },
+    "DailyStaminaRouteRegularPagedScanDownAgain": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetStageListAnySelectable"
+                ],
+                "box_index": 0
+            }
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    360,
+                    980
+                ],
+                "end": [
+                    360,
+                    330
+                ],
+                "duration": 750
+            }
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyStaminaOpenPagedTargetStage",
+            "DailyStaminaRouteRegularPagedNextPage",
+            "DailyStaminaStageNotFoundGiveUp"
+        ],
+        "pre_wait_freezes": 300,
+        "post_delay": 500,
+        "on_error": [
+            "CommonEnsureMain"
+        ]
+    },
+    "DailyStaminaRouteRegularPagedNextPage": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "DailyStaminaPresetStageListAnySelectable",
+                    "__DailyStaminaNextPageArrow"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true
+            }
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyStaminaRouteRegularPagedScanPage"
+        ],
+        "pre_wait_freezes": 300,
+        "post_wait_freezes": {
+            "time": 600,
+            "target": [
+                240,
+                318,
+                240,
+                680
+            ],
+            "rate_limit": 100,
+            "timeout": 2800
+        },
+        "post_delay": 500,
+        "max_hit": 8,
+        "on_error": [
+            "DailyStaminaStageNotFoundGiveUp"
+        ]
+    },
+    "__DailyStaminaPreviousPageArrow": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": [
+                    "DailyStamina/PreviousPage.png",
+                    "DailyStamina/PreviousPageCity.png"
+                ],
+                "roi": [
+                    0,
+                    551,
+                    96,
+                    102
+                ],
+                "threshold": 0.62,
+                "order_by": "Score"
+            }
+        }
+    },
+    "__DailyStaminaNextPageArrow": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": [
+                    "DailyStamina/NextPage.png",
+                    "DailyStamina/NextPageCity.png"
+                ],
+                "roi": [
+                    624,
+                    551,
+                    96,
+                    102
+                ],
+                "threshold": 0.7,
+                "order_by": "Score"
+            }
+        }
     },
     "DailyStaminaRouteDailyAffairsStart": {
         "next": [

@@ -70,10 +70,10 @@
             "name": "消耗体力",
             "entry": "DailyStaminaStart",
             "option": [
-                "体力消耗关卡@211739fd9a99",
-                "扫荡不足时手动补刷",
-                "体力不足时使用体力药",
-                "体力不足时购买体力"
+                "体力消耗关卡@059dc555c254",
+                "体力不足时使用体力药@2",
+                "体力不足时购买体力@2",
+                "扫荡不足时手动补刷@2"
             ],
             "doc": [
                 "从主界面进入限时活动，按所选关卡配置寻找活动、入口图标和关卡名。",
@@ -163,14 +163,200 @@
                 }
             ]
         },
-        "体力消耗关卡@211739fd9a99": {
+        "体力消耗关卡@059dc555c254": {
             "type": "select",
-            "default_case": "新大陆历险记 - 访查-01",
+            "label": "活动",
+            "default_case": "新大陆历险记",
             "cases": [
                 {
-                    "name": "新大陆历险记 - 访查-01",
+                    "name": "新大陆历险记",
+                    "option": [
+                        "体力活动关卡@5cdde2def957"
+                    ]
+                },
+                {
+                    "name": "凯萨½（复刻）",
+                    "option": [
+                        "体力活动关卡@d5c4d50adc3a"
+                    ]
+                },
+                {
+                    "name": "日常政务",
+                    "option": [
+                        "体力活动关卡@a297c5a984be"
+                    ]
+                },
+                {
+                    "name": "自定义关卡",
+                    "description": "选择活动类型和活动分区，再填写活动与关卡。",
+                    "option": [
+                        "自定义体力关卡模板",
+                        "自定义体力活动分区",
+                        "自定义体力活动与关卡"
+                    ],
+                    "pipeline_override": {
+                        "DailyStaminaStart": {
+                            "action": {
+                                "param": {
+                                    "custom_action_param": {
+                                        "enabled": true
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteInnerNormalListStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "__CUSTOM_ACTIVITY__"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        770,
+                                        580,
+                                        60
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "__CUSTOM_STAGE__"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 1,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 1,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListAnySelectable": {
+                            "enabled": true,
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "__CUSTOM_LIST__"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        90,
+                                        720,
+                                        180
+                                    ]
+                                }
+                            }
+                        },
+                        "CommonReturnMainFromStaminaStageList": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "体力活动关卡@5cdde2def957": {
+            "type": "select",
+            "label": "关卡",
+            "default_case": "访查-01",
+            "cases": [
+                {
+                    "name": "访查-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找访查-01并扫荡。",
                     "pipeline_override": {
+                        "DailyStaminaStart": {
+                            "action": {
+                                "param": {
+                                    "custom_action_param": {
+                                        "enabled": false
+                                    }
+                                }
+                            }
+                        },
                         "DailyStaminaPresetRouteStart": {
                             "next": [
                                 "DailyStaminaRouteActivitySectionStart"
@@ -210,14 +396,14 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "新大陆历险记",
-                                        "新大陸歷險記"
+                                        "^新大陆历险记$",
+                                        "^新大陸歷險記$"
                                     ],
                                     "roi": [
                                         70,
-                                        770,
+                                        768,
                                         580,
-                                        80
+                                        82
                                     ]
                                 }
                             }
@@ -227,9 +413,9 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01"
+                                        "^访查-01$",
+                                        "^访查01$",
+                                        "^訪查-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -285,15 +471,13 @@
                                 "param": {
                                     "expected": [
                                         "新大陆历险记",
-                                        "新大陸歷險記",
-                                        "活动挑战还有",
-                                        "活動挑戰還有"
+                                        "新大陸歷險記"
                                     ],
                                     "roi": [
                                         0,
                                         90,
-                                        720,
-                                        180
+                                        240,
+                                        80
                                     ]
                                 }
                             }
@@ -307,49 +491,22 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
                 },
                 {
-                    "name": "新大陆历险记 - 记录-01",
+                    "name": "记录-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找记录-01并扫荡。",
                     "pipeline_override": {
+                        "DailyStaminaStart": {
+                            "action": {
+                                "param": {
+                                    "custom_action_param": {
+                                        "enabled": false
+                                    }
+                                }
+                            }
+                        },
                         "DailyStaminaPresetRouteStart": {
                             "next": [
                                 "DailyStaminaRouteActivitySectionStart"
@@ -389,14 +546,14 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "新大陆历险记",
-                                        "新大陸歷險記"
+                                        "^新大陆历险记$",
+                                        "^新大陸歷險記$"
                                     ],
                                     "roi": [
                                         70,
-                                        770,
+                                        768,
                                         580,
-                                        80
+                                        82
                                     ]
                                 }
                             }
@@ -406,11 +563,11 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01"
+                                        "^记录-01$",
+                                        "^记录01$",
+                                        "^纪录-01$",
+                                        "^纪录01$",
+                                        "^紀錄-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -466,15 +623,13 @@
                                 "param": {
                                     "expected": [
                                         "新大陆历险记",
-                                        "新大陸歷險記",
-                                        "活动挑战还有",
-                                        "活動挑戰還有"
+                                        "新大陸歷險記"
                                     ],
                                     "roi": [
                                         0,
                                         90,
-                                        720,
-                                        180
+                                        240,
+                                        80
                                     ]
                                 }
                             }
@@ -488,49 +643,22 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
                 },
                 {
-                    "name": "新大陆历险记 - 撰写-01",
+                    "name": "撰写-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找撰写-01并扫荡。",
                     "pipeline_override": {
+                        "DailyStaminaStart": {
+                            "action": {
+                                "param": {
+                                    "custom_action_param": {
+                                        "enabled": false
+                                    }
+                                }
+                            }
+                        },
                         "DailyStaminaPresetRouteStart": {
                             "next": [
                                 "DailyStaminaRouteActivitySectionStart"
@@ -570,14 +698,14 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "新大陆历险记",
-                                        "新大陸歷險記"
+                                        "^新大陆历险记$",
+                                        "^新大陸歷險記$"
                                     ],
                                     "roi": [
                                         70,
-                                        770,
+                                        768,
                                         580,
-                                        80
+                                        82
                                     ]
                                 }
                             }
@@ -587,9 +715,9 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01"
+                                        "^撰写-01$",
+                                        "^撰写01$",
+                                        "^撰寫-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -645,15 +773,13 @@
                                 "param": {
                                     "expected": [
                                         "新大陆历险记",
-                                        "新大陸歷險記",
-                                        "活动挑战还有",
-                                        "活動挑戰還有"
+                                        "新大陸歷險記"
                                     ],
                                     "roi": [
                                         0,
                                         90,
-                                        720,
-                                        180
+                                        240,
+                                        80
                                     ]
                                 }
                             }
@@ -667,49 +793,22 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
                 },
                 {
-                    "name": "新大陆历险记 - 锻造-01",
+                    "name": "锻造-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找锻造-01并扫荡。",
                     "pipeline_override": {
+                        "DailyStaminaStart": {
+                            "action": {
+                                "param": {
+                                    "custom_action_param": {
+                                        "enabled": false
+                                    }
+                                }
+                            }
+                        },
                         "DailyStaminaPresetRouteStart": {
                             "next": [
                                 "DailyStaminaRouteActivitySectionStart"
@@ -749,14 +848,14 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "新大陆历险记",
-                                        "新大陸歷險記"
+                                        "^新大陆历险记$",
+                                        "^新大陸歷險記$"
                                     ],
                                     "roi": [
                                         70,
-                                        770,
+                                        768,
                                         580,
-                                        80
+                                        82
                                     ]
                                 }
                             }
@@ -766,9 +865,9 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01"
+                                        "^锻造-01$",
+                                        "^锻造01$",
+                                        "^鍛造-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -824,15 +923,13 @@
                                 "param": {
                                     "expected": [
                                         "新大陆历险记",
-                                        "新大陸歷險記",
-                                        "活动挑战还有",
-                                        "活動挑戰還有"
+                                        "新大陸歷險記"
                                     ],
                                     "roi": [
                                         0,
                                         90,
-                                        720,
-                                        180
+                                        240,
+                                        80
                                     ]
                                 }
                             }
@@ -846,49 +943,22 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
                 },
                 {
-                    "name": "新大陆历险记 - 获取-01",
+                    "name": "获取-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找获取-01并扫荡。",
                     "pipeline_override": {
+                        "DailyStaminaStart": {
+                            "action": {
+                                "param": {
+                                    "custom_action_param": {
+                                        "enabled": false
+                                    }
+                                }
+                            }
+                        },
                         "DailyStaminaPresetRouteStart": {
                             "next": [
                                 "DailyStaminaRouteActivitySectionStart"
@@ -928,14 +998,14 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "新大陆历险记",
-                                        "新大陸歷險記"
+                                        "^新大陆历险记$",
+                                        "^新大陸歷險記$"
                                     ],
                                     "roi": [
                                         70,
-                                        770,
+                                        768,
                                         580,
-                                        80
+                                        82
                                     ]
                                 }
                             }
@@ -945,9 +1015,9 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01"
+                                        "^获取-01$",
+                                        "^获取01$",
+                                        "^獲取-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -1003,15 +1073,13 @@
                                 "param": {
                                     "expected": [
                                         "新大陆历险记",
-                                        "新大陸歷險記",
-                                        "活动挑战还有",
-                                        "活動挑戰還有"
+                                        "新大陸歷險記"
                                     ],
                                     "roi": [
                                         0,
                                         90,
-                                        720,
-                                        180
+                                        240,
+                                        80
                                     ]
                                 }
                             }
@@ -1025,49 +1093,22 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
                 },
                 {
-                    "name": "新大陆历险记 - 拍摄-01",
+                    "name": "拍摄-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找拍摄-01并扫荡。",
                     "pipeline_override": {
+                        "DailyStaminaStart": {
+                            "action": {
+                                "param": {
+                                    "custom_action_param": {
+                                        "enabled": false
+                                    }
+                                }
+                            }
+                        },
                         "DailyStaminaPresetRouteStart": {
                             "next": [
                                 "DailyStaminaRouteActivitySectionStart"
@@ -1107,14 +1148,14 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "新大陆历险记",
-                                        "新大陸歷險記"
+                                        "^新大陆历险记$",
+                                        "^新大陸歷險記$"
                                     ],
                                     "roi": [
                                         70,
-                                        770,
+                                        768,
                                         580,
-                                        80
+                                        82
                                     ]
                                 }
                             }
@@ -1124,9 +1165,9 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
+                                        "^拍摄-01$",
+                                        "^拍摄01$",
+                                        "^拍攝-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -1182,15 +1223,13 @@
                                 "param": {
                                     "expected": [
                                         "新大陆历险记",
-                                        "新大陸歷險記",
-                                        "活动挑战还有",
-                                        "活動挑戰還有"
+                                        "新大陸歷險記"
                                     ],
                                     "roi": [
                                         0,
                                         90,
-                                        720,
-                                        180
+                                        240,
+                                        80
                                     ]
                                 }
                             }
@@ -1204,49 +1243,187 @@
                                     ]
                                 }
                             }
+                        }
+                    }
+                }
+            ]
+        },
+        "体力活动关卡@d5c4d50adc3a": {
+            "type": "select",
+            "label": "关卡",
+            "default_case": "凯萨-09",
+            "cases": [
+                {
+                    "name": "凯萨-09",
+                    "description": "复刻活动地图：选择凯萨½，寻找凯萨-09并扫荡。",
+                    "pipeline_override": {
+                        "DailyStaminaStart": {
+                            "action": {
+                                "param": {
+                                    "custom_action_param": {
+                                        "enabled": false
+                                    }
+                                }
+                            }
                         },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
                             "recognition": {
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteInnerRerunUiStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "^[凯凱][萨薩] *(?:1?½(?:[/／]?2)?|1[/／]?2)$"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        765,
+                                        220,
+                                        70
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "^[凯凱][萨薩][-－]09(?:[ ]*[⚡ϟ4]?[ ]*15)?$"
+                                    ],
+                                    "roi": [
+                                        175,
+                                        170,
+                                        435,
+                                        960
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 15,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 15,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunMainColumnStart"
+                            ]
+                        },
+                        "DailyStaminaPresetRerunMapMarker": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "^[凯凱][萨薩] *(?:1?½(?:[/／]?2)?|1[/／]?2)$"
                                     ],
                                     "roi": [
                                         0,
-                                        160,
-                                        720,
-                                        1000
+                                        116,
+                                        170,
+                                        55
+                                    ]
+                                }
+                            }
+                        },
+                        "CommonReturnMainFromStaminaStageList": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetRerunMapMarker"
                                     ]
                                 }
                             }
                         }
                     }
-                },
+                }
+            ]
+        },
+        "体力活动关卡@a297c5a984be": {
+            "type": "select",
+            "label": "关卡",
+            "default_case": "战争演习-特IV",
+            "cases": [
                 {
-                    "name": "常驻关卡 - 战争演习-特IV",
+                    "name": "战争演习-特IV",
                     "description": "常驻路线：目前活动 → 日常政务 → 战争演习，进入纵向关卡列表后寻找战争演习-特IV。",
                     "pipeline_override": {
+                        "DailyStaminaStart": {
+                            "action": {
+                                "param": {
+                                    "custom_action_param": {
+                                        "enabled": false
+                                    }
+                                }
+                            }
+                        },
                         "DailyStaminaPresetRouteStart": {
                             "next": [
                                 "DailyStaminaRouteActivitySectionStart"
@@ -1403,64 +1580,212 @@
                         }
                     }
                 }
-            ],
-            "label": "体力消耗关卡",
-            "description": "活动关卡列表变化导致旧选择失效时，默认选择列表中的第一个关卡。"
+            ]
         },
-        "扫荡不足时手动补刷": {
-            "type": "switch",
-            "default_case": "No",
+        "自定义体力关卡模板": {
+            "type": "select",
+            "label": "活动类型",
+            "default_case": "普通列表活动",
             "cases": [
                 {
-                    "name": "Yes",
-                    "description": "扫荡券不足或扫荡后仍有足够体力时，继续使用开始/再次挑战手动补刷。",
+                    "name": "普通列表活动",
                     "pipeline_override": {
-                        "DailyStaminaManualStart": {
-                            "enabled": true
+                        "DailyStaminaCustomTemplate": {
+                            "attach": {
+                                "route": "normal_list"
+                            }
                         }
                     }
                 },
                 {
-                    "name": "No",
+                    "name": "常规分页活动",
+                    "pipeline_override": {
+                        "DailyStaminaCustomTemplate": {
+                            "attach": {
+                                "route": "regular_paged_list"
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "复刻地图活动",
+                    "pipeline_override": {
+                        "DailyStaminaCustomTemplate": {
+                            "attach": {
+                                "route": "rerun_activity_map"
+                            }
+                        }
+                    },
+                    "option": [
+                        "自定义体力复刻地图区域"
+                    ]
+                }
+            ]
+        },
+        "自定义体力活动分区": {
+            "type": "select",
+            "label": "活动分区",
+            "default_case": "限时活动",
+            "cases": [
+                {
+                    "name": "限时活动",
+                    "pipeline_override": {
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "目前活动",
+                    "pipeline_override": {
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "目前活动"
+                                    ],
+                                    "roi": [
+                                        270,
+                                        90,
+                                        180,
+                                        80
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "自定义体力活动与关卡": {
+            "type": "input",
+            "label": "活动与关卡",
+            "inputs": [
+                {
+                    "name": "activity",
+                    "label": "活动名称",
+                    "default": "",
+                    "verify": ".*\\S.*",
+                    "pattern_msg": "请填写游戏中显示的活动名称"
+                },
+                {
+                    "name": "stage",
+                    "label": "目标关卡名称",
+                    "default": "",
+                    "verify": ".*\\S.*",
+                    "pattern_msg": "请填写游戏中显示的完整关卡名称"
+                },
+                {
+                    "name": "list_marker",
+                    "label": "列表或地图标题（留空使用活动名称）",
+                    "default": ""
+                },
+                {
+                    "name": "cost",
+                    "label": "每次体力消耗",
+                    "default": "30",
+                    "pipeline_type": "int",
+                    "verify": "^[1-9][0-9]*$",
+                    "pattern_msg": "请输入正整数"
+                }
+            ],
+            "pipeline_override": {
+                "DailyStaminaCustomInput": {
+                    "attach": {
+                        "activity": "{activity}",
+                        "stage": "{stage}",
+                        "list_marker": "{list_marker}",
+                        "cost": "{cost}"
+                    }
+                }
+            }
+        },
+        "自定义体力复刻地图区域": {
+            "type": "select",
+            "label": "地图搜索区域",
+            "default_case": "中路",
+            "cases": [
+                {
+                    "name": "中路",
+                    "pipeline_override": {
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunMainColumnStart"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "左路",
+                    "pipeline_override": {
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunLeftColumnStart"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "右路",
+                    "pipeline_override": {
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunRightColumnStart"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "扫荡不足时手动补刷@2": {
+            "type": "select",
+            "label": "扫荡不足时手动补刷",
+            "default_case": "关闭",
+            "cases": [
+                {
+                    "name": "关闭",
                     "description": "只使用军团扫荡；扫荡不可用或扫荡后仍有体力也返回主界面停止。",
                     "pipeline_override": {
                         "DailyStaminaManualStart": {
                             "enabled": false
                         }
                     }
-                }
-            ]
-        },
-        "体力不足时使用体力药": {
-            "type": "switch",
-            "default_case": "No",
-            "cases": [
+                },
                 {
-                    "name": "Yes",
-                    "description": "体力不足时按临期顺序逐瓶使用体力药，补足后继续，单次任务最多使用 10 瓶。",
+                    "name": "开启",
+                    "description": "扫荡券不足或扫荡后仍有足够体力时，继续使用开始/再次挑战手动补刷。",
                     "pipeline_override": {
-                        "DailyStaminaRefillWithPotionWhenLow": {
-                            "enabled": true
-                        },
-                        "DailyStaminaUsePotionPopup": {
-                            "enabled": true
-                        },
-                        "DailyStaminaSelectPotionTab": {
-                            "enabled": true
-                        },
-                        "RegularActivityUsePotionPopup": {
-                            "enabled": true
-                        },
-                        "RegularActivityRefillWithPotionWhenLow": {
-                            "enabled": true
-                        },
-                        "RegularActivitySelectPotionTab": {
+                        "DailyStaminaManualStart": {
                             "enabled": true
                         }
                     }
-                },
+                }
+            ]
+        },
+        "体力不足时使用体力药@2": {
+            "type": "select",
+            "label": "体力不足时使用体力药",
+            "default_case": "关闭",
+            "cases": [
                 {
-                    "name": "No",
+                    "name": "关闭",
                     "description": "不自动使用体力药。",
                     "pipeline_override": {
                         "DailyStaminaRefillWithPotionWhenLow": {
@@ -1482,39 +1807,40 @@
                             "enabled": false
                         }
                     }
-                }
-            ]
-        },
-        "体力不足时购买体力": {
-            "type": "switch",
-            "default_case": "No",
-            "cases": [
+                },
                 {
-                    "name": "Yes",
-                    "description": "体力不足且出现魔晶石兑换提示时，按弹窗当前价格购买一次体力并继续当前流程。",
+                    "name": "开启",
+                    "description": "体力不足时按临期顺序逐瓶使用体力药，补足后继续，单次任务最多使用 10 瓶。",
                     "pipeline_override": {
-                        "DailyStaminaRefillWithCurrencyWhenLow": {
+                        "DailyStaminaRefillWithPotionWhenLow": {
                             "enabled": true
                         },
-                        "DailyStaminaBuyStaminaPopup": {
+                        "DailyStaminaUsePotionPopup": {
                             "enabled": true
                         },
-                        "DailyStaminaSelectCurrencyTab": {
+                        "DailyStaminaSelectPotionTab": {
                             "enabled": true
                         },
-                        "RegularActivityBuyStaminaPopup": {
+                        "RegularActivityUsePotionPopup": {
                             "enabled": true
                         },
-                        "RegularActivityRefillWithCurrencyWhenLow": {
+                        "RegularActivityRefillWithPotionWhenLow": {
                             "enabled": true
                         },
-                        "RegularActivitySelectCurrencyTab": {
+                        "RegularActivitySelectPotionTab": {
                             "enabled": true
                         }
                     }
-                },
+                }
+            ]
+        },
+        "体力不足时购买体力@2": {
+            "type": "select",
+            "label": "体力不足时购买体力",
+            "default_case": "关闭",
+            "cases": [
                 {
-                    "name": "No",
+                    "name": "关闭",
                     "description": "不自动消耗魔晶石购买体力。",
                     "pipeline_override": {
                         "DailyStaminaRefillWithCurrencyWhenLow": {
@@ -1534,6 +1860,30 @@
                         },
                         "RegularActivitySelectCurrencyTab": {
                             "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "开启",
+                    "description": "体力不足且出现魔晶石兑换提示时，按弹窗当前价格购买一次体力并继续当前流程。",
+                    "pipeline_override": {
+                        "DailyStaminaRefillWithCurrencyWhenLow": {
+                            "enabled": true
+                        },
+                        "DailyStaminaBuyStaminaPopup": {
+                            "enabled": true
+                        },
+                        "DailyStaminaSelectCurrencyTab": {
+                            "enabled": true
+                        },
+                        "RegularActivityBuyStaminaPopup": {
+                            "enabled": true
+                        },
+                        "RegularActivityRefillWithCurrencyWhenLow": {
+                            "enabled": true
+                        },
+                        "RegularActivitySelectCurrencyTab": {
+                            "enabled": true
                         }
                     }
                 }

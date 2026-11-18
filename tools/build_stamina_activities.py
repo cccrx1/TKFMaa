@@ -9,6 +9,11 @@ from pathlib import Path
 
 
 OPTION_NAME = "体力消耗关卡"
+STAGE_OPTION_NAME = "体力活动关卡"
+CUSTOM_TEMPLATE_OPTION = "自定义体力关卡模板"
+CUSTOM_SECTION_OPTION = "自定义体力活动分区"
+CUSTOM_INPUT_OPTION = "自定义体力活动与关卡"
+CUSTOM_RERUN_COLUMN_OPTION = "自定义体力复刻地图区域"
 REGULAR_AUTO_CLEAR_MODE = "regular_auto_clear"
 REGULAR_AUTO_CLEAR_SENTINEL = "__REGULAR_ACTIVITY_CLEAR__"
 
@@ -191,7 +196,10 @@ def expand_activity_groups(config):
                     case=case_name,
                 )
 
-            activities.append(deep_merge(base, case_override))
+            activity = deep_merge(base, case_override)
+            activity.setdefault("activity_label", case_prefix)
+            activity.setdefault("stage_label", case_suffix or case_name)
+            activities.append(activity)
 
     raw_activities = expanded.get("activities", [])
     if raw_activities is not None:
@@ -352,6 +360,9 @@ def build_override(resolved):
     inner_title = resolved.get("inner_title")
 
     override = {
+        "DailyStaminaStart": {
+            "action": {"param": {"custom_action_param": {"enabled": False}}}
+        },
         "DailyStaminaPresetRouteStart": {
             "next": ["DailyStaminaRouteActivitySectionStart"]
         },
@@ -454,42 +465,192 @@ def build_cases(config):
         }
         for activity in config["activities"]
     ]
+    custom = config.get("custom_selection")
+    if custom:
+        if custom["name"] in [case["name"] for case in cases]:
+            raise ValueError("custom_selection.name conflicts with an activity")
+        resolved = resolve_activity(
+            config,
+            {
+                "template": "normal_list",
+                "activity_name": {"expected": ["__CUSTOM_ACTIVITY__"]},
+                "stage": {
+                    "expected": ["__CUSTOM_STAGE__"],
+                    "any_selectable": {
+                        "expected": ["__CUSTOM_LIST__"],
+                        "roi": [0, 90, 720, 180],
+                    },
+                },
+                "stamina": {"cost": 1},
+            },
+        )
+        override = build_override(resolved)
+        override["DailyStaminaStart"]["action"]["param"]["custom_action_param"] = {
+            "enabled": True,
+        }
+        cases.append(
+            {
+                "name": custom["name"],
+                "description": "选择活动类型和活动分区，再填写活动与关卡。",
+                "option": [CUSTOM_TEMPLATE_OPTION, CUSTOM_SECTION_OPTION, CUSTOM_INPUT_OPTION],
+                "pipeline_override": override,
+            }
+        )
     return cases
 
 
-def activity_option_key(cases):
-    """Invalidate saved positional choices only when the ordered stage identities change."""
-    # The layout version invalidates indices saved by the earlier placeholder layout.
-    names = json.dumps({"layout": "direct-stage-v1", "names": [case["name"] for case in cases]},
-                       ensure_ascii=False, separators=(",", ":"))
-    revision = hashlib.sha256(names.encode("utf-8")).hexdigest()[:12]
-    return f"{OPTION_NAME}@{revision}"
+def custom_config_override(node, fields):
+    return {node: {"attach": fields}}
 
 
-def update_interface(interface, cases):
+def build_custom_options(config):
+    custom = config.get("custom_selection")
+    if not custom:
+        return {}
+    cases = []
+    for item in custom["templates"]:
+        template = item["template"]
+        if template not in ("normal_list", "regular_paged_list", "rerun_activity_map"):
+            raise ValueError(f"Unsupported custom template: {template}")
+        case = {
+            "name": item["name"],
+            "pipeline_override": custom_config_override(
+                "DailyStaminaCustomTemplate", {"route": template}
+            ),
+        }
+        if template == "rerun_activity_map":
+            case["option"] = [CUSTOM_RERUN_COLUMN_OPTION]
+        cases.append(case)
     if not cases:
-        raise ValueError("At least one real stamina stage is required")
+        raise ValueError("custom_selection.templates must not be empty")
+    sections = []
+    for name, roi in (("限时活动", [480, 90, 150, 80]), ("目前活动", [270, 90, 180, 80])):
+        sections.append(
+            {
+                "name": name,
+                "pipeline_override": {
+                    "DailyStaminaPresetActivitySection": {
+                        "recognition": ocr_recognition({"expected": [name], "roi": roi})
+                    }
+                },
+            }
+        )
+    inputs = [
+        {
+            "name": "activity", "label": "活动名称", "default": "",
+            "verify": r".*\S.*", "pattern_msg": "请填写游戏中显示的活动名称",
+        },
+        {
+            "name": "stage", "label": "目标关卡名称", "default": "",
+            "verify": r".*\S.*", "pattern_msg": "请填写游戏中显示的完整关卡名称",
+        },
+        {"name": "list_marker", "label": "列表或地图标题（留空使用活动名称）", "default": ""},
+        {
+            "name": "cost", "label": "每次体力消耗", "default": "30",
+            "pipeline_type": "int", "verify": r"^[1-9][0-9]*$", "pattern_msg": "请输入正整数",
+        },
+    ]
+    return {
+        CUSTOM_TEMPLATE_OPTION: {
+            "type": "select", "label": "活动类型",
+            "default_case": cases[0]["name"], "cases": cases,
+        },
+        CUSTOM_SECTION_OPTION: {
+            "type": "select", "label": "活动分区",
+            "default_case": sections[0]["name"], "cases": sections,
+        },
+        CUSTOM_INPUT_OPTION: {
+            "type": "input", "label": "活动与关卡", "inputs": inputs,
+            "pipeline_override": custom_config_override(
+                "DailyStaminaCustomInput",
+                {item["name"]: "{" + item["name"] + "}" for item in inputs},
+            ),
+        },
+        CUSTOM_RERUN_COLUMN_OPTION: {
+            "type": "select", "label": "地图搜索区域", "default_case": "中路",
+            "cases": [
+                {
+                    "name": label,
+                    "pipeline_override": {
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": ["DailyStaminaRerunClickTarget", RERUN_COLUMN_NODES[column]]
+                        }
+                    },
+                }
+                for column, label in (("main", "中路"), ("left", "左路"), ("right", "右路"))
+            ],
+        },
+    }
+
+
+def versioned_option_key(prefix, identities):
+    data = json.dumps(identities, ensure_ascii=False, separators=(",", ":"))
+    revision = hashlib.sha256(data.encode("utf-8")).hexdigest()[:12]
+    return f"{prefix}@{revision}"
+
+
+def build_activity_options(config, cases):
+    activities = expand_activity_groups(config)["activities"]
+    stages_by_activity = {}
+    for activity, case in zip(activities, cases[:len(activities)], strict=True):
+        label = activity.get("activity_label", activity["name"])
+        stage = {**case, "name": activity.get("stage_label", case["name"])}
+        stages_by_activity.setdefault(label, []).append(stage)
+
+    activity_cases = []
+    stage_options = {}
+    for label, stages in stages_by_activity.items():
+        stage_names = [stage["name"] for stage in stages]
+        if len(stage_names) != len(set(stage_names)):
+            raise ValueError(f"{label}: duplicate stage label")
+        key = versioned_option_key(STAGE_OPTION_NAME, [label, stage_names])
+        stage_options[key] = {
+            "type": "select", "label": "关卡",
+            "default_case": stage_names[0], "cases": stages,
+        }
+        activity_cases.append({"name": label, "option": [key]})
+
+    if config.get("custom_selection"):
+        if cases[-1]["name"] in stages_by_activity:
+            raise ValueError("custom_selection.name conflicts with an activity label")
+        activity_cases.append(cases[-1])
+    key = versioned_option_key(OPTION_NAME, ["activity-stage-v2", [case["name"] for case in activity_cases]])
+    return key, {
+        key: {
+            "type": "select", "label": "活动",
+            "default_case": activity_cases[0]["name"], "cases": activity_cases,
+        },
+        **stage_options,
+        **build_custom_options(config),
+    }
+
+
+def update_interface(interface, new_key, generated_options):
     result = copy.deepcopy(interface)
     pattern = re.compile(rf"{re.escape(OPTION_NAME)}(?:@[0-9a-f]{{12}})?")
     keys = [key for key in result["option"] if pattern.fullmatch(key)]
     if len(keys) != 1:
-        raise ValueError(f"Expected one generated {OPTION_NAME} option, got {keys}")
+        raise ValueError(f"Expected one generated stamina activity option, got {keys}")
     old_key = keys[0]
-    new_key = activity_option_key(cases)
-    option = copy.deepcopy(result["option"][old_key])
-    option.update(
-        label=OPTION_NAME,
-        description="活动关卡列表变化导致旧选择失效时，默认选择列表中的第一个关卡。",
-        default_case=cases[0]["name"],
-        cases=cases,
-    )
-    result["option"] = {
-        (new_key if key == old_key else key): (option if key == old_key else value)
-        for key, value in result["option"].items()
-    }
+    old_options = {old_key}
+    pending = [old_key]
+    while pending:
+        option = result["option"].get(pending.pop(), {})
+        for case in option.get("cases", []):
+            for key in case.get("option", []):
+                if key not in old_options:
+                    old_options.add(key)
+                    pending.append(key)
+    options = {}
+    for key, value in result["option"].items():
+        if key == old_key:
+            options.update(generated_options)
+        elif key not in old_options:
+            options[key] = value
+    result["option"] = options
     tasks = [task for task in result["task"] if task.get("entry") == "DailyStaminaStart"]
     if len(tasks) != 1 or tasks[0].get("option", []).count(old_key) != 1:
-        raise ValueError("Stamina task must register exactly one generated stage selector")
+        raise ValueError("Stamina task must register exactly one generated activity selector")
     tasks[0]["option"] = [new_key if key == old_key else key for key in tasks[0]["option"]]
     return result
 
@@ -498,6 +659,7 @@ def write_interface(interface_path, interface):
     interface_path.write_text(
         json.dumps(interface, ensure_ascii=False, indent=4) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
 
 
@@ -531,7 +693,8 @@ def main():
         return
 
     interface = load_jsonc(interface_path)
-    expected = update_interface(interface, cases)
+    activity_key, options = build_activity_options(config, cases)
+    expected = update_interface(interface, activity_key, options)
 
     if args.check:
         if interface != expected:

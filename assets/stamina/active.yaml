@@ -10,6 +10,9 @@ defaults:
   reserve: 0
 
 templates:
+  normal_list:
+    route_type: normal_list
+
   regular_paged_list:
     route_type: normal_list
     extra_overrides:
@@ -28,8 +31,20 @@ templates:
   daily_affairs_list:
     route_type: daily_affairs
 
+custom_selection:
+  name: "自定义关卡"
+  templates:
+    - name: "普通列表活动"
+      template: normal_list
+    - name: "常规分页活动"
+      template: regular_paged_list
+    - name: "复刻地图活动"
+      template: rerun_activity_map
+
 activities:
   - name: "常驻关卡 - 战争演习-特IV"
+    activity_label: "日常政务"
+    stage_label: "战争演习-特IV"
     description: "常驻路线：目前活动 → 日常政务 → 战争演习，进入纵向关卡列表后寻找战争演习-特IV。"
     template: daily_affairs_list
     activity_section:
@@ -57,64 +72,55 @@ activity_groups:
     base:
       template: regular_paged_list
       activity_name:
-        expected: ["新大陆历险记", "新大陸歷險記"]
-        roi: [70, 770, 580, 80]
+        expected: ["^新大陆历险记$", "^新大陸歷險記$"]
+        roi: [70, 768, 580, 82]
       stage:
         any_selectable:
-          expected: ["新大陆历险记", "新大陸歷險記", "活动挑战还有", "活動挑戰還有"]
-          roi: [0, 90, 720, 180]
+          expected: ["新大陆历险记", "新大陸歷險記"]
+          roi: [0, 90, 240, 80]
       stamina:
         cost: 30
-      extra_overrides:
-        DailyStaminaPresetFirstPageMarker:
-          enabled: true
-          recognition:
-            type: OCR
-            param:
-              expected:
-                [
-                  "访查-01",
-                  "访查01",
-                  "訪查-01",
-                  "记录-01",
-                  "记录01",
-                  "纪录-01",
-                  "纪录01",
-                  "紀錄-01",
-                  "撰写-01",
-                  "撰写01",
-                  "撰寫-01",
-                  "锻造-01",
-                  "锻造01",
-                  "鍛造-01",
-                  "获取-01",
-                  "获取01",
-                  "獲取-01",
-                  "拍摄-01",
-                  "拍摄01",
-                  "拍攝-01",
-                ]
-              roi: [0, 160, 720, 1000]
     cases:
       - case_suffix: "访查-01"
         stage:
-          expected: ["访查-01", "访查01", "訪查-01"]
+          expected: ["^访查-01$", "^访查01$", "^訪查-01$"]
         stamina:
           cost: 25
       - case_suffix: "记录-01"
         stage:
-          expected: ["记录-01", "记录01", "纪录-01", "纪录01", "紀錄-01"]
+          expected: ["^记录-01$", "^记录01$", "^纪录-01$", "^纪录01$", "^紀錄-01$"]
       - case_suffix: "撰写-01"
         stage:
-          expected: ["撰写-01", "撰写01", "撰寫-01"]
+          expected: ["^撰写-01$", "^撰写01$", "^撰寫-01$"]
       - case_suffix: "锻造-01"
         stage:
-          expected: ["锻造-01", "锻造01", "鍛造-01"]
+          expected: ["^锻造-01$", "^锻造01$", "^鍛造-01$"]
       - case_suffix: "获取-01"
         stage:
-          expected: ["获取-01", "获取01", "獲取-01"]
+          expected: ["^获取-01$", "^获取01$", "^獲取-01$"]
       - case_suffix: "拍摄-01"
         stage:
-          expected: ["拍摄-01", "拍摄01", "拍攝-01"]
+          expected: ["^拍摄-01$", "^拍摄01$", "^拍攝-01$"]
         stamina:
           cost: 45
+
+  kaiser_rerun:
+    case_prefix: "凯萨½（复刻）"
+    description_template: "复刻活动地图：选择凯萨½，寻找{stage}并扫荡。"
+    base:
+      template: rerun_activity_map
+      activity_name:
+        expected: ["^[凯凱][萨薩] *(?:1?½(?:[/／]?2)?|1[/／]?2)$"]
+        roi: [70, 765, 220, 70]
+      rerun:
+        column: main
+        marker:
+          expected: ["^[凯凱][萨薩] *(?:1?½(?:[/／]?2)?|1[/／]?2)$"]
+          roi: [0, 116, 170, 55]
+      stamina:
+        cost: 15
+    cases:
+      - case_suffix: "凯萨-09"
+        stage:
+          expected: ["^[凯凱][萨薩][-－]09(?:[ ]*[⚡ϟ4]?[ ]*15)?$"]
+          roi: [175, 170, 435, 960]
