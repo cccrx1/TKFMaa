@@ -9,6 +9,10 @@ from pathlib import Path
 
 
 OPTION_NAME = "体力消耗关卡"
+CUSTOM_TEMPLATE_OPTION = "自定义体力关卡模板"
+CUSTOM_SECTION_OPTION = "自定义体力活动分区"
+CUSTOM_INPUT_OPTION = "自定义体力活动与关卡"
+CUSTOM_FIRST_PAGE_OPTION = "自定义体力第一页关卡"
 REGULAR_AUTO_CLEAR_MODE = "regular_auto_clear"
 REGULAR_AUTO_CLEAR_SENTINEL = "__REGULAR_ACTIVITY_CLEAR__"
 
@@ -352,6 +356,9 @@ def build_override(resolved):
     inner_title = resolved.get("inner_title")
 
     override = {
+        "DailyStaminaStart": {
+            "action": {"param": {"custom_action_param": {"enabled": False}}}
+        },
         "DailyStaminaPresetRouteStart": {
             "next": ["DailyStaminaRouteActivitySectionStart"]
         },
@@ -454,7 +461,121 @@ def build_cases(config):
         }
         for activity in config["activities"]
     ]
+    custom = config.get("custom_selection")
+    if custom:
+        if custom["name"] in [case["name"] for case in cases]:
+            raise ValueError("custom_selection.name conflicts with an activity")
+        resolved = resolve_activity(
+            config,
+            {
+                "template": "normal_list",
+                "activity_name": {"expected": ["__CUSTOM_ACTIVITY__"]},
+                "stage": {
+                    "expected": ["__CUSTOM_STAGE__"],
+                    "any_selectable": {
+                        "expected": ["__CUSTOM_LIST__"],
+                        "roi": [0, 90, 720, 180],
+                    },
+                },
+                "stamina": {"cost": 1},
+            },
+        )
+        override = build_override(resolved)
+        override["DailyStaminaStart"]["action"]["param"]["custom_action_param"] = {
+            "enabled": True,
+        }
+        cases.append(
+            {
+                "name": custom["name"],
+                "description": "按活动内部列表模板寻找用户填写的关卡。名称按游戏显示填写。",
+                "option": [CUSTOM_TEMPLATE_OPTION, CUSTOM_SECTION_OPTION, CUSTOM_INPUT_OPTION],
+                "pipeline_override": override,
+            }
+        )
     return cases
+
+
+def custom_config_override(node, fields):
+    return {node: {"attach": fields}}
+
+
+def build_custom_options(config):
+    custom = config.get("custom_selection")
+    if not custom:
+        return {}
+    cases = []
+    for item in custom["templates"]:
+        template = item["template"]
+        if template not in ("normal_list", "regular_paged_list"):
+            raise ValueError(f"Unsupported custom template: {template}")
+        case = {
+            "name": item["name"],
+            "pipeline_override": custom_config_override(
+                "DailyStaminaCustomTemplate", {"template": template}
+            ),
+        }
+        if template == "regular_paged_list":
+            case["option"] = [CUSTOM_FIRST_PAGE_OPTION]
+        cases.append(case)
+    if not cases:
+        raise ValueError("custom_selection.templates must not be empty")
+    sections = []
+    for name, roi in (("限时活动", [480, 90, 150, 80]), ("目前活动", [270, 90, 180, 80])):
+        sections.append(
+            {
+                "name": name,
+                "pipeline_override": {
+                    "DailyStaminaPresetActivitySection": {
+                        "recognition": ocr_recognition({"expected": [name], "roi": roi})
+                    }
+                },
+            }
+        )
+    inputs = [
+        {
+            "name": "activity", "label": "活动名称", "default": "",
+            "verify": r".*\S.*", "pattern_msg": "请填写游戏中显示的活动名称",
+        },
+        {
+            "name": "stage", "label": "目标关卡名称", "default": "",
+            "verify": r".*\S.*", "pattern_msg": "请填写游戏中显示的完整关卡名称",
+        },
+        {"name": "list_marker", "label": "列表顶部标题（留空使用活动名称）", "default": ""},
+        {
+            "name": "cost", "label": "每次体力消耗", "default": "30",
+            "pipeline_type": "int", "verify": r"^[1-9][0-9]*$", "pattern_msg": "请输入正整数",
+        },
+    ]
+    return {
+        CUSTOM_TEMPLATE_OPTION: {
+            "type": "select", "label": "关卡列表模板",
+            "default_case": cases[0]["name"], "cases": cases,
+        },
+        CUSTOM_SECTION_OPTION: {
+            "type": "select", "label": "活动分区",
+            "default_case": sections[0]["name"], "cases": sections,
+        },
+        CUSTOM_INPUT_OPTION: {
+            "type": "input", "label": "活动与关卡", "inputs": inputs,
+            "pipeline_override": custom_config_override(
+                "DailyStaminaCustomInput",
+                {item["name"]: "{" + item["name"] + "}" for item in inputs},
+            ),
+        },
+        CUSTOM_FIRST_PAGE_OPTION: {
+            "type": "input", "label": "分页定位",
+            "inputs": [
+                {
+                    "name": "first_page", "label": "第一页任一完整关卡名称",
+                    "default": "", "verify": r".*\S.*",
+                    "pattern_msg": "请填写仅出现在第一页的关卡名称",
+                }
+            ],
+            "pipeline_override": custom_config_override(
+                "DailyStaminaCustomFirstPage", {"first_page": "{first_page}"}
+            ),
+        },
+    }
 
 
 def activity_option_key(cases):
@@ -466,7 +587,7 @@ def activity_option_key(cases):
     return f"{OPTION_NAME}@{revision}"
 
 
-def update_interface(interface, cases):
+def update_interface(interface, cases, custom_options=None):
     if not cases:
         raise ValueError("At least one real stamina stage is required")
     result = copy.deepcopy(interface)
@@ -487,6 +608,8 @@ def update_interface(interface, cases):
         (new_key if key == old_key else key): (option if key == old_key else value)
         for key, value in result["option"].items()
     }
+    if custom_options is not None:
+        result["option"].update(custom_options)
     tasks = [task for task in result["task"] if task.get("entry") == "DailyStaminaStart"]
     if len(tasks) != 1 or tasks[0].get("option", []).count(old_key) != 1:
         raise ValueError("Stamina task must register exactly one generated stage selector")
@@ -531,7 +654,7 @@ def main():
         return
 
     interface = load_jsonc(interface_path)
-    expected = update_interface(interface, cases)
+    expected = update_interface(interface, cases, build_custom_options(config))
 
     if args.check:
         if interface != expected:

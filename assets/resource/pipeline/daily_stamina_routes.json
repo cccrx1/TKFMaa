@@ -41,6 +41,7 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyStaminaRouteActivityListEnterSelected",
+            "DailyStaminaRouteActivityListSkipChallengeSlot2",
             "DailyStaminaRouteActivityListSelectSlot2"
         ],
         "timeout": 12000
@@ -50,7 +51,8 @@
             "type": "And",
             "param": {
                 "all_of": [
-                    "DailyStaminaPresetActivityName"
+                    "DailyStaminaPresetActivityName",
+                    "__DailyStaminaActivityListReady"
                 ]
             }
         },
@@ -80,6 +82,28 @@
         ],
         "max_hit": 4,
         "pre_wait_freezes": 300
+    },
+    "DailyStaminaRouteActivityListSkipChallengeSlot2": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "协会共斗",
+                    "協會共鬥",
+                    "挑战活动",
+                    "挑戰活動",
+                    "活动挑战",
+                    "活動挑戰"
+                ],
+                "roi": [
+                    270,
+                    662,
+                    180,
+                    80
+                ]
+            }
+        },
+        "next": ["DailyStaminaRouteActivityListSelectSlot3"]
     },
     "DailyStaminaRouteActivityListSelectSlot2": {
         "recognition": {
@@ -131,6 +155,29 @@
             "DailyStaminaStageNotFoundGiveUp"
         ],
         "post_delay": 500,
+        "pre_wait_freezes": 300
+    },
+    "DailyStaminaReturnMainFromActivityList": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyStaminaActivityListReady",
+                    "DailyStaminaPresetActivitySection"
+                ],
+                "box_index": 0
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    40,
+                    74
+                ]
+            }
+        },
+        "next": ["CommonStopOnMainWithRetries"],
         "pre_wait_freezes": 300
     },
     "DailyStaminaRouteInnerSpecialUiStart": {

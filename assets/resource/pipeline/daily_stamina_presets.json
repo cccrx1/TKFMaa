@@ -1,4 +1,22 @@
 {
+    "DailyStaminaCustomInput": {
+        "attach": {
+            "activity": "",
+            "stage": "",
+            "list_marker": "",
+            "cost": 30
+        }
+    },
+    "DailyStaminaCustomTemplate": {
+        "attach": {
+            "template": "normal_list"
+        }
+    },
+    "DailyStaminaCustomFirstPage": {
+        "attach": {
+            "first_page": ""
+        }
+    },
     "DailyStaminaPresetRouteStart": {
         "recognition": {
             "type": "DirectHit"
