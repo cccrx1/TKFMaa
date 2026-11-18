@@ -5,3 +5,5 @@
 - [验证记录](verification.md)：详细填写后保存到被忽略的本地 records；提取脱敏摘要用于评审，不提交整份测试流水账。
 
 空白模板随仓库维护，填写后的去向按[文档与验证资料](../contributing/documentation.md)决定。占位内容不是已经实现或验证的结论。
+
+纯文档改动可在交付摘要中简要列出检查结果。各类改动的验收要求见[开发与验收](../contributing/development.md)。

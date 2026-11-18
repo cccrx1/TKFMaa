@@ -5,13 +5,13 @@
 本仓库是基于 MaaFramework 的自动化助手。先检查工作区状态，只修改本次任务涉及的内容。
 按下表读取对应专题；专题规则是仓库协作规则的一部分，无需每次读取全部发布细节。
 
-| 工作类型                                       | 必读文档                                                                                                             |
-| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| 所有修改                                       | 本文件；[开发与验收](docs/zh_cn/contributing/development.md)                                                         |
-| 文档、提示词或验证记录                         | [文档与验证资料](docs/zh_cn/contributing/documentation.md)、[模板](docs/zh_cn/templates/README.md)                   |
-| Pipeline、Interface、Agent、活动配置、设备测试 | [Maa 开发规则](docs/zh_cn/contributing/maa.md)及对应[任务说明](docs/zh_cn/tasks/README.md)                           |
-| 环境、依赖或版本升级                           | [运行环境与版本](docs/zh_cn/contributing/runtime.md)                                                                 |
-| 构建、工作流、资源通道或发布                   | [构建与发布操作约束](docs/zh_cn/contributing/build_release.md)、[资源包与完整包构建](docs/zh_cn/resource_updates.md) |
+| 工作类型                                       | 必读文档                                                                                                     |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| 所有修改                                       | 本文件；[开发与验收](docs/zh_cn/contributing/development.md)                                                 |
+| 文档、提示词或验证记录                         | [文档与验证资料](docs/zh_cn/contributing/documentation.md)、[模板](docs/zh_cn/templates/README.md)           |
+| Pipeline、Interface、Agent、活动配置、设备测试 | [Maa 开发规则](docs/zh_cn/contributing/maa.md)及对应[任务说明](docs/zh_cn/tasks/README.md)                   |
+| 环境、依赖或版本升级                           | [运行环境与版本](docs/zh_cn/contributing/runtime.md)                                                         |
+| 构建、工作流或发布                             | [构建与发布操作约束](docs/zh_cn/contributing/build_release.md)、[构建与验包](docs/zh_cn/resource_updates.md) |
 
 ## 项目地图与事实来源
 
@@ -31,7 +31,7 @@
 - 交互遵循“识别 → 动作 → 再识别”；带识别的交互默认 `pre_wait_freezes: 300`，豁免须登记原因；重试与滚动有上限。
 - 新增选项同步定义、任务注册和预先存在的 Override 目标；自定义注册名必须与 Pipeline 一致。
 - 生成配置与源数据同改同验，禁止手工修补生成字段。节点名及跨文件引用保持稳定。
-- `maa-tools check` 与 JSON Schema 校验均须执行；行为修改还须验证受影响路径。购买、资源消耗及账号操作在合并前完成端到端实机验证。
+- 修改资源、Agent、Schema 或相关构建与校验配置时，须执行 `maa-tools check` 与 JSON Schema 校验。行为修改还须验证受影响路径。涉及购买、资源消耗或账号操作的改动在进入 `main` 前须完成端到端实机验证。
 - 未执行、失败、受阻与通过分开报告。纯文档修改无需设备测试，不会自动获得发布或远端操作授权。
 - 功能说明与逐次测试记录分开；公开文档不得链接本地资料。远端仅保留必要且脱敏的验证摘要，日志、截图、缓存、模型和个人配置不自动上传。
 
@@ -48,7 +48,7 @@
 - `python tools/check_environment.py --load-resource`：环境与资源加载；Agent 注册在独立进程检查。
 - 本地测试文件存在时运行 `python -m unittest discover -s tools -p 'test_*.py'`；远端 CI 不执行这些本地单元测试。
 
-OCR 缺失时按 `tools/ocr_model.json` 使用 `python tools/configure.py --download` 恢复，不能仅依赖当前缺少 gitlink 的子模块声明。默认 GPU 检查崩溃时先保留日志，再按[构建命令索引](docs/zh_cn/contributing/build_release.md)执行 CPU 检查，不能据此宣称 GPU 验收通过。
+OCR 缺失时按 `tools/ocr_model.json` 使用 `python tools/configure.py --download` 恢复。默认 GPU 检查崩溃时先保留日志，再按[构建命令索引](docs/zh_cn/contributing/build_release.md)执行 CPU 检查，分别报告默认模式与 CPU 检查结果。
 
 ## 文档同步
 
@@ -64,7 +64,7 @@ OCR 缺失时按 `tools/ocr_model.json` 使用 `python tools/configure.py --down
 
 一个提交只处理一个可独立说明和验证的改动。若同时修改多个任务，必须按任务分别提交，不得用一个 `feat` 或 `fix` 混合商城、体力、派遣等多个任务；被多个任务复用的公共节点、工具或基础设施改动单独提交，再分别提交各任务适配。仅属于同一任务且必须同时生效的 Pipeline、Interface、Agent、素材和文档应放在同一提交中，避免产生无法运行的中间状态。
 
-分支使用 `feat/<name>`、`fix/<name>` 等明确格式。PR 目标分支为 `main`，每个 PR 只处理一个主题，并说明动机、影响范围、提交拆分和实际执行的验证命令。适用时使用 `Closes #123` 关联 Issue；涉及 UI、识别、工作流或行为变化时提供验证摘要；必要日志片段或截图经脱敏并获得上传授权后附上。未完成的改动请提交为 Draft PR。
+日常改动完成验收后可直接提交，也欢迎通过 PR 参与协作。需要创建分支时，使用 `feat/<name>`、`fix/<name>` 等明确格式。具体流程见[开发与验收](docs/zh_cn/contributing/development.md)。
 
 ## 版本控制安全
 
