@@ -445,3 +445,613 @@
              var executablePath = Environment.ProcessPath ?? Path.Combine(AppContext.BaseDirectory, "MFAAvalonia.exe");
              var instanceKey = AppRuntime.CreateInstanceKey(executablePath);
              AppRuntime.Initialize(args, instanceKey);
+--- a/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs
++++ b/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs
+@@ -2663,4 +2663,6 @@
+         }
+
++        if (!OperatingSystem.IsAndroid())
++            TkfmStaminaCatalog.Load(result);
+         return result;
+     }
+@@ -3756,4 +3758,11 @@
+             }
+
++            var index = TkfmStaminaCatalog.GetIndex(selectOption, interfaceOption);
++            if (index < 0 && TkfmStaminaCatalog.GetId(selectOption) != null)
++            {
++                taskModels.Merge(TkfmStaminaCatalog.MissingSelectionOverride());
++                continue;
++            }
++
+             // 处理 checkbox 类型（多选，任务 10）
+             if (interfaceOption.IsCheckbox && interfaceOption.Cases != null)
+@@ -3832,6 +3841,5 @@
+             }
+             // 处理 select/switch 类型
+-            else if (selectOption.Index is int index
+-                     && interfaceOption.Cases is { } cases
++            else if (interfaceOption.Cases is { } cases
+                      && index >= 0
+                      && index < cases.Count)
+--- a/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs
++++ b/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs
+@@ -506,5 +506,14 @@
+                 var optName = newOpt.Name ?? string.Empty;
+
+-                if (existingDict.TryGetValue(optName, out var existing))
++                if (!existingDict.TryGetValue(optName, out var existing) &&
++                    newItem.Entry == TkfmStaminaCatalog.Entry && TkfmStaminaCatalog.IsActivityOption(optName))
++                {
++                    // Official activity changes version the selector key. Local selections have stable IDs.
++                    existing = existingDict.Values.FirstOrDefault(option =>
++                        TkfmStaminaCatalog.IsActivityOption(option.Name) && TkfmStaminaCatalog.GetId(option) != null);
++                    if (existing != null)
++                        existing.Name = optName;
++                }
++                if (existing != null)
+                 {
+                     // 保留原有对象，只更新必要的属性（如果interface 定义变了需要调整）
+@@ -610,4 +619,5 @@
+             }
+
++            TkfmStaminaCatalog.StabilizeStage(option, io);
+             EnsureDefaultSubOptions(@interface, option, io, optionPath);
+         }
+@@ -633,4 +643,5 @@
+
+         IEnumerable<string> activeSubOptionNames = Array.Empty<string>();
++        var index = TkfmStaminaCatalog.GetIndex(option, interfaceOption);
+         if (interfaceOption.IsCheckbox)
+         {
+@@ -640,5 +651,5 @@
+                 .SelectMany(caseItem => caseItem.Option ?? Enumerable.Empty<string>());
+         }
+-        else if (option.Index is int index && index >= 0 && index < interfaceOption.Cases.Count)
++        else if (index >= 0 && index < interfaceOption.Cases.Count)
+         {
+             activeSubOptionNames = interfaceOption.Cases[index].Option ?? Enumerable.Empty<string>();
+--- a/MFAAvalonia/Helper/TaskOptionGenerator.cs
++++ b/MFAAvalonia/Helper/TaskOptionGenerator.cs
+@@ -22,4 +22,5 @@
+ using System;
+ using System.Collections.Generic;
++using System.IO;
+ using System.Linq;
+ using System.Text.RegularExpressions;
+@@ -48,11 +49,5 @@
+         AddRepeatOption(panel, dragItem);
+
+-        if (dragItem.InterfaceItem?.Option != null)
+-        {
+-            foreach (var option in dragItem.InterfaceItem.Option.ToList())
+-            {
+-                AddOption(panel, option, dragItem);
+-            }
+-        }
++        AddTaskOptions(panel, dragItem);
+
+         if (dragItem.InterfaceItem?.Advanced != null)
+@@ -77,11 +72,77 @@
+         AddRepeatOption(panel, dragItem);
+
+-        if (dragItem.InterfaceItem?.Option != null)
+-        {
+-            foreach (var option in dragItem.InterfaceItem.Option.ToList())
+-            {
++        AddTaskOptions(panel, dragItem);
++    }
++
++    private void AddTaskOptions(StackPanel panel, DragItemViewModel dragItem)
++    {
++        var options = dragItem.InterfaceItem?.Option;
++        if (options == null)
++            return;
++        var project = MaaProcessor.Interface;
++        var selector = options.FirstOrDefault(option => TkfmStaminaCatalog.IsActivityOption(option.Name));
++        if (OperatingSystem.IsAndroid() || dragItem.InterfaceItem?.Entry != TkfmStaminaCatalog.Entry ||
++            selector == null || project == null || !TkfmStaminaCatalog.IsSupported(project))
++        {
++            foreach (var option in options.ToList())
+                 AddOption(panel, option, dragItem);
+-            }
+-        }
++            return;
++        }
++
++        var container = new StackPanel();
++        var footer = new StackPanel { Margin = new Thickness(10, 8, 10, 4), Spacing = 6 };
++        footer.Children.Add(CreateStaminaEditorButton(project, selector, editId: null));
++        object? displayedCases = null;
++
++        void Refresh()
++        {
++            displayedCases = project.Option?.GetValueOrDefault(selector.Name ?? "")?.Cases;
++            container.Children.Clear();
++            foreach (var option in options.ToList())
++                AddOption(container, option, dragItem);
++            container.Children.Add(footer);
++        }
++
++        void OnCatalogChanged(object? sender, EventArgs args) => Refresh();
++        container.AttachedToVisualTree += (_, _) =>
++        {
++            TkfmStaminaCatalog.Changed += OnCatalogChanged;
++            if (!ReferenceEquals(displayedCases, project.Option?.GetValueOrDefault(selector.Name ?? "")?.Cases))
++                Refresh();
++        };
++        container.DetachedFromVisualTree += (_, _) => TkfmStaminaCatalog.Changed -= OnCatalogChanged;
++        Refresh();
++        panel.Children.Add(container);
++    }
++
++    private Control CreateStaminaEditorButton(MaaInterface project, MaaInterface.MaaInterfaceSelectOption selector, string? editId)
++    {
++        var button = new Button { Content = editId == null ? "添加活动" : "编辑此活动" };
++        BindIdleEnabled(button);
++        var error = new TextBlock { TextWrapping = TextWrapping.Wrap, IsVisible = false };
++        button.Click += async (_, _) =>
++        {
++            if (TopLevel.GetTopLevel(button) is not Window owner)
++                return;
++            error.IsVisible = false;
++            try
++            {
++                var original = editId == null ? null : (TkfmStaminaCatalog.Read().Find(item => item.CaseId == editId)
++                    ?? throw new InvalidDataException("活动已不可用，请重新选择。"));
++                var activity = await new TkfmStaminaEditor(project, original).ShowDialog<TkfmStaminaCatalog.Activity?>(owner);
++                if (activity == null)
++                    return;
++                TkfmStaminaCatalog.Select(selector, activity.CaseId, -1);
++                TaskLoader.SetDefaultOptionValue(project, selector);
++                TkfmStaminaCatalog.NotifyChanged();
++                saveConfigurationAction();
++            }
++            catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or JsonException)
++            {
++                error.Text = ex.Message;
++                error.IsVisible = true;
++            }
++        };
++        return new StackPanel { Spacing = 4, Children = { button, error } };
+     }
+
+@@ -705,6 +766,11 @@
+         var wrapper = new StackPanel();
+         var grid = CreateBaseGrid();
+-
+-        interfaceOption.Cases?.ForEach(c => c.InitializeDisplayName());
++        var selectedIndex = TkfmStaminaCatalog.GetIndex(option, interfaceOption);
++
++        interfaceOption.Cases?.ForEach(c =>
++        {
++            if (!TkfmStaminaCatalog.IsLocalCase(c.Name))
++                c.InitializeDisplayName();
++        });
+         interfaceOption.InitializeIcon();
+
+@@ -715,5 +781,6 @@
+             Margin = new Thickness(0, 2, 0, 2),
+             ItemsSource = interfaceOption.Cases,
+-            SelectedIndex = option.Index ?? 0,
++            SelectedIndex = option.Index == null && TkfmStaminaCatalog.GetId(option) == null ? 0 : selectedIndex,
++            PlaceholderText = TkfmStaminaCatalog.GetId(option) != null && selectedIndex < 0 ? "目标已不可用，请重新选择" : "",
+             HorizontalAlignment = HorizontalAlignment.Stretch
+         };
+@@ -728,4 +795,6 @@
+         {
+             subOptionsContainer.Children.Clear();
++            if (TkfmStaminaCatalog.GetId(option) != null)
++                index = TkfmStaminaCatalog.GetIndex(option, interfaceOption);
+             if (interfaceOption.Cases == null || index < 0 || index >= interfaceOption.Cases.Count) return;
+
+@@ -745,14 +814,15 @@
+                 AddSubOption(subOptionsContainer, existing, source);
+             }
++            if (TkfmStaminaCatalog.IsActivityOption(option.Name) && TkfmStaminaCatalog.GetId(option) is { } editId &&
++                MaaProcessor.Interface is { } project)
++                subOptionsContainer.Children.Add(CreateStaminaEditorButton(project, option, editId));
+         }
+
+         comboBox.SelectionChanged += (_, _) =>
+         {
+-            var selectedCase = comboBox.SelectedItem as MaaInterface.MaaInterfaceOptionCase;
+-            var resolvedIndex = selectedCase != null && interfaceOption.Cases != null
+-                ? interfaceOption.Cases.FindIndex(c => c.Name == selectedCase.Name)
+-                : comboBox.SelectedIndex;
+-
+-            option.Index = resolvedIndex;
++            if (comboBox.SelectedItem is not MaaInterface.MaaInterfaceOptionCase selectedCase)
++                return;
++            var resolvedIndex = interfaceOption.Cases?.FindIndex(c => c.Name == selectedCase.Name) ?? -1;
++            TkfmStaminaCatalog.Select(option, selectedCase.Name, resolvedIndex);
+             UpdateSubOptions(resolvedIndex);
+             saveConfigurationAction();
+@@ -1151,4 +1221,5 @@
+                 if (idx >= 0) selectOption.Index = idx;
+             }
++            TkfmStaminaCatalog.StabilizeStage(selectOption, interfaceOption);
+         }
+         return selectOption;
+--- /dev/null
++++ b/MFAAvalonia/Helper/TkfmStaminaCatalog.cs
+@@ -0,0 +1,240 @@
++using MFAAvalonia.Extensions.MaaFW;
++using Newtonsoft.Json;
++using Newtonsoft.Json.Linq;
++using System;
++using System.Collections.Generic;
++using System.IO;
++using System.Linq;
++using System.Text.RegularExpressions;
++using Option = MFAAvalonia.Extensions.MaaFW.MaaInterface.MaaInterfaceOption;
++using Case = MFAAvalonia.Extensions.MaaFW.MaaInterface.MaaInterfaceOptionCase;
++using Selection = MFAAvalonia.Extensions.MaaFW.MaaInterface.MaaInterfaceSelectOption;
++
++namespace MFAAvalonia.Helper;
++
++internal static class TkfmStaminaCatalog
++{
++    public const string Entry = "DailyStaminaStart";
++    private const string ProjectName = "TKFMaa";
++    private const string ActivityOptionPrefix = "体力消耗关卡@";
++    private const string LocalPrefix = "tkfm-local-stamina:";
++    private const string StagePrefix = LocalPrefix + "stages:";
++    private const string SelectedId = "tkfm_stamina_case";
++    private const string LegacyCase = "自定义关卡";
++    private const string TemplateOption = "自定义体力关卡模板";
++    private const string SectionOption = "自定义体力活动分区";
++    private const string ColumnOption = "自定义体力复刻地图区域";
++    private static string CatalogPath => Path.Combine(AppPaths.ConfigDirectory, "stamina-activities.json");
++
++    public static readonly string[] Templates = ["普通列表活动", "常规分页活动", "复刻地图活动"];
++    public static readonly string[] Sections = ["限时活动", "目前活动"];
++    public static readonly string[] Columns = ["中路", "左路", "右路"];
++
++    internal sealed record Stage(Guid Id, string Name, int Cost);
++    internal sealed record Activity(Guid Id, string Name, string Template, string Section, string Marker,
++        string Column, List<Stage> Stages)
++    {
++        [JsonIgnore]
++        public string CaseId => LocalPrefix + Id.ToString("N");
++    }
++
++    public static event EventHandler? Changed;
++
++    public static bool IsActivityOption(string? name) => name?.StartsWith(ActivityOptionPrefix, StringComparison.Ordinal) == true;
++    public static bool IsLocalCase(string? name) => name?.StartsWith(LocalPrefix, StringComparison.Ordinal) == true;
++
++    public static string? GetId(Selection option) =>
++        (IsActivityOption(option.Name) || option.Name?.StartsWith(StagePrefix, StringComparison.Ordinal) == true)
++        && option.Data?.GetValueOrDefault(SelectedId) is { } id ? id : null;
++
++    public static void Select(Selection option, string? caseName, int index)
++    {
++        if (IsLocalCase(caseName) &&
++            (IsActivityOption(option.Name) || option.Name?.StartsWith(StagePrefix, StringComparison.Ordinal) == true))
++        {
++            option.Data ??= new();
++            option.Data[SelectedId] = caseName;
++            option.Index = -1;
++            return;
++        }
++        if (GetId(option) != null)
++            option.Data!.Remove(SelectedId);
++        option.Index = index;
++    }
++
++    public static int GetIndex(Selection option, Option definition) =>
++        GetId(option) is { } id ? definition.Cases?.FindIndex(item => item.Name == id) ?? -1 : option.Index ?? -1;
++
++    public static void StabilizeStage(Selection option, Option definition)
++    {
++        if (option.Name?.StartsWith(StagePrefix, StringComparison.Ordinal) == true &&
++            GetId(option) == null && definition.Cases is { Count: > 0 } cases)
++            Select(option, cases[0].Name, 0);
++    }
++
++    public static Dictionary<string, JToken> MissingSelectionOverride() => new()
++    {
++        [Entry] = JObject.FromObject(new
++        {
++            action = new
++            {
++                type = "Custom",
++                param = new
++                {
++                    custom_action = "DailyStaminaConfigureCustom",
++                    custom_action_param = new { enabled = true, local_selection_missing = true }
++                }
++            }
++        })
++    };
++
++    public static bool IsSupported(MaaInterface? project) => FindSelector(project) != null;
++
++    private static Option? FindSelector(MaaInterface? project)
++    {
++        if (project?.Name != ProjectName || project.Option == null)
++            return null;
++        var selectorName = project.Task?.FirstOrDefault(task => task.Entry == Entry)?.Option?
++            .FirstOrDefault(option => IsActivityOption(option.Name))?.Name;
++        return selectorName != null && project.Option.TryGetValue(selectorName, out var selector) &&
++            selector.Cases?.Count(item => item.Name == LegacyCase && item.PipelineOverride != null) == 1 &&
++            project.Option.ContainsKey(TemplateOption) && project.Option.ContainsKey(SectionOption) &&
++            project.Option.ContainsKey(ColumnOption) ? selector : null;
++    }
++
++    public static void Load(MaaInterface project)
++    {
++        if (FindSelector(project) is not { } selector)
++            return;
++        try
++        {
++            Apply(project, selector, BuildOverlay(project, selector, Read()));
++        }
++        catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or JsonException)
++        {
++            LoggerHelper.Warning($"读取本地体力活动失败：{ex.Message}");
++        }
++    }
++
++    public static List<Activity> Read()
++    {
++        if (!File.Exists(CatalogPath))
++            return [];
++        var activities = JsonConvert.DeserializeObject<List<Activity>>(File.ReadAllText(CatalogPath))
++            ?? throw new InvalidDataException("活动配置为空。");
++        foreach (var activity in activities)
++            Validate(activity);
++        if (activities.Select(item => item.Id).Distinct().Count() != activities.Count ||
++            activities.Select(item => item.Name).Distinct(StringComparer.Ordinal).Count() != activities.Count)
++            throw new InvalidDataException("活动配置包含重复记录。");
++        return activities;
++    }
++
++    public static void Save(MaaInterface project, Activity activity, Activity? original)
++    {
++        Validate(activity);
++        var selector = FindSelector(project) ?? throw new InvalidDataException("当前资源包不支持自定义活动。");
++        Directory.CreateDirectory(AppPaths.ConfigDirectory);
++        using var fileLock = File.Open(CatalogPath + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
++        var activities = Read();
++        var index = activities.FindIndex(item => item.Id == activity.Id);
++        if (original != null && (index < 0 || !JToken.DeepEquals(JToken.FromObject(activities[index]), JToken.FromObject(original))))
++            throw new InvalidDataException("此活动已在其他窗口修改，请重新打开弹窗。");
++        if (activities.Any(item => item.Id != activity.Id && item.Name == activity.Name))
++            throw new InvalidDataException("已存在同名自定义活动。");
++        if (index < 0)
++            activities.Add(activity);
++        else
++            activities[index] = activity;
++
++        var overlay = BuildOverlay(project, selector, activities);
++        var temporary = CatalogPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
++        try
++        {
++            File.WriteAllText(temporary, JsonConvert.SerializeObject(activities, Formatting.Indented));
++            File.Move(temporary, CatalogPath, overwrite: true);
++        }
++        finally
++        {
++            File.Delete(temporary);
++        }
++        Apply(project, selector, overlay);
++    }
++
++    public static void NotifyChanged() => Changed?.Invoke(null, EventArgs.Empty);
++
++    private static void Validate(Activity? activity)
++    {
++        if (activity == null || activity.Id == Guid.Empty || string.IsNullOrWhiteSpace(activity.Name) ||
++            !Templates.Contains(activity.Template) || !Sections.Contains(activity.Section) || !Columns.Contains(activity.Column) ||
++            activity.Marker == null || activity.Stages is not { Count: > 0 })
++            throw new InvalidDataException("请完整填写活动信息并至少添加一个关卡。");
++        if (Regex.IsMatch(activity.Name, "协会共斗|協會共鬥|挑战活动|挑戰活動|活动挑战|活動挑戰"))
++            throw new InvalidDataException("请填写活动本体名称。");
++        if (activity.Stages.Any(stage => stage == null || stage.Id == Guid.Empty ||
++            string.IsNullOrWhiteSpace(stage.Name) || stage.Cost <= 0))
++            throw new InvalidDataException("每个关卡都需要名称和正整数体力消耗。");
++        if (activity.Stages.Select(stage => stage.Id).Distinct().Count() != activity.Stages.Count ||
++            activity.Stages.Select(stage => stage.Name).Distinct(StringComparer.Ordinal).Count() != activity.Stages.Count)
++            throw new InvalidDataException("同一活动内的关卡名称不能重复。");
++    }
++
++    private static (List<Case> Cases, Dictionary<string, Option> Stages) BuildOverlay(
++        MaaInterface project, Option selector, List<Activity> activities)
++    {
++        var options = project.Option!;
++        var builtIns = selector.Cases!.Where(item => !IsLocalCase(item.Name)).ToList();
++        var legacy = builtIns.Single(item => item.Name == LegacyCase);
++        var generated = new Dictionary<string, Option>();
++        foreach (var activity in activities)
++        {
++            var stageOptionName = StagePrefix + activity.Id.ToString("N");
++            var stages = activity.Stages.Select(stage => new Case
++            {
++                Name = LocalPrefix + stage.Id.ToString("N"),
++                Label = stage.Name,
++                DisplayName = stage.Name,
++                PipelineOverride = BuildOverride(options, legacy, activity, stage)
++            }).ToList();
++            generated.Add(stageOptionName, new Option
++            {
++                Name = stageOptionName, Label = "关卡", Type = "select", Cases = stages
++            });
++            var label = builtIns.Any(item => (item.Label ?? item.Name) == activity.Name)
++                ? $"{activity.Name}（自定义）" : activity.Name;
++            builtIns.Add(new Case { Name = activity.CaseId, Label = label, DisplayName = label, Option = [stageOptionName] });
++        }
++
++        return (builtIns, generated);
++    }
++
++    private static void Apply(MaaInterface project, Option selector, (List<Case> Cases, Dictionary<string, Option> Stages) overlay)
++    {
++        var options = project.Option!;
++        foreach (var key in options.Keys.Where(key => key.StartsWith(StagePrefix, StringComparison.Ordinal)).ToList())
++            options.Remove(key);
++        foreach (var (key, value) in overlay.Stages)
++            options.Add(key, value);
++        selector.Cases = overlay.Cases;
++    }
++
++    private static Dictionary<string, JToken> BuildOverride(Dictionary<string, Option> options, Case legacy,
++        Activity activity, Stage stage)
++    {
++        var result = JObject.FromObject(legacy.PipelineOverride!);
++        foreach (var (option, name) in new[] { (TemplateOption, activity.Template), (SectionOption, activity.Section),
++                     (ColumnOption, activity.Column) })
++        {
++            if (option == ColumnOption && activity.Template != Templates[2])
++                continue;
++            var patch = options[option].Cases?.FirstOrDefault(item => item.Name == name)?.PipelineOverride
++                ?? throw new InvalidDataException($"资源包缺少活动配置选项：{name}。");
++            result.Merge(JObject.FromObject(patch), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
++        }
++        result["DailyStaminaCustomInput"] = JObject.FromObject(new
++        {
++            attach = new { activity = activity.Name, stage = stage.Name, list_marker = activity.Marker, cost = stage.Cost }
++        });
++        return result.ToObject<Dictionary<string, JToken>>()!;
++    }
++}
+--- /dev/null
++++ b/MFAAvalonia/Helper/TkfmStaminaEditor.cs
+@@ -0,0 +1,136 @@
++using Avalonia;
++using Avalonia.Controls;
++using Avalonia.Layout;
++using Avalonia.Media;
++using MFAAvalonia.Extensions.MaaFW;
++using Newtonsoft.Json;
++using System;
++using System.Collections.Generic;
++using System.Globalization;
++using System.IO;
++using System.Linq;
++using Activity = MFAAvalonia.Helper.TkfmStaminaCatalog.Activity;
++using Stage = MFAAvalonia.Helper.TkfmStaminaCatalog.Stage;
++
++namespace MFAAvalonia.Helper;
++
++internal sealed class TkfmStaminaEditor : Window
++{
++    private readonly List<StageRow> _stages = [];
++    private readonly StackPanel _stageRows = new() { Spacing = 8 };
++    private sealed record StageRow(Guid Id, TextBox Name, TextBox Cost, Grid Control);
++
++    public TkfmStaminaEditor(MaaInterface project, Activity? original)
++    {
++        Title = original == null ? "添加活动" : "编辑活动";
++        Width = 560;
++        Height = 610;
++        MinWidth = 390;
++        MinHeight = 420;
++        WindowStartupLocation = WindowStartupLocation.CenterOwner;
++
++        var name = new TextBox { Text = original?.Name, Watermark = "游戏活动卡上的完整标题" };
++        var template = Choices(TkfmStaminaCatalog.Templates, original?.Template);
++        var section = Choices(TkfmStaminaCatalog.Sections, original?.Section);
++        var marker = new TextBox { Text = original?.Marker, Watermark = "留空时使用活动名称" };
++        var column = Choices(TkfmStaminaCatalog.Columns, original?.Column);
++        var columnField = Field("地图搜索区域", column);
++        columnField.IsVisible = template.SelectedIndex == 2;
++        template.SelectionChanged += (_, _) => columnField.IsVisible = template.SelectedIndex == 2;
++
++        var addStage = new Button { Content = "添加关卡" };
++        addStage.Click += (_, _) => AddStage(null).Name.Focus();
++        foreach (var stage in original?.Stages ?? [])
++            AddStage(stage);
++        if (_stages.Count == 0)
++            AddStage(null);
++
++        var error = new TextBlock { Foreground = Brushes.IndianRed, TextWrapping = TextWrapping.Wrap };
++        var cancel = new Button { Content = "取消", IsCancel = true };
++        cancel.Click += (_, _) => Close();
++        var save = new Button { Content = "保存活动" };
++        save.Click += (_, _) =>
++        {
++            try
++            {
++                var stages = _stages.Select(row =>
++                {
++                    if (!int.TryParse(row.Cost.Text?.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var cost) || cost <= 0)
++                        throw new InvalidDataException("每个关卡的体力消耗都必须为正整数。");
++                    return new Stage(row.Id, row.Name.Text?.Trim() ?? "", cost);
++                }).ToList();
++                var activity = new Activity(original?.Id ?? Guid.NewGuid(), name.Text?.Trim() ?? "",
++                    (string)template.SelectedItem!, (string)section.SelectedItem!, marker.Text?.Trim() ?? "",
++                    (string)column.SelectedItem!, stages);
++                if (!ReferenceEquals(project, MaaProcessor.Interface) || !Instances.RootViewModel.Idle)
++                    throw new InvalidDataException("客户端状态已变化，请关闭弹窗后重试。");
++                TkfmStaminaCatalog.Save(project, activity, original);
++                Close(activity);
++            }
++            catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or JsonException)
++            {
++                error.Text = ex.Message;
++            }
++        };
++
++        var buttons = new StackPanel
++        {
++            Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right,
++            Spacing = 8, Children = { cancel, save }
++        };
++        var footer = new StackPanel { Spacing = 8, Margin = new Thickness(20, 10, 20, 16), Children = { error, buttons } };
++        var form = new StackPanel
++        {
++            Margin = new Thickness(20, 16), Spacing = 10,
++            Children =
++            {
++                Field("活动名称", name), Field("活动类型", template), Field("活动分区", section),
++                Field("列表或地图标题（可选）", marker), columnField,
++                new TextBlock { Text = "关卡", FontWeight = FontWeight.SemiBold, Margin = new Thickness(0, 8, 0, 0) },
++                _stageRows, addStage
++            }
++        };
++        var scroll = new ScrollViewer { Content = form };
++        DockPanel.SetDock(footer, Dock.Bottom);
++        Content = new DockPanel { Children = { footer, scroll } };
++        Opened += (_, _) => name.Focus();
++    }
++
++    private StageRow AddStage(Stage? stage)
++    {
++        var name = new TextBox { Text = stage?.Name, Watermark = "完整关卡名称" };
++        var cost = new TextBox { Text = stage?.Cost.ToString(CultureInfo.InvariantCulture) ?? "30", Watermark = "体力" };
++        var remove = new Button { Content = "移除", VerticalAlignment = VerticalAlignment.Bottom };
++        var nameField = Field("关卡名称", name);
++        var costField = Field("每次体力", cost);
++        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,8,84,8,Auto") };
++        Grid.SetColumn(costField, 2);
++        Grid.SetColumn(remove, 4);
++        grid.Children.Add(nameField);
++        grid.Children.Add(costField);
++        grid.Children.Add(remove);
++        var row = new StageRow(stage?.Id ?? Guid.NewGuid(), name, cost, grid);
++        _stages.Add(row);
++        _stageRows.Children.Add(grid);
++
++        remove.Click += (_, _) =>
++        {
++            _stageRows.Children.Remove(row.Control);
++            _stages.Remove(row);
++            if (_stages.Count == 0)
++                AddStage(null).Name.Focus();
++        };
++        return row;
++    }
++
++    private static ComboBox Choices(string[] choices, string? selected) => new()
++    {
++        ItemsSource = choices, SelectedIndex = Math.Max(0, Array.IndexOf(choices, selected)),
++        HorizontalAlignment = HorizontalAlignment.Stretch
++    };
++
++    private static StackPanel Field(string label, Control input) => new()
++    {
++        Spacing = 4, Children = { new TextBlock { Text = label }, input }
++    };
++}

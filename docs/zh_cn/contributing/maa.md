@@ -4,7 +4,7 @@
 
 ## 生成配置与派生产物
 
-`assets/stamina/active.yaml` 是“体力消耗关卡”选项的唯一源数据，`assets/interface.json` 中对应的选项键、任务选项引用、`default_case` 和 `cases` 由 `tools/build_stamina_activities.py` 生成，不应手工修改。选项键包含列表布局及有序关卡名称的摘要，列表增删或重排时使旧序号失效并默认选中第一个真实关卡；显示名称固定，不添加重选占位项或入口拦截。仅修正 ROI 等而关卡名称和顺序不变时不重置选择。修改 YAML，或修改生成脚本中会影响输出的模板、校验和 Override 逻辑后，必须运行生成命令，并将源文件、脚本改动和生成后的 `assets/interface.json` 放在同一提交中。
+`assets/stamina/active.yaml` 是体力任务预设活动、关卡及自定义路线选项的源数据，`assets/interface.json` 中对应的选项键、任务引用、`default_case` 和 `cases` 由 `tools/build_stamina_activities.py` 生成。活动选项键包含布局和有序活动名摘要，每个活动的关卡选项键包含活动名及其有序关卡名摘要。名单增删或重排时，相应的预设选择回到首项；单纯调整识别参数时保留选择。修改影响生成结果的 YAML、模板、校验或 Override 逻辑后，运行生成命令，并将源文件、脚本改动和生成后的 `assets/interface.json` 放在同一提交中。桌面客户端从本地配置加载用户添加的活动，按活动和关卡的标识恢复选择。
 
 同一活动包含多个关卡时使用 `activity_groups`：活动名称、页面 marker 和公共 Override 放入 `base`，各关卡差异放入 `cases`；`templates` 仅描述可跨活动复用的内部 UI 路线，不写具体活动名称。四类路线见[消耗体力](../tasks/daily_stamina.md)，字段以源 YAML 和生成脚本为准。本地 `docs/zh_cn/develop/stamina_activity_config.md` 存在时可作为补充。
 

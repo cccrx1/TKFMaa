@@ -5,14 +5,30 @@
     "revision": "1080d3e1500f3439ac896ab2eca9aeb8e885f1f4",
     "source_archive_sha256": "351ecf655c7bfeb2b70e3285f727d7bb44061a136a215df095eeefd3bab5eb64",
     "patch": "tkfmaa-mfa-2.16.2.patch",
-    "patch_sha256": "112fb6b5cc42d677cbe40e2aad338272eeb80a0e52b15f634a79f60a69eb21af",
+    "patch_sha256": "355660d1c839be97f84f9e624f8b1dbcf13d4fc363c9db947159c13311576f4c",
     "sdk": "10.0.403",
     "frontend": "2.16.2",
     "maafw": "5.14.3",
     "files": {
+        "MFAAvalonia.Desktop/Program.cs": {
+            "before_sha256": "a705296ec3907452e581fd0a63f6a638bc8a35d4c843f86e3ee9c137bcf80fcd",
+            "after_sha256": "401a3ba37b940cb7c05fdb01b5e8a38949a9280be3cd249da36204cda299d334"
+        },
         "MFAAvalonia/Extensions/MaaFW/AgentHelper.cs": {
             "before_sha256": "b3dd98808f96445c85507ddf426f5640659346e1e5657bb9119a130b1b3b4bc6",
             "after_sha256": "919013eb0f0a336196de0ae0c2f048249b8395d8df93d17766ca33f2220ac0a5"
+        },
+        "MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs": {
+            "before_sha256": "e420f474c0813c5065a84714acca74028319746b209f1f792c7603322e3dca25",
+            "after_sha256": "1e9b143aedf340a88b4b9b96f4ce5d40cdc2787a49841986a44def6f133acaf8"
+        },
+        "MFAAvalonia/Extensions/MaaFW/TaskLoader.cs": {
+            "before_sha256": "f033b71be4d9e3760b01ce474f7f344a925c2038e960ea76c5181871eb2e7c84",
+            "after_sha256": "7d99660de7383abc382a72071f5b507bdfe6a91bd1969f39443a081359c50f14"
+        },
+        "MFAAvalonia/Helper/TaskOptionGenerator.cs": {
+            "before_sha256": "b84c39833ad0d21e5f9f4da60a05ad214f950c5784160b290dbf8e5ba4a9d4d1",
+            "after_sha256": "89de0875b9c189a5a428c4e0698c849cbcc2a8e0f4ba086df837ab986c0367a1"
         },
         "MFAAvalonia/Helper/TkfmPackagePreflight.cs": {
             "before_sha256": null,
@@ -21,6 +37,14 @@
         "MFAAvalonia/Helper/TkfmRuntimeEnvironment.cs": {
             "before_sha256": null,
             "after_sha256": "0569958e512bf4342ae8fca99cc24c057fc47d29071b8bde9f8128440fae78ea"
+        },
+        "MFAAvalonia/Helper/TkfmStaminaCatalog.cs": {
+            "before_sha256": null,
+            "after_sha256": "98519c178c95fd653e6f41fd7e7952c10dd08772d49dfc93adaaa814ecf5d106"
+        },
+        "MFAAvalonia/Helper/TkfmStaminaEditor.cs": {
+            "before_sha256": null,
+            "after_sha256": "b8094f29a4464ebac56e458889f8610549af7dd209d64b863195756685bbcd9e"
         },
         "MFAAvalonia/Helper/UniversalExtractor.cs": {
             "before_sha256": "d5f2f8656b03f7a2846a2e20b88ae36b63dd1ccf2c5ba6fd4a4d6729833c9b88",
@@ -33,10 +57,6 @@
         "MFAAvalonia/MFAAvalonia.csproj": {
             "before_sha256": "1b99177b143b0bf30b11a745e41ffcaabfbe06df87c1be91f0884231548e3ee5",
             "after_sha256": "fe414795a17b863c4e7c7da7573a243b8c4eb4651f12b2cf556b04c3b88715c9"
-        },
-        "MFAAvalonia.Desktop/Program.cs": {
-            "before_sha256": "a705296ec3907452e581fd0a63f6a638bc8a35d4c843f86e3ee9c137bcf80fcd",
-            "after_sha256": "401a3ba37b940cb7c05fdb01b5e8a38949a9280be3cd249da36204cda299d334"
         }
     }
 }

@@ -70,10 +70,10 @@
             "name": "消耗体力",
             "entry": "DailyStaminaStart",
             "option": [
-                "体力消耗关卡@6b13508c70e8",
-                "扫荡不足时手动补刷@2",
+                "体力消耗关卡@059dc555c254",
                 "体力不足时使用体力药@2",
-                "体力不足时购买体力@2"
+                "体力不足时购买体力@2",
+                "扫荡不足时手动补刷@2"
             ],
             "doc": [
                 "从主界面进入限时活动，按所选关卡配置寻找活动、入口图标和关卡名。",
@@ -163,12 +163,189 @@
                 }
             ]
         },
-        "体力消耗关卡@6b13508c70e8": {
+        "体力消耗关卡@059dc555c254": {
             "type": "select",
-            "default_case": "新大陆历险记 - 访查-01",
+            "label": "活动",
+            "default_case": "新大陆历险记",
             "cases": [
                 {
-                    "name": "新大陆历险记 - 访查-01",
+                    "name": "新大陆历险记",
+                    "option": [
+                        "体力活动关卡@5cdde2def957"
+                    ]
+                },
+                {
+                    "name": "凯萨½（复刻）",
+                    "option": [
+                        "体力活动关卡@d5c4d50adc3a"
+                    ]
+                },
+                {
+                    "name": "日常政务",
+                    "option": [
+                        "体力活动关卡@a297c5a984be"
+                    ]
+                },
+                {
+                    "name": "自定义关卡",
+                    "description": "选择活动类型和活动分区，再填写活动与关卡。",
+                    "option": [
+                        "自定义体力关卡模板",
+                        "自定义体力活动分区",
+                        "自定义体力活动与关卡"
+                    ],
+                    "pipeline_override": {
+                        "DailyStaminaStart": {
+                            "action": {
+                                "param": {
+                                    "custom_action_param": {
+                                        "enabled": true
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetRouteStart": {
+                            "next": [
+                                "DailyStaminaRouteActivitySectionStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivitySection": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "限时活动"
+                                    ],
+                                    "roi": [
+                                        480,
+                                        90,
+                                        150,
+                                        80
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetInnerRouteStart": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            },
+                            "next": [
+                                "DailyStaminaRouteInnerNormalListStart"
+                            ]
+                        },
+                        "DailyStaminaPresetActivityName": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "__CUSTOM_ACTIVITY__"
+                                    ],
+                                    "roi": [
+                                        70,
+                                        770,
+                                        580,
+                                        60
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListTarget": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "__CUSTOM_STAGE__"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        160,
+                                        720,
+                                        1000
+                                    ]
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaEnough": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "enough",
+                                        "cost": 1,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStaminaLow": {
+                            "recognition": {
+                                "type": "Custom",
+                                "param": {
+                                    "custom_recognition": "DailyStaminaCompare",
+                                    "custom_recognition_param": {
+                                        "mode": "low",
+                                        "cost": 1,
+                                        "reserve": 0,
+                                        "stamina_roi": [
+                                            500,
+                                            0,
+                                            180,
+                                            45
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "DailyStaminaPresetStageListAnySelectable": {
+                            "enabled": true,
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "__CUSTOM_LIST__"
+                                    ],
+                                    "roi": [
+                                        0,
+                                        90,
+                                        720,
+                                        180
+                                    ]
+                                }
+                            }
+                        },
+                        "CommonReturnMainFromStaminaStageList": {
+                            "recognition": {
+                                "type": "And",
+                                "param": {
+                                    "all_of": [
+                                        "DailyStaminaPresetStageListAnySelectable"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "体力活动关卡@5cdde2def957": {
+            "type": "select",
+            "label": "关卡",
+            "default_case": "访查-01",
+            "cases": [
+                {
+                    "name": "访查-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找访查-01并扫荡。",
                     "pipeline_override": {
                         "DailyStaminaStart": {
@@ -236,9 +413,9 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01"
+                                        "^访查-01$",
+                                        "^访查01$",
+                                        "^訪查-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -314,47 +491,11 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
                 },
                 {
-                    "name": "新大陆历险记 - 记录-01",
+                    "name": "记录-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找记录-01并扫荡。",
                     "pipeline_override": {
                         "DailyStaminaStart": {
@@ -422,11 +563,11 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01"
+                                        "^记录-01$",
+                                        "^记录01$",
+                                        "^纪录-01$",
+                                        "^纪录01$",
+                                        "^紀錄-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -502,47 +643,11 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
                 },
                 {
-                    "name": "新大陆历险记 - 撰写-01",
+                    "name": "撰写-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找撰写-01并扫荡。",
                     "pipeline_override": {
                         "DailyStaminaStart": {
@@ -610,9 +715,9 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01"
+                                        "^撰写-01$",
+                                        "^撰写01$",
+                                        "^撰寫-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -688,47 +793,11 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
                 },
                 {
-                    "name": "新大陆历险记 - 锻造-01",
+                    "name": "锻造-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找锻造-01并扫荡。",
                     "pipeline_override": {
                         "DailyStaminaStart": {
@@ -796,9 +865,9 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01"
+                                        "^锻造-01$",
+                                        "^锻造01$",
+                                        "^鍛造-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -874,47 +943,11 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
                 },
                 {
-                    "name": "新大陆历险记 - 获取-01",
+                    "name": "获取-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找获取-01并扫荡。",
                     "pipeline_override": {
                         "DailyStaminaStart": {
@@ -982,9 +1015,9 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01"
+                                        "^获取-01$",
+                                        "^获取01$",
+                                        "^獲取-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -1060,47 +1093,11 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
                 },
                 {
-                    "name": "新大陆历险记 - 拍摄-01",
+                    "name": "拍摄-01",
                     "description": "常规活动分页列表：选择 新大陆历险记，进入关卡列表后寻找拍摄-01并扫荡。",
                     "pipeline_override": {
                         "DailyStaminaStart": {
@@ -1168,9 +1165,9 @@
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
+                                        "^拍摄-01$",
+                                        "^拍摄01$",
+                                        "^拍攝-01$"
                                     ],
                                     "roi": [
                                         0,
@@ -1246,47 +1243,18 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetFirstPageMarker": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "访查-01",
-                                        "访查01",
-                                        "訪查-01",
-                                        "记录-01",
-                                        "记录01",
-                                        "纪录-01",
-                                        "纪录01",
-                                        "紀錄-01",
-                                        "撰写-01",
-                                        "撰写01",
-                                        "撰寫-01",
-                                        "锻造-01",
-                                        "锻造01",
-                                        "鍛造-01",
-                                        "获取-01",
-                                        "获取01",
-                                        "獲取-01",
-                                        "拍摄-01",
-                                        "拍摄01",
-                                        "拍攝-01"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
                         }
                     }
-                },
+                }
+            ]
+        },
+        "体力活动关卡@d5c4d50adc3a": {
+            "type": "select",
+            "label": "关卡",
+            "default_case": "凯萨-09",
+            "cases": [
                 {
-                    "name": "凯萨½（复刻） - 凯萨-09",
+                    "name": "凯萨-09",
                     "description": "复刻活动地图：选择凯萨½，寻找凯萨-09并扫荡。",
                     "pipeline_override": {
                         "DailyStaminaStart": {
@@ -1435,9 +1403,16 @@
                             }
                         }
                     }
-                },
+                }
+            ]
+        },
+        "体力活动关卡@a297c5a984be": {
+            "type": "select",
+            "label": "关卡",
+            "default_case": "战争演习-特IV",
+            "cases": [
                 {
-                    "name": "常驻关卡 - 战争演习-特IV",
+                    "name": "战争演习-特IV",
                     "description": "常驻路线：目前活动 → 日常政务 → 战争演习，进入纵向关卡列表后寻找战争演习-特IV。",
                     "pipeline_override": {
                         "DailyStaminaStart": {
@@ -1604,30 +1579,57 @@
                             }
                         }
                     }
+                }
+            ]
+        },
+        "自定义体力关卡模板": {
+            "type": "select",
+            "label": "活动类型",
+            "default_case": "普通列表活动",
+            "cases": [
+                {
+                    "name": "普通列表活动",
+                    "pipeline_override": {
+                        "DailyStaminaCustomTemplate": {
+                            "attach": {
+                                "route": "normal_list"
+                            }
+                        }
+                    }
                 },
                 {
-                    "name": "自定义关卡",
-                    "description": "按活动内部列表模板寻找用户填写的关卡。名称按游戏显示填写。",
-                    "option": [
-                        "自定义体力关卡模板",
-                        "自定义体力活动分区",
-                        "自定义体力活动与关卡"
-                    ],
+                    "name": "常规分页活动",
                     "pipeline_override": {
-                        "DailyStaminaStart": {
-                            "action": {
-                                "param": {
-                                    "custom_action_param": {
-                                        "enabled": true
-                                    }
-                                }
+                        "DailyStaminaCustomTemplate": {
+                            "attach": {
+                                "route": "regular_paged_list"
                             }
-                        },
-                        "DailyStaminaPresetRouteStart": {
-                            "next": [
-                                "DailyStaminaRouteActivitySectionStart"
-                            ]
-                        },
+                        }
+                    }
+                },
+                {
+                    "name": "复刻地图活动",
+                    "pipeline_override": {
+                        "DailyStaminaCustomTemplate": {
+                            "attach": {
+                                "route": "rerun_activity_map"
+                            }
+                        }
+                    },
+                    "option": [
+                        "自定义体力复刻地图区域"
+                    ]
+                }
+            ]
+        },
+        "自定义体力活动分区": {
+            "type": "select",
+            "label": "活动分区",
+            "default_case": "限时活动",
+            "cases": [
+                {
+                    "name": "限时活动",
+                    "pipeline_override": {
                         "DailyStaminaPresetActivitySection": {
                             "recognition": {
                                 "type": "OCR",
@@ -1643,122 +1645,114 @@
                                     ]
                                 }
                             }
-                        },
-                        "DailyStaminaPresetInnerRouteStart": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetStageListAnySelectable"
-                                    ]
-                                }
-                            },
-                            "next": [
-                                "DailyStaminaRouteInnerNormalListStart"
-                            ]
-                        },
-                        "DailyStaminaPresetActivityName": {
+                        }
+                    }
+                },
+                {
+                    "name": "目前活动",
+                    "pipeline_override": {
+                        "DailyStaminaPresetActivitySection": {
                             "recognition": {
                                 "type": "OCR",
                                 "param": {
                                     "expected": [
-                                        "__CUSTOM_ACTIVITY__"
+                                        "目前活动"
                                     ],
                                     "roi": [
-                                        70,
-                                        770,
-                                        580,
-                                        60
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStageListTarget": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "__CUSTOM_STAGE__"
-                                    ],
-                                    "roi": [
-                                        0,
-                                        160,
-                                        720,
-                                        1000
-                                    ]
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaEnough": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "enough",
-                                        "cost": 1,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStaminaLow": {
-                            "recognition": {
-                                "type": "Custom",
-                                "param": {
-                                    "custom_recognition": "DailyStaminaCompare",
-                                    "custom_recognition_param": {
-                                        "mode": "low",
-                                        "cost": 1,
-                                        "reserve": 0,
-                                        "stamina_roi": [
-                                            500,
-                                            0,
-                                            180,
-                                            45
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "DailyStaminaPresetStageListAnySelectable": {
-                            "enabled": true,
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "__CUSTOM_LIST__"
-                                    ],
-                                    "roi": [
-                                        0,
+                                        270,
                                         90,
-                                        720,
-                                        180
-                                    ]
-                                }
-                            }
-                        },
-                        "CommonReturnMainFromStaminaStageList": {
-                            "recognition": {
-                                "type": "And",
-                                "param": {
-                                    "all_of": [
-                                        "DailyStaminaPresetStageListAnySelectable"
+                                        180,
+                                        80
                                     ]
                                 }
                             }
                         }
                     }
                 }
+            ]
+        },
+        "自定义体力活动与关卡": {
+            "type": "input",
+            "label": "活动与关卡",
+            "inputs": [
+                {
+                    "name": "activity",
+                    "label": "活动名称",
+                    "default": "",
+                    "verify": ".*\\S.*",
+                    "pattern_msg": "请填写游戏中显示的活动名称"
+                },
+                {
+                    "name": "stage",
+                    "label": "目标关卡名称",
+                    "default": "",
+                    "verify": ".*\\S.*",
+                    "pattern_msg": "请填写游戏中显示的完整关卡名称"
+                },
+                {
+                    "name": "list_marker",
+                    "label": "列表或地图标题（留空使用活动名称）",
+                    "default": ""
+                },
+                {
+                    "name": "cost",
+                    "label": "每次体力消耗",
+                    "default": "30",
+                    "pipeline_type": "int",
+                    "verify": "^[1-9][0-9]*$",
+                    "pattern_msg": "请输入正整数"
+                }
             ],
-            "label": "体力消耗关卡",
-            "description": "活动关卡列表变化导致旧选择失效时，默认选择列表中的第一个关卡。"
+            "pipeline_override": {
+                "DailyStaminaCustomInput": {
+                    "attach": {
+                        "activity": "{activity}",
+                        "stage": "{stage}",
+                        "list_marker": "{list_marker}",
+                        "cost": "{cost}"
+                    }
+                }
+            }
+        },
+        "自定义体力复刻地图区域": {
+            "type": "select",
+            "label": "地图搜索区域",
+            "default_case": "中路",
+            "cases": [
+                {
+                    "name": "中路",
+                    "pipeline_override": {
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunMainColumnStart"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "左路",
+                    "pipeline_override": {
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunLeftColumnStart"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "右路",
+                    "pipeline_override": {
+                        "DailyStaminaRouteInnerRerunUiStart": {
+                            "next": [
+                                "DailyStaminaRerunClickTarget",
+                                "DailyStaminaRerunRightColumnStart"
+                            ]
+                        }
+                    }
+                }
+            ]
         },
         "扫荡不足时手动补刷@2": {
             "type": "select",
@@ -2120,64 +2114,109 @@
             "cases": [
                 {
                     "name": "寝室-地牢-训练所-宝藏库-封印密室",
-                    "description": "优先选择魔王寝室，其次地牢、训练所、宝藏库、封印密室。",
+                    "description": "按选项列出的房间名称顺序搜索；忙碌或没有可选档位时尝试下一房间。",
                     "pipeline_override": {
                         "DailyDispatchSelectLocationStart": {
                             "next": [
-                                "DailyDispatchSelectBedroom",
-                                "DailyDispatchSelectDungeon",
-                                "DailyDispatchSelectTraining",
-                                "DailyDispatchSelectTreasureVault",
-                                "DailyDispatchSelectSealRoom",
-                                "DailyDispatchSwipeLocationListDown",
-                                "DailyDispatchSelectBedroomAfterSwipe",
-                                "DailyDispatchSelectDungeonAfterSwipe",
-                                "DailyDispatchSelectTrainingAfterSwipe",
-                                "DailyDispatchSelectTreasureVaultAfterSwipe",
-                                "DailyDispatchSelectSealRoomAfterSwipe"
+                                "DailyDispatchSelectBedroom"
                             ]
+                        },
+                        "DailyDispatchSelectBedroom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectDungeon"
+                            }
+                        },
+                        "DailyDispatchSelectDungeon": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTraining"
+                            }
+                        },
+                        "DailyDispatchSelectTraining": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTreasureVault"
+                            }
+                        },
+                        "DailyDispatchSelectTreasureVault": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectSealRoom"
+                            }
+                        },
+                        "DailyDispatchSelectSealRoom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSkipUnavailable"
+                            }
                         }
                     }
                 },
                 {
                     "name": "地牢-训练所-宝藏库-封印密室-寝室",
-                    "description": "优先选择地牢，其次训练所、宝藏库、封印密室、魔王寝室。",
+                    "description": "按选项列出的房间名称顺序搜索；忙碌或没有可选档位时尝试下一房间。",
                     "pipeline_override": {
                         "DailyDispatchSelectLocationStart": {
                             "next": [
-                                "DailyDispatchSelectDungeon",
-                                "DailyDispatchSelectTraining",
-                                "DailyDispatchSelectTreasureVault",
-                                "DailyDispatchSelectSealRoom",
-                                "DailyDispatchSelectBedroom",
-                                "DailyDispatchSwipeLocationListDown",
-                                "DailyDispatchSelectDungeonAfterSwipe",
-                                "DailyDispatchSelectTrainingAfterSwipe",
-                                "DailyDispatchSelectTreasureVaultAfterSwipe",
-                                "DailyDispatchSelectSealRoomAfterSwipe",
-                                "DailyDispatchSelectBedroomAfterSwipe"
+                                "DailyDispatchSelectDungeon"
                             ]
+                        },
+                        "DailyDispatchSelectDungeon": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTraining"
+                            }
+                        },
+                        "DailyDispatchSelectTraining": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTreasureVault"
+                            }
+                        },
+                        "DailyDispatchSelectTreasureVault": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectSealRoom"
+                            }
+                        },
+                        "DailyDispatchSelectSealRoom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectBedroom"
+                            }
+                        },
+                        "DailyDispatchSelectBedroom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSkipUnavailable"
+                            }
                         }
                     }
                 },
                 {
                     "name": "训练所-宝藏库-封印密室-地牢-寝室",
-                    "description": "优先选择训练所，其次宝藏库、封印密室、地牢、魔王寝室。",
+                    "description": "按选项列出的房间名称顺序搜索；忙碌或没有可选档位时尝试下一房间。",
                     "pipeline_override": {
                         "DailyDispatchSelectLocationStart": {
                             "next": [
-                                "DailyDispatchSelectTraining",
-                                "DailyDispatchSelectTreasureVault",
-                                "DailyDispatchSelectSealRoom",
-                                "DailyDispatchSelectDungeon",
-                                "DailyDispatchSelectBedroom",
-                                "DailyDispatchSwipeLocationListDown",
-                                "DailyDispatchSelectTrainingAfterSwipe",
-                                "DailyDispatchSelectTreasureVaultAfterSwipe",
-                                "DailyDispatchSelectSealRoomAfterSwipe",
-                                "DailyDispatchSelectDungeonAfterSwipe",
-                                "DailyDispatchSelectBedroomAfterSwipe"
+                                "DailyDispatchSelectTraining"
                             ]
+                        },
+                        "DailyDispatchSelectTraining": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectTreasureVault"
+                            }
+                        },
+                        "DailyDispatchSelectTreasureVault": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectSealRoom"
+                            }
+                        },
+                        "DailyDispatchSelectSealRoom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectDungeon"
+                            }
+                        },
+                        "DailyDispatchSelectDungeon": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSelectBedroom"
+                            }
+                        },
+                        "DailyDispatchSelectBedroom": {
+                            "anchor": {
+                                "DispatchNextRoom": "DailyDispatchSkipUnavailable"
+                            }
                         }
                     }
                 }
@@ -2189,172 +2228,206 @@
             "cases": [
                 {
                     "name": "最大时间优先",
-                    "description": "优先选择每个地点从左向右第一个时间按钮。",
+                    "description": "在当前优先房间内依次尝试 22/12/9/6 小时；已选中不重复点击，选中验证失败继续后续档位。",
                     "pipeline_override": {
-                        "DailyDispatchSelectBedroom": {
+                        "DailyDispatchSearchScan0": {
                             "next": [
-                                "DailyDispatchSelectBedroomTime1",
-                                "DailyDispatchSelectBedroomTime2",
-                                "DailyDispatchSelectBedroomTime3",
-                                "DailyDispatchSelectBedroomTime4"
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll0"
                             ]
                         },
-                        "DailyDispatchSelectBedroomAfterSwipe": {
+                        "DailyDispatchSearchScan1": {
                             "next": [
-                                "DailyDispatchSelectBedroomTime1",
-                                "DailyDispatchSelectBedroomTime2",
-                                "DailyDispatchSelectBedroomTime3",
-                                "DailyDispatchSelectBedroomTime4"
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll1"
                             ]
                         },
-                        "DailyDispatchSelectDungeon": {
+                        "DailyDispatchSearchScan2": {
                             "next": [
-                                "DailyDispatchSelectDungeonTime1",
-                                "DailyDispatchSelectDungeonTime2",
-                                "DailyDispatchSelectDungeonTime3",
-                                "DailyDispatchSelectDungeonTime4"
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll2"
                             ]
                         },
-                        "DailyDispatchSelectDungeonAfterSwipe": {
+                        "DailyDispatchSearchScan3": {
                             "next": [
-                                "DailyDispatchSelectDungeonTime1",
-                                "DailyDispatchSelectDungeonTime2",
-                                "DailyDispatchSelectDungeonTime3",
-                                "DailyDispatchSelectDungeonTime4"
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSearchScroll3"
                             ]
                         },
-                        "DailyDispatchSelectTraining": {
+                        "DailyDispatchSearchScan4": {
                             "next": [
-                                "DailyDispatchSelectTrainingTime1",
-                                "DailyDispatchSelectTrainingTime2",
-                                "DailyDispatchSelectTrainingTime3",
-                                "DailyDispatchSelectTrainingTime4"
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTrainingAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectTrainingTime1",
-                                "DailyDispatchSelectTrainingTime2",
-                                "DailyDispatchSelectTrainingTime3",
-                                "DailyDispatchSelectTrainingTime4"
+                        "DailyDispatchPick22h": {
+                            "on_error": [
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTreasureVault": {
-                            "next": [
-                                "DailyDispatchSelectTreasureVaultTime1",
-                                "DailyDispatchSelectTreasureVaultTime2",
-                                "DailyDispatchSelectTreasureVaultTime3",
-                                "DailyDispatchSelectTreasureVaultTime4"
+                        "DailyDispatchPick12h": {
+                            "on_error": [
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTreasureVaultAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectTreasureVaultTime1",
-                                "DailyDispatchSelectTreasureVaultTime2",
-                                "DailyDispatchSelectTreasureVaultTime3",
-                                "DailyDispatchSelectTreasureVaultTime4"
+                        "DailyDispatchPick9h": {
+                            "on_error": [
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectSealRoom": {
-                            "next": [
-                                "DailyDispatchSelectSealRoomTime1",
-                                "DailyDispatchSelectSealRoomTime2",
-                                "DailyDispatchSelectSealRoomTime3",
-                                "DailyDispatchSelectSealRoomTime4"
-                            ]
-                        },
-                        "DailyDispatchSelectSealRoomAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectSealRoomTime1",
-                                "DailyDispatchSelectSealRoomTime2",
-                                "DailyDispatchSelectSealRoomTime3",
-                                "DailyDispatchSelectSealRoomTime4"
+                        "DailyDispatchPick6h": {
+                            "on_error": [
+                                "[Anchor]DispatchNextRoom"
                             ]
                         }
                     }
                 },
                 {
                     "name": "短时间优先",
-                    "description": "优先选择每个地点从右向左第一个时间按钮。",
+                    "description": "在当前优先房间内依次尝试 6/9/12/22 小时；已选中不重复点击，选中验证失败继续后续档位。",
                     "pipeline_override": {
-                        "DailyDispatchSelectBedroom": {
+                        "DailyDispatchSearchScan0": {
                             "next": [
-                                "DailyDispatchSelectBedroomTime4",
-                                "DailyDispatchSelectBedroomTime3",
-                                "DailyDispatchSelectBedroomTime2",
-                                "DailyDispatchSelectBedroomTime1"
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll0"
                             ]
                         },
-                        "DailyDispatchSelectBedroomAfterSwipe": {
+                        "DailyDispatchSearchScan1": {
                             "next": [
-                                "DailyDispatchSelectBedroomTime4",
-                                "DailyDispatchSelectBedroomTime3",
-                                "DailyDispatchSelectBedroomTime2",
-                                "DailyDispatchSelectBedroomTime1"
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll1"
                             ]
                         },
-                        "DailyDispatchSelectDungeon": {
+                        "DailyDispatchSearchScan2": {
                             "next": [
-                                "DailyDispatchSelectDungeonTime4",
-                                "DailyDispatchSelectDungeonTime3",
-                                "DailyDispatchSelectDungeonTime2",
-                                "DailyDispatchSelectDungeonTime1"
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll2"
                             ]
                         },
-                        "DailyDispatchSelectDungeonAfterSwipe": {
+                        "DailyDispatchSearchScan3": {
                             "next": [
-                                "DailyDispatchSelectDungeonTime4",
-                                "DailyDispatchSelectDungeonTime3",
-                                "DailyDispatchSelectDungeonTime2",
-                                "DailyDispatchSelectDungeonTime1"
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "DailyDispatchSearchScroll3"
                             ]
                         },
-                        "DailyDispatchSelectTraining": {
+                        "DailyDispatchSearchScan4": {
                             "next": [
-                                "DailyDispatchSelectTrainingTime4",
-                                "DailyDispatchSelectTrainingTime3",
-                                "DailyDispatchSelectTrainingTime2",
-                                "DailyDispatchSelectTrainingTime1"
+                                "DailyDispatchSelected6h",
+                                "DailyDispatchPick6h",
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTrainingAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectTrainingTime4",
-                                "DailyDispatchSelectTrainingTime3",
-                                "DailyDispatchSelectTrainingTime2",
-                                "DailyDispatchSelectTrainingTime1"
+                        "DailyDispatchPick6h": {
+                            "on_error": [
+                                "DailyDispatchSelected9h",
+                                "DailyDispatchPick9h",
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTreasureVault": {
-                            "next": [
-                                "DailyDispatchSelectTreasureVaultTime4",
-                                "DailyDispatchSelectTreasureVaultTime3",
-                                "DailyDispatchSelectTreasureVaultTime2",
-                                "DailyDispatchSelectTreasureVaultTime1"
+                        "DailyDispatchPick9h": {
+                            "on_error": [
+                                "DailyDispatchSelected12h",
+                                "DailyDispatchPick12h",
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectTreasureVaultAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectTreasureVaultTime4",
-                                "DailyDispatchSelectTreasureVaultTime3",
-                                "DailyDispatchSelectTreasureVaultTime2",
-                                "DailyDispatchSelectTreasureVaultTime1"
+                        "DailyDispatchPick12h": {
+                            "on_error": [
+                                "DailyDispatchSelected22h",
+                                "DailyDispatchPick22h",
+                                "[Anchor]DispatchNextRoom"
                             ]
                         },
-                        "DailyDispatchSelectSealRoom": {
-                            "next": [
-                                "DailyDispatchSelectSealRoomTime4",
-                                "DailyDispatchSelectSealRoomTime3",
-                                "DailyDispatchSelectSealRoomTime2",
-                                "DailyDispatchSelectSealRoomTime1"
-                            ]
-                        },
-                        "DailyDispatchSelectSealRoomAfterSwipe": {
-                            "next": [
-                                "DailyDispatchSelectSealRoomTime4",
-                                "DailyDispatchSelectSealRoomTime3",
-                                "DailyDispatchSelectSealRoomTime2",
-                                "DailyDispatchSelectSealRoomTime1"
+                        "DailyDispatchPick22h": {
+                            "on_error": [
+                                "[Anchor]DispatchNextRoom"
                             ]
                         }
                     }
@@ -2408,148 +2481,6 @@
                                 "target_names": "{物品列表}"
                             }
                         }
-                    }
-                }
-            }
-        },
-        "自定义体力关卡模板": {
-            "type": "select",
-            "label": "关卡列表模板",
-            "default_case": "普通关卡列表",
-            "cases": [
-                {
-                    "name": "普通关卡列表",
-                    "pipeline_override": {
-                        "DailyStaminaCustomTemplate": {
-                            "attach": {
-                                "template": "normal_list"
-                            }
-                        }
-                    }
-                },
-                {
-                    "name": "常规分页列表",
-                    "pipeline_override": {
-                        "DailyStaminaCustomTemplate": {
-                            "attach": {
-                                "template": "regular_paged_list"
-                            }
-                        }
-                    },
-                    "option": [
-                        "自定义体力第一页关卡"
-                    ]
-                }
-            ]
-        },
-        "自定义体力活动分区": {
-            "type": "select",
-            "label": "活动分区",
-            "default_case": "限时活动",
-            "cases": [
-                {
-                    "name": "限时活动",
-                    "pipeline_override": {
-                        "DailyStaminaPresetActivitySection": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "限时活动"
-                                    ],
-                                    "roi": [
-                                        480,
-                                        90,
-                                        150,
-                                        80
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "name": "目前活动",
-                    "pipeline_override": {
-                        "DailyStaminaPresetActivitySection": {
-                            "recognition": {
-                                "type": "OCR",
-                                "param": {
-                                    "expected": [
-                                        "目前活动"
-                                    ],
-                                    "roi": [
-                                        270,
-                                        90,
-                                        180,
-                                        80
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
-        },
-        "自定义体力活动与关卡": {
-            "type": "input",
-            "label": "活动与关卡",
-            "inputs": [
-                {
-                    "name": "activity",
-                    "label": "活动名称",
-                    "default": "",
-                    "verify": ".*\\S.*",
-                    "pattern_msg": "请填写游戏中显示的活动名称"
-                },
-                {
-                    "name": "stage",
-                    "label": "目标关卡名称",
-                    "default": "",
-                    "verify": ".*\\S.*",
-                    "pattern_msg": "请填写游戏中显示的完整关卡名称"
-                },
-                {
-                    "name": "list_marker",
-                    "label": "列表顶部标题（留空使用活动名称）",
-                    "default": ""
-                },
-                {
-                    "name": "cost",
-                    "label": "每次体力消耗",
-                    "default": "30",
-                    "pipeline_type": "int",
-                    "verify": "^[1-9][0-9]*$",
-                    "pattern_msg": "请输入正整数"
-                }
-            ],
-            "pipeline_override": {
-                "DailyStaminaCustomInput": {
-                    "attach": {
-                        "activity": "{activity}",
-                        "stage": "{stage}",
-                        "list_marker": "{list_marker}",
-                        "cost": "{cost}"
-                    }
-                }
-            }
-        },
-        "自定义体力第一页关卡": {
-            "type": "input",
-            "label": "分页定位",
-            "inputs": [
-                {
-                    "name": "first_page",
-                    "label": "第一页任一完整关卡名称",
-                    "default": "",
-                    "verify": ".*\\S.*",
-                    "pattern_msg": "请填写仅出现在第一页的关卡名称"
-                }
-            ],
-            "pipeline_override": {
-                "DailyStaminaCustomFirstPage": {
-                    "attach": {
-                        "first_page": "{first_page}"
                     }
                 }
             }

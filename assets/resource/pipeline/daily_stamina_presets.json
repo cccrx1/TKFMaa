@@ -9,12 +9,7 @@
     },
     "DailyStaminaCustomTemplate": {
         "attach": {
-            "template": "normal_list"
-        }
-    },
-    "DailyStaminaCustomFirstPage": {
-        "attach": {
-            "first_page": ""
+            "route": "normal_list"
         }
     },
     "DailyStaminaPresetRouteStart": {

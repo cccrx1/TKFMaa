@@ -34,13 +34,17 @@ templates:
 custom_selection:
   name: "自定义关卡"
   templates:
-    - name: "普通关卡列表"
+    - name: "普通列表活动"
       template: normal_list
-    - name: "常规分页列表"
+    - name: "常规分页活动"
       template: regular_paged_list
+    - name: "复刻地图活动"
+      template: rerun_activity_map
 
 activities:
   - name: "常驻关卡 - 战争演习-特IV"
+    activity_label: "日常政务"
+    stage_label: "战争演习-特IV"
     description: "常驻路线：目前活动 → 日常政务 → 战争演习，进入纵向关卡列表后寻找战争演习-特IV。"
     template: daily_affairs_list
     activity_section:
@@ -76,57 +80,27 @@ activity_groups:
           roi: [0, 90, 240, 80]
       stamina:
         cost: 30
-      extra_overrides:
-        DailyStaminaPresetFirstPageMarker:
-          enabled: true
-          recognition:
-            type: OCR
-            param:
-              expected:
-                [
-                  "访查-01",
-                  "访查01",
-                  "訪查-01",
-                  "记录-01",
-                  "记录01",
-                  "纪录-01",
-                  "纪录01",
-                  "紀錄-01",
-                  "撰写-01",
-                  "撰写01",
-                  "撰寫-01",
-                  "锻造-01",
-                  "锻造01",
-                  "鍛造-01",
-                  "获取-01",
-                  "获取01",
-                  "獲取-01",
-                  "拍摄-01",
-                  "拍摄01",
-                  "拍攝-01",
-                ]
-              roi: [0, 160, 720, 1000]
     cases:
       - case_suffix: "访查-01"
         stage:
-          expected: ["访查-01", "访查01", "訪查-01"]
+          expected: ["^访查-01$", "^访查01$", "^訪查-01$"]
         stamina:
           cost: 25
       - case_suffix: "记录-01"
         stage:
-          expected: ["记录-01", "记录01", "纪录-01", "纪录01", "紀錄-01"]
+          expected: ["^记录-01$", "^记录01$", "^纪录-01$", "^纪录01$", "^紀錄-01$"]
       - case_suffix: "撰写-01"
         stage:
-          expected: ["撰写-01", "撰写01", "撰寫-01"]
+          expected: ["^撰写-01$", "^撰写01$", "^撰寫-01$"]
       - case_suffix: "锻造-01"
         stage:
-          expected: ["锻造-01", "锻造01", "鍛造-01"]
+          expected: ["^锻造-01$", "^锻造01$", "^鍛造-01$"]
       - case_suffix: "获取-01"
         stage:
-          expected: ["获取-01", "获取01", "獲取-01"]
+          expected: ["^获取-01$", "^获取01$", "^獲取-01$"]
       - case_suffix: "拍摄-01"
         stage:
-          expected: ["拍摄-01", "拍摄01", "拍攝-01"]
+          expected: ["^拍摄-01$", "^拍摄01$", "^拍攝-01$"]
         stamina:
           cost: 45
 
