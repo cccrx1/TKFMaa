@@ -8,6 +8,7 @@ import re
 
 from frontend_build import PLATFORMS, ROOT, read_json, release_profile, verify_proof
 from clean_package_stage import clean
+from release_support import full_package_baseline
 
 
 def checksum(path: Path) -> str:
@@ -26,7 +27,7 @@ def preflight(version: str, artifacts: Path | None = None, commit: str | None = 
         raise ValueError("Numeric prerelease identifiers cannot have leading zeros")
     plan = read_json(ROOT / f"tools/releases/{version}.json")
     profile = release_profile()
-    policy = read_json(ROOT / "tools/release_baseline.json")
+    policy = full_package_baseline(ROOT)
     if (plan.get("schema_version") != 1 or plan.get("version") != version or plan.get("kind") != "full"
             or plan.get("update_repository") != policy["source_repository"]
             or plan.get("frontend_profile") != profile["id"]

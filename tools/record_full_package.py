@@ -8,13 +8,13 @@ import re
 
 from package_resources import ROOT, collect_resources, digest
 from frontend_build import verify_proof
-from release_support import baseline, source_identity, version_key, write_json
+from release_support import full_package_baseline, source_identity, version_key, write_json
 
 
 def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allow_dirty: bool = False,
            rehearsal: bool = False, require_frontend_build: bool = False) -> dict:
     version_key(version)
-    policy = baseline()
+    policy = full_package_baseline()
     source = source_identity(ROOT, commit, allow_dirty)
     if rehearsal:
         source = {**source, "rehearsal": True}
@@ -34,7 +34,7 @@ def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allo
     packaged_resources = {name: value for name, value in files.items() if name == "interface.json" or name.startswith(("resource/", "agent/"))}
     if packaged_resources != {name: digest(data) for name, data in expected.items()}:
         raise ValueError("Full package resources differ from source")
-    site = stage / ("python/Lib/site-packages" if os_name == "win" else "python/lib/python3.12/site-packages")
+    site = stage / ("python/Lib/site-packages" if os_name == "win" else f"python/lib/python{policy['python']}/site-packages")
     inventory, raw_versions = {}, {}
     for path in site.glob("*.dist-info/METADATA"):
         metadata = BytesParser().parsebytes(path.read_bytes(), headersonly=True)

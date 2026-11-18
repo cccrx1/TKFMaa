@@ -9,8 +9,8 @@ import sys
 import tempfile
 
 from package_resources import ROOT, collect_resources, digest, verify_archive
-from release_support import (TARGETS, baseline, check_agent_imports, check_selection, file_entry,
-                             read_json, source_identity, version_key, write_json)
+from release_support import (TARGETS, check_agent_imports, check_selection, file_entry, read_json,
+                             resource_release_baseline, source_identity, version_key, write_json)
 
 
 def prepare(input_dir: Path, output: Path, version: str, repository: str, commit: str,
@@ -18,7 +18,7 @@ def prepare(input_dir: Path, output: Path, version: str, repository: str, commit
     version_key(version)
     if previous_version and version_key(version) <= version_key(previous_version):
         raise ValueError("Version must increase beyond previous version")
-    policy = baseline()
+    policy = resource_release_baseline()
     if repository not in policy["allowed_update_repositories"]:
         raise ValueError("Update repository is not approved in release_baseline.json")
     source = source_identity(ROOT, commit, allow_dirty)

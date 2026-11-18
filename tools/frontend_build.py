@@ -27,7 +27,7 @@ def required_files(platform: str) -> set[str]:
 def release_profile() -> dict:
     manifest = read_json(MANIFEST)
     profile = read_json(PROFILE)
-    baseline = read_json(ROOT / "tools/release_baseline.json")
+    baseline = read_json(ROOT / "tools/full_package_baseline.json")
     if (profile.get("schema_version") != 1 or profile.get("platforms") != list(PLATFORMS)
             or profile.get("manifest_sha256") != hashlib.sha256(MANIFEST.read_bytes()).hexdigest()
             or profile.get("license_sha256") != hashlib.sha256((MANIFEST.parent / "LICENSE").read_bytes()).hexdigest()
