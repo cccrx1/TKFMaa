@@ -25,15 +25,16 @@ ROOMS = {
 }
 
 
-def selected_fraction(image, box):
-    """Purple button interior, anchored to the actual OCR duration box."""
+def duration_button_fractions(image, box):
+    """Measure purple and light pixels inside the OCR-anchored button."""
     x, y, w, h = map(int, box)
     patch = image[max(220, y - 30):y + h + 5, max(145, x - 5):min(575, x + w + 5)]
     if patch.size == 0:
-        return 0.0
+        return 0.0, 0.0
     b, g, r = [patch[:, :, i].astype(np.int16) for i in range(3)]
     purple = (b > g + 25) & (b > r + 20) & (g < 190)
-    return float(purple.mean())
+    light = (b >= 170) & (g >= 170) & (r >= 170)
+    return float(purple.mean()), float(light.mean())
 
 
 @AgentServer.custom_recognition("DispatchDurationRecognition")
@@ -98,15 +99,20 @@ class DispatchDurationRecognition(CustomRecognition):
         if len(candidates) != 1:
             return self.miss("ambiguous_or_missing_duration")
         box = candidates[0]
-        fraction = selected_fraction(argv.image, box)
-        selected = fraction >= 0.35
+        purple, light = duration_button_fractions(argv.image, box)
+        selected = purple >= 0.35
+        # Locked durations keep their OCR text but use a dark gray background.
+        # Only a recognized purple or light button may be selected or clicked.
+        if not selected and light < 0.35:
+            return self.miss("unavailable_button", room=room, hours=hours,
+                             purple_fraction=purple, light_fraction=light)
         if mode == "selected" and not selected:
-            return self.miss("not_selected", fraction=fraction)
+            return self.miss("not_selected", fraction=purple)
         if mode == "unselected" and selected:
-            return self.miss("already_selected", fraction=fraction)
+            return self.miss("already_selected", fraction=purple)
         return CustomRecognition.AnalyzeResult(box=box, detail={
             "room": room, "hours": hours, "selected": selected,
-            "purple_fraction": fraction, "room_box": [x, y, w, h],
+            "purple_fraction": purple, "light_fraction": light, "room_box": [x, y, w, h],
         })
 
     @staticmethod

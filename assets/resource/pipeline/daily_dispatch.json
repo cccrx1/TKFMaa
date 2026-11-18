@@ -574,10 +574,7 @@
             "type": "And",
             "param": {
                 "all_of": [
-                    "__DailyDispatchOverviewTitle",
-                    "__DailyDispatchSlot1Busy",
-                    "__DailyDispatchSlot2Busy",
-                    "__DailyDispatchSlot3Busy"
+                    "__DailyDispatchOverviewSettled"
                 ]
             }
         },
@@ -756,15 +753,79 @@
             }
         }
     },
-    "DailyDispatchVerifyComplete": {
+    "__DailyDispatchSlot2Locked": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "[达達]到魔王[阶階][级級]4[阶階].*[开開]放"
+                ],
+                "roi": [
+                    150,
+                    1005,
+                    430,
+                    80
+                ]
+            }
+        }
+    },
+    "__DailyDispatchSlot3Locked": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "[达達]到魔王[阶階][级級]8[阶階].*[开開]放"
+                ],
+                "roi": [
+                    150,
+                    1135,
+                    430,
+                    80
+                ]
+            }
+        }
+    },
+    "__DailyDispatchSlot2Settled": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "__DailyDispatchSlot2Busy",
+                    "__DailyDispatchSlot2Locked"
+                ]
+            }
+        }
+    },
+    "__DailyDispatchSlot3Settled": {
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "__DailyDispatchSlot3Busy",
+                    "__DailyDispatchSlot3Locked"
+                ]
+            }
+        }
+    },
+    "__DailyDispatchOverviewSettled": {
         "recognition": {
             "type": "And",
             "param": {
                 "all_of": [
                     "__DailyDispatchOverviewTitle",
                     "__DailyDispatchSlot1Busy",
-                    "__DailyDispatchSlot2Busy",
-                    "__DailyDispatchSlot3Busy"
+                    "__DailyDispatchSlot2Settled",
+                    "__DailyDispatchSlot3Settled"
+                ]
+            }
+        }
+    },
+    "DailyDispatchVerifyComplete": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyDispatchOverviewSettled"
                 ]
             }
         },
