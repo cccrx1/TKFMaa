@@ -8,7 +8,7 @@
 
 前端仍要求系统提供 .NET 10 运行环境，不是完全自包含的 .NET 分发。Windows 按包内依赖安装说明处理。完整包需保持目录完整并可写，不能只复制前端可执行文件。
 
-独立资源包只包含资源和 Agent 等文件，不含 Python、前端和 native runtime，只能用于兼容的已有客户端，不能作为首次安装包。Android 构建不走桌面 Python/前端捆绑步骤，不适用上述桌面结论。
+Android 有独立的构建流程。以上 Python 与前端的捆绑方式适用于桌面完整包。
 
 以上是构建和启动配置事实，不代表本次已在未安装 Python 的干净系统中执行验收。
 
@@ -22,13 +22,11 @@
 | MFAAvalonia 前端                 | 2.16.2 加本项目补丁    | 固定上游提交、源码 ZIP、补丁及文件摘要，编译后校验来源                                             |
 | 前端构建 .NET SDK                | 10.0.403               | 工作流与前端清单固定 SDK 版本                                                                      |
 | 用户系统 .NET                    | 10.0 系列              | 系统运行条件，不作为包内运行时捆绑                                                                 |
-| numpy / maaagentbinary / strenum | 2.5.4 / 1.0.1 / 0.4.15 | 桌面依赖按 release_baseline 精确安装                                                               |
+| numpy / maaagentbinary / strenum | 2.5.4 / 1.0.1 / 0.4.15 | 按完整包基线精确安装                                                                               |
 
-来源：[完整包工作流](../../../.github/workflows/install.yml)、[Python 依赖](../../../tools/requirements.txt)、[桌面资源基线](../../../tools/release_baseline.json)、[前端构建配置](../../../tools/frontend_release.json)、[前端源码与补丁清单](../../../tools/frontend_candidate/manifest.json)。
+来源：[完整包工作流](../../../.github/workflows/install.yml)、[Python 依赖](../../../tools/requirements.txt)、[完整包基线](../../../tools/full_package_baseline.json)、[前端构建配置](../../../tools/frontend_release.json)、[前端源码与补丁清单](../../../tools/frontend_candidate/manifest.json)。
 
-因此，当前不能称为“所有依赖完全锁定”或“同一提交必然产生字节一致的完整包”。除 Python 最新构建选择外，构建机镜像、部分构建工具依赖等仍有可变因素。包内来源和文件哈希用于追踪与校验实际产物，不等于下载输入全部固定。
-
-如需提高可复现性，下一步应单独固定便携 Python 的补丁版本、上游发布批次、六目标下载文件及摘要，并核对环境检查和打包工具。此次文档整理不修改工作流、依赖或兼容基线。
+框架和前端输入按表中约束锁定，便携 Python 的补丁版本与构建批次、构建机镜像及部分构建工具依赖仍会变化。桌面完整包的 `package-provenance.json` 记录该次构建的源码、实际安装的依赖和包内文件 SHA256。
 
 ## 本地开发
 
@@ -37,6 +35,6 @@
 开发与正式验证使用 Python 3.12；Windows 使用 `.venv312/`，终端设置 `PYTHONUTF8=1`。`.python-version` 与 CI 均以此为基线；使用 VS Code 时需手动选择项目解释器。其他 Python 版本不作为首选验收环境。
 安装依赖后运行 `python tools/check_environment.py --load-resource` 核对解释器、maafw、native runtime 与构建声明，Agent 注册在独立进程检查。
 
-OCR 来源由 `tools/ocr_model.json` 固定。当前只有 `.gitmodules` 声明而缺少 gitlink；使用 `python tools/configure.py --download` 恢复，使用 `--check` 只读核对。虚拟环境、下载模型、截图、日志和个人配置只保留本地。
+OCR 来源由 `tools/ocr_model.json` 固定。使用 `python tools/configure.py --download` 恢复，使用 `--check` 只读核对。虚拟环境、下载模型、截图、日志和个人配置保留在本地。
 
-Python、框架、前端或新增运行依赖的变更需要完整更新与迁移审核；不能只提高资源通道最旧客户端兼容基线后继续发小包。构建声明、资源加载与客户端实机验收分别记录，细则见[构建与发布操作约束](build_release.md)。
+Python、框架、前端或运行依赖变化时，发布前须核对完整包的兼容性和升级路径。构建声明、资源加载与客户端实机验收分别记录，细则见[构建与发布操作约束](build_release.md)。

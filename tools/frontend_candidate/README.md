@@ -4,7 +4,7 @@
 
 候选包含资源安装前检查、压缩库与解压调用适配、更新失败后的界面复位、重启锁处理，以及 Windows TKFMaa 的进程临时目录隔离和 Agent TCP 兼容处理。TKFMaa 在线更新要求有效 SHA256，更新日志延后到安装成功后写入。其他项目保留原更新日志策略。
 
-前端还为 TKFMaa 的消耗体力面板提供本地活动编辑器。活动库随客户端配置保存，启动时加载到活动和关卡下拉框，并复用资源包声明的自定义路线。
+前端还为 TKFMaa 的消耗体力面板提供本地活动编辑器。活动库随客户端配置保存，启动时加载到活动和关卡下拉框，并复用项目资源声明的自定义路线。
 
 `manifest.json` 固定上游提交、源码 ZIP 与补丁的 SHA256、SDK，以及变更文件的应用前后内容摘要。文件摘要统一按 UTF-8、LF 计算；补丁不含本机更新服务地址。
 
@@ -24,15 +24,15 @@ python tools/stage_frontend_release.py --source build/frontend-source --publishe
 
 使用清单指定的 .NET SDK 10.0.403。准备工具不联网、不安装依赖，只在新建的 `build/` 子目录内解压和应用补丁；源码或补丁摘要不符时拒绝继续。编译需要已配置的 NuGet 依赖来源，首次恢复可能联网。
 
-Windows TKFMaa 会在加载 native 库之前把进程 TEMP/TMP 指向安装目录内 `logs/runtime-temp`，并采用 Agent TCP。目录必须可写；不会修改系统环境变量。此目录与日志、配置一样属于运行数据，不应加入资源包或候选源码。
+Windows TKFMaa 会在加载 native 库之前把进程 TEMP/TMP 指向安装目录内 `logs/runtime-temp`，并采用 Agent TCP。目录必须可写；不会修改系统环境变量。此目录与日志、配置一样属于运行数据，应保存在客户端本地。
 
 ## 完整包与诊断候选的区别
 
-`frontend-candidate` 手工工作流仅构建 Windows x64，输出来源清单和文件哈希；没有标签或 Release 写权限。Artifact 仍需与同一源码资源、Python 及 native runtime 组装验证。候选的日志/摘要修复、资源更新重启、完整包回滚及本地升级链路已有 Windows x64 验收；在线真实仓库发布闭环、其他平台及游戏任务仍须单独验收。
+`frontend-candidate` 手工工作流构建 Windows x64 诊断候选，输出来源清单和文件哈希。验收时将这个 Artifact 与同一源码的资源、Python 和 native runtime 组装。按实际覆盖记录更新来源、重启或回滚路径、目标平台及游戏任务。
 
 `install` 默认编译六种桌面平台的固定补丁前端，按 `tools/frontend_release.json` 核对源码、基线和文件摘要，包内保存 `frontend-build-provenance.json`。所有非标签构建强制记录 rehearsal，不绕过云端干净源码检查。手工输入 `preview_version: v1.0.8` 可按发布计划生成准确版本的预演完整包；即使选择版本标签也不会发布。
 
-正式标签流程使用相同的补丁前端，发布前检查版本计划、发布说明及六个桌面完整包的来源和哈希。v1.0.8 保持主仓库更新源，不迁移正式资源通道；资源通道最旧客户端兼容指纹不随前端构建配置修改。独立候选仍用 `stage_frontend_candidate.py` 生成不可发布的来源记录，不能替代正式构建记录。预演和本地假版本不得发布。
+正式标签流程使用相同的补丁前端，发布前检查版本计划、发布说明及六个桌面完整包的来源和哈希。v1.0.8 的更新源为项目主仓库。`stage_frontend_candidate.py` 生成的候选来源记录和预演产物仅供开发验收。
 
 ## 系统依赖与清理边界
 
@@ -42,4 +42,4 @@ Windows TKFMaa 会在加载 native 库之前把进程 TEMP/TMP 指向安装目�
 
 ## 验证记录
 
-源码准备、编译、包内核验和目标系统运行分别记录。上述历史验收范围不能替代新产物验证；使用[验证模板](../../docs/zh_cn/templates/verification.md)记录本地结果，公开时只提供必要的脱敏摘要。
+源码准备、编译、包内核验和目标系统运行分别记录。使用[验证模板](../../docs/zh_cn/templates/verification.md)记录本地结果，公开时提供必要的脱敏摘要。
