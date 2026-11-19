@@ -364,7 +364,8 @@
             "param": {
                 "all_of": [
                     "__DailyDispatchStartButton",
-                    "__DailyDispatchTeamFilledColor"
+                    "__DailyDispatchTeamFilledColor",
+                    "__DailyDispatchSelectionBonus"
                 ]
             }
         },
