@@ -133,13 +133,20 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "DailyShopExchangeScanTop",
             "DailyShopExchangeResetTop1"
         ],
         "pre_wait_freezes": 300
     },
     "DailyShopExchangeResetTop1": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "exchange"
+                }
+            }
         },
         "action": {
             "type": "Swipe",
@@ -152,17 +159,35 @@
                     360,
                     940
                 ],
-                "duration": 1000
+                "duration": 800
             }
         },
         "next": [
+            "DailyShopExchangeScanTop",
             "DailyShopExchangeResetTop2"
         ],
-        "max_hit": 24
+        "max_hit": 6,
+        "pre_wait_freezes": 300,
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                685,
+                280,
+                20,
+                770
+            ],
+            "timeout": 1500
+        }
     },
     "DailyShopExchangeResetTop2": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "exchange"
+                }
+            }
         },
         "action": {
             "type": "Swipe",
@@ -175,49 +200,43 @@
                     360,
                     940
                 ],
-                "duration": 1000
+                "duration": 800
             }
         },
         "next": [
             "DailyShopExchangeScanTop"
         ],
-        "max_hit": 24,
+        "max_hit": 6,
         "post_wait_freezes": {
-            "time": 400,
+            "time": 300,
             "target": [
-                70,
+                685,
                 280,
-                545,
-                740
-            ]
-        }
+                20,
+                770
+            ],
+            "timeout": 1500
+        },
+        "pre_wait_freezes": 300
     },
-    "DailyShopStartSecondVerificationPass": {
+    "DailyShopExchangeShelfDone": {
         "recognition": {
             "type": "Custom",
             "param": {
-                "custom_recognition": "DailyShopNeedsSecondPass",
-                "custom_recognition_param": {}
-            }
-        },
-        "action": {
-            "type": "Custom",
-            "param": {
-                "custom_action": "DailyShopMarkVerificationPass",
-                "custom_action_param": {}
+                "custom_recognition": "DailyShopShelfDone",
+                "custom_recognition_param": {"shop": "exchange"}
             }
         },
         "next": [
-            "DailyShopOpenExchangeTab"
-        ],
-        "max_hit": 1
+            "DailyShopOpenGuildShop"
+        ]
     },
     "DailyShopExchangeScanTop": {
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopExchangeTargetItem",
-            "DailyShopExchangeSwipe1",
-            "DailyShopOpenGuildShop"
+            "DailyShopExchangeShelfDone",
+            "DailyShopExchangeSwipe1"
         ],
         "timeout": 5000,
         "action": {
@@ -225,6 +244,16 @@
             "param": {
                 "custom_action": "DailyShopSetScanPosition",
                 "custom_action_param": {
+                    "position": "top"
+                }
+            }
+        },
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "exchange",
                     "position": "top"
                 }
             }
@@ -246,64 +275,93 @@
             }
         },
         "action": {
-            "type": "Click",
+            "type": "Custom",
             "param": {
-                "target": true
+                "custom_action": "DailyShopOpenTargetDetail",
+                "custom_action_param": {}
             }
         },
         "post_wait_freezes": {
-            "time": 500,
+            "time": 300,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                77,
+                430,
+                550,
+                48
+            ],
+            "timeout": 1500
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "DailyShopPurchaseDetailInsufficient",
+            "[JumpBack]DailyShopPurchaseDetailInsufficient",
             "[JumpBack]DailyShopPurchaseCurrentItem",
             "[JumpBack]DailyShopClosePurchaseDetail",
-            "DailyShopExchangeResetTop1"
+            "DailyShopExchangeResumeTop",
+            "DailyShopExchangeResumeBottom"
         ],
-        "max_hit": 10,
-        "pre_wait_freezes": 300
+        "max_hit": 36,
+        "pre_wait_freezes": {
+            "time": 300,
+            "target": [
+                685,
+                280,
+                20,
+                770
+            ],
+            "timeout": 1500
+        },
+        "timeout": 4000
     },
     "DailyShopExchangeSwipe1": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "exchange"
+                }
+            }
         },
         "action": {
             "type": "Swipe",
             "param": {
                 "begin": [
                     360,
-                    940
+                    980
                 ],
                 "end": [
                     360,
-                    570
+                    420
                 ],
-                "duration": 1500
+                "duration": 650
             }
         },
         "post_wait_freezes": {
-            "time": 800,
+            "time": 300,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                685,
+                280,
+                20,
+                770
+            ],
+            "timeout": 1500
         },
         "next": [
+            "DailyShopExchangeScanBottom",
             "DailyShopExchangeSwipe2"
-        ]
+        ],
+        "pre_wait_freezes": 300,
+        "max_hit": 6
     },
     "DailyShopExchangeSwipe2": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "exchange"
+                }
+            }
         },
         "action": {
             "type": "Swipe",
@@ -316,27 +374,31 @@
                     360,
                     570
                 ],
-                "duration": 1500
+                "duration": 800
             }
         },
         "post_wait_freezes": {
-            "time": 800,
+            "time": 300,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                685,
+                280,
+                20,
+                770
+            ],
+            "timeout": 1500
         },
         "next": [
             "DailyShopExchangeScanBottom"
-        ]
+        ],
+        "pre_wait_freezes": 300,
+        "max_hit": 6
     },
     "DailyShopExchangeScanBottom": {
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopExchangeTargetItem",
-            "DailyShopOpenGuildShop"
+            "DailyShopExchangeShelfDone",
+            "DailyShopExchangeResetTop1"
         ],
         "timeout": 5000,
         "action": {
@@ -347,6 +409,16 @@
                     "position": "bottom"
                 }
             }
+        },
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "exchange",
+                    "position": "bottom"
+                }
+            }
         }
     },
     "DailyShopPurchaseCurrentItem": {
@@ -354,10 +426,11 @@
             "type": "And",
             "param": {
                 "all_of": [
+                    "DailyShopClosePurchaseDetail",
                     "DailyShopVerifyPurchaseDetail",
                     "__DailyShopPurchaseButton"
                 ],
-                "box_index": 1
+                "box_index": 2
             }
         },
         "action": {
@@ -370,28 +443,34 @@
         "post_wait_freezes": {
             "time": 700,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                250,
+                450,
+                220,
+                330
+            ],
+            "timeout": 2500
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopPurchaseCurrencyInsufficient",
             "DailyShopMarkTargetPurchased"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 3500,
+        "on_error": [
+            "DailyShopRecoverExchangePurchaseReward"
+        ]
     },
     "DailyShopPurchaseGuildItem": {
         "recognition": {
             "type": "And",
             "param": {
                 "all_of": [
+                    "DailyShopClosePurchaseDetail",
                     "DailyShopVerifyPurchaseDetail",
                     "__DailyShopPurchaseButton"
                 ],
-                "box_index": 1
+                "box_index": 2
             }
         },
         "action": {
@@ -404,18 +483,23 @@
         "post_wait_freezes": {
             "time": 700,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                250,
+                450,
+                220,
+                330
+            ],
+            "timeout": 2500
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopPurchaseCurrencyInsufficient",
             "DailyShopMarkGuildTargetPurchased"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 3500,
+        "on_error": [
+            "DailyShopRecoverGuildPurchaseReward"
+        ]
     },
     "DailyShopVerifyPurchaseDetail": {
         "recognition": {
@@ -431,13 +515,13 @@
             "type": "OCR",
             "param": {
                 "expected": [
-                    "购买"
+                    "^购买$"
                 ],
                 "roi": [
-                    240,
-                    760,
-                    240,
-                    110
+                    265,
+                    793,
+                    190,
+                    49
                 ]
             }
         }
@@ -457,25 +541,20 @@
             "param": {
                 "target": [
                     360,
-                    920
+                    935
                 ]
             }
         },
         "post_wait_freezes": {
-            "time": 500,
+            "time": 300,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                685,
+                280,
+                20,
+                770
+            ],
+            "timeout": 1500
         },
-        "next": [
-            "[JumpBack]CommonWaitLoading",
-            "DailyShopReturnMain",
-            "[JumpBack]CommonEnsureMain",
-            "DailyShopDone"
-        ],
         "pre_wait_freezes": 300
     },
     "__DailyShopPurchaseDetailCurrentOwnedText": {
@@ -540,11 +619,12 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "DailyShopReturnMain",
-            "[JumpBack]CommonEnsureMain",
-            "DailyShopDone"
+            "[JumpBack]DailyShopClosePurchaseDetail",
+            "__DailyShopExchangeList",
+            "__DailyShopGuildList"
         ],
-        "pre_wait_freezes": 300
+        "pre_wait_freezes": 300,
+        "timeout": 3000
     },
     "__DailyShopPurchaseCurrencyInsufficientText": {
         "recognition": {
@@ -586,13 +666,13 @@
             "type": "OCR",
             "param": {
                 "expected": [
-                    "持有"
+                    "^持有$"
                 ],
                 "roi": [
-                    450,
-                    430,
-                    190,
-                    80
+                    454,
+                    432,
+                    85,
+                    46
                 ]
             }
         },
@@ -601,18 +681,19 @@
             "param": {
                 "target": [
                     360,
-                    920
+                    935
                 ]
             }
         },
         "post_wait_freezes": {
-            "time": 500,
+            "time": 300,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                685,
+                280,
+                20,
+                770
+            ],
+            "timeout": 1500
         },
         "pre_wait_freezes": 300
     },
@@ -635,12 +716,9 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "[JumpBack]CommonCloseReward",
-            "DailyShopExchangeResetTop1"
+            "__DailyShopExchangeList"
         ],
-        "timeout": 5000,
-        "on_error": [
-            "DailyShopRecoverExchangePurchaseReward"
-        ]
+        "timeout": 5000
     },
     "DailyShopMarkGuildTargetPurchased": {
         "recognition": {
@@ -661,54 +739,25 @@
         "next": [
             "[JumpBack]CommonWaitLoading",
             "[JumpBack]CommonCloseReward",
-            "DailyShopGuildResetTop1"
+            "__DailyShopGuildList"
         ],
-        "timeout": 5000,
-        "on_error": [
-            "DailyShopRecoverGuildPurchaseReward"
-        ]
+        "timeout": 5000
     },
     "DailyShopRecoverExchangePurchaseReward": {
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    "CommonCloseReward"
-                ]
-            }
-        },
-        "action": {
-            "type": "Custom",
-            "param": {
-                "custom_action": "DailyShopMarkTargetPurchased",
-                "custom_action_param": {}
-            }
-        },
         "next": [
-            "[JumpBack]CommonCloseReward",
-            "DailyShopExchangeResetTop1"
-        ]
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]DailyShopClosePurchaseDetail",
+            "__DailyShopExchangeList"
+        ],
+        "timeout": 3000
     },
     "DailyShopRecoverGuildPurchaseReward": {
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    "CommonCloseReward"
-                ]
-            }
-        },
-        "action": {
-            "type": "Custom",
-            "param": {
-                "custom_action": "DailyShopMarkTargetPurchased",
-                "custom_action_param": {}
-            }
-        },
         "next": [
-            "[JumpBack]CommonCloseReward",
-            "DailyShopGuildResetTop1"
-        ]
+            "[JumpBack]CommonWaitLoading",
+            "[JumpBack]DailyShopClosePurchaseDetail",
+            "__DailyShopGuildList"
+        ],
+        "timeout": 3000
     },
     "__DailyShopPurchaseRewardMarker": {
         "recognition": {
@@ -760,13 +809,20 @@
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
+            "DailyShopGuildScanTop",
             "DailyShopGuildResetTop1"
         ],
         "pre_wait_freezes": 300
     },
     "DailyShopGuildResetTop1": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "guild"
+                }
+            }
         },
         "action": {
             "type": "Swipe",
@@ -779,17 +835,35 @@
                     360,
                     940
                 ],
-                "duration": 1000
+                "duration": 800
             }
         },
         "next": [
+            "DailyShopGuildScanTop",
             "DailyShopGuildResetTop2"
         ],
-        "max_hit": 24
+        "max_hit": 6,
+        "pre_wait_freezes": 300,
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                685,
+                280,
+                20,
+                770
+            ],
+            "timeout": 1500
+        }
     },
     "DailyShopGuildResetTop2": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "guild"
+                }
+            }
         },
         "action": {
             "type": "Swipe",
@@ -802,27 +876,30 @@
                     360,
                     940
                 ],
-                "duration": 1000
+                "duration": 800
             }
         },
         "next": [
             "DailyShopGuildScanTop"
         ],
-        "max_hit": 24,
+        "max_hit": 6,
         "post_wait_freezes": {
-            "time": 400,
+            "time": 300,
             "target": [
-                70,
+                685,
                 280,
-                545,
-                740
-            ]
-        }
+                20,
+                770
+            ],
+            "timeout": 1500
+        },
+        "pre_wait_freezes": 300
     },
     "DailyShopGuildScanTop": {
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopGuildTargetItem",
+            "DailyShopGuildShelfDone",
             "DailyShopGuildSwipe1"
         ],
         "timeout": 5000,
@@ -834,42 +911,68 @@
                     "position": "top"
                 }
             }
+        },
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "guild",
+                    "position": "top"
+                }
+            }
         }
     },
     "DailyShopGuildSwipe1": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "guild"
+                }
+            }
         },
         "action": {
             "type": "Swipe",
             "param": {
                 "begin": [
                     360,
-                    940
+                    980
                 ],
                 "end": [
                     360,
-                    570
+                    420
                 ],
-                "duration": 1500
+                "duration": 650
             }
         },
         "post_wait_freezes": {
-            "time": 800,
+            "time": 300,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                685,
+                280,
+                20,
+                770
+            ],
+            "timeout": 1500
         },
         "next": [
+            "DailyShopGuildScanBottom",
             "DailyShopGuildSwipe2"
-        ]
+        ],
+        "pre_wait_freezes": 300,
+        "max_hit": 6
     },
     "DailyShopGuildSwipe2": {
         "recognition": {
-            "type": "DirectHit"
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "guild"
+                }
+            }
         },
         "action": {
             "type": "Swipe",
@@ -882,28 +985,31 @@
                     360,
                     570
                 ],
-                "duration": 1500
+                "duration": 800
             }
         },
         "post_wait_freezes": {
-            "time": 800,
+            "time": 300,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                685,
+                280,
+                20,
+                770
+            ],
+            "timeout": 1500
         },
         "next": [
             "DailyShopGuildScanBottom"
-        ]
+        ],
+        "pre_wait_freezes": 300,
+        "max_hit": 6
     },
     "DailyShopGuildScanBottom": {
         "next": [
             "[JumpBack]CommonWaitLoading",
             "DailyShopGuildTargetItem",
-            "DailyShopStartSecondVerificationPass",
-            "DailyShopReturnMain"
+            "DailyShopGuildShelfDone",
+            "DailyShopGuildResetTop1"
         ],
         "timeout": 5000,
         "action": {
@@ -911,6 +1017,16 @@
             "param": {
                 "custom_action": "DailyShopSetScanPosition",
                 "custom_action_param": {
+                    "position": "bottom"
+                }
+            }
+        },
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "guild",
                     "position": "bottom"
                 }
             }
@@ -932,29 +1048,55 @@
             }
         },
         "action": {
-            "type": "Click",
+            "type": "Custom",
             "param": {
-                "target": true
+                "custom_action": "DailyShopOpenTargetDetail",
+                "custom_action_param": {}
             }
         },
         "post_wait_freezes": {
-            "time": 500,
+            "time": 300,
             "target": [
-                0,
-                0,
-                0,
-                0
-            ]
+                77,
+                430,
+                550,
+                48
+            ],
+            "timeout": 1500
         },
         "next": [
             "[JumpBack]CommonWaitLoading",
-            "DailyShopPurchaseDetailInsufficient",
+            "[JumpBack]DailyShopPurchaseDetailInsufficient",
             "[JumpBack]DailyShopPurchaseGuildItem",
             "[JumpBack]DailyShopClosePurchaseDetail",
-            "DailyShopGuildResetTop1"
+            "DailyShopGuildResumeTop",
+            "DailyShopGuildResumeBottom"
         ],
-        "max_hit": 10,
-        "pre_wait_freezes": 300
+        "max_hit": 36,
+        "pre_wait_freezes": {
+            "time": 300,
+            "target": [
+                685,
+                280,
+                20,
+                770
+            ],
+            "timeout": 1500
+        },
+        "timeout": 4000
+    },
+    "DailyShopGuildShelfDone": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopShelfDone",
+                "custom_recognition_param": {"shop": "guild"}
+            }
+        },
+        "next": [
+            "[JumpBack]CommonWaitLoading",
+            "DailyShopReturnMain"
+        ]
     },
     "DailyShopReturnMain": {
         "recognition": {
@@ -995,6 +1137,15 @@
             "DailyShopReturnMain"
         ]
     },
+    "__DailyShopSoldOutBanner": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": ["DailyShop/SoldOutBanner.png"],
+                "threshold": [0.9]
+            }
+        }
+    },
     "__DailyShopMainButton": {
         "recognition": {
             "type": "OCR",
@@ -1019,5 +1170,87 @@
             }
         },
         "pre_wait_freezes": 300
+    },
+    "__DailyShopExchangeList": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "exchange"
+                }
+            }
+        }
+    },
+    "DailyShopExchangeResumeTop": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "exchange",
+                    "position": "top"
+                }
+            }
+        },
+        "next": [
+            "DailyShopExchangeScanTop"
+        ]
+    },
+    "DailyShopExchangeResumeBottom": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "exchange",
+                    "position": "bottom"
+                }
+            }
+        },
+        "next": [
+            "DailyShopExchangeScanBottom"
+        ]
+    },
+    "__DailyShopGuildList": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "guild"
+                }
+            }
+        }
+    },
+    "DailyShopGuildResumeTop": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "guild",
+                    "position": "top"
+                }
+            }
+        },
+        "next": [
+            "DailyShopGuildScanTop"
+        ]
+    },
+    "DailyShopGuildResumeBottom": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "DailyShopListReady",
+                "custom_recognition_param": {
+                    "shop": "guild",
+                    "position": "bottom"
+                }
+            }
+        },
+        "next": [
+            "DailyShopGuildScanBottom"
+        ]
     }
 }

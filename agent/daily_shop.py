@@ -1,4 +1,8 @@
-from difflib import SequenceMatcher
+import re
+import unicodedata
+from dataclasses import dataclass
+
+import numpy as np
 
 from bootstrap import configure_runtime
 
@@ -12,299 +16,313 @@ from maa.pipeline import JOCR
 from common import safe_json_loads
 
 
-SHOP_SLOTS = [
-    {
-        "name": "top_left",
-        "card_roi": (70, 280, 182, 365),
-        "click_box": (70, 280, 182, 365),
-    },
-    {
-        "name": "top_middle",
-        "card_roi": (255, 280, 180, 365),
-        "click_box": (255, 280, 180, 365),
-    },
-    {
-        "name": "top_right",
-        "card_roi": (435, 280, 180, 365),
-        "click_box": (435, 280, 180, 365),
-    },
-    {
-        "name": "bottom_left",
-        "card_roi": (70, 650, 182, 370),
-        "click_box": (70, 650, 182, 370),
-    },
-    {
-        "name": "bottom_middle",
-        "card_roi": (255, 650, 180, 370),
-        "click_box": (255, 650, 180, 370),
-    },
-    {
-        "name": "bottom_right",
-        "card_roi": (435, 650, 180, 370),
-        "click_box": (435, 650, 180, 370),
-    },
-]
+PRIORITY_ITEMS = {
+    "exchange": {"紧急录用证", "招募命令"},
+    "guild": {"召唤契约", "魔晶石", "阿克色记录"},
+}
+TITLE_ROI = (78, 432, 375, 44)
+SOLD_OUT = "sold_out"
+UNCERTAIN = "uncertain"
+NO_BANNER = "no_banner"
+MAX_UNREAD_PROBES = 2
+_MIDDLE = (0, 0, 1, 1)
 
-_HANDLED_ITEM_KEYS = set()
-_PURCHASE_ATTEMPT_SLOTS = set()
-_PURCHASED_SLOTS = set()
-_PENDING_TARGET = None
-_VERIFICATION_PASSES = 0
+
+@dataclass(frozen=True)
+class Target:
+    name: str
+    priority: bool
+
+
+@dataclass(frozen=True)
+class Card:
+    slot: int
+    title: str
+    box: tuple[int, int, int, int]
+    stock: str = NO_BANNER
+
+    @property
+    def origin(self):
+        return self.box[0] - 40, self.box[1] - 74
+
+
+@dataclass(frozen=True)
+class Pending:
+    shop: str
+    position: str
+    card: Card
+    target: Target
+    match: str
+    terms: tuple[int, int] | None = None
+
+    @property
+    def key(self):
+        return (self.shop, self.position, self.card.slot)
+
+
+_SHELVES = {}
+_OUTCOMES = {}
+_UNREAD_PROBES = {}
+_PENDING = None
+_VERIFIED_TITLE = ""
+_DONE_SHOP = None
 _SCAN_POSITION = "top"
 
 
-def _is_word_char(ch):
-    return ch.isalnum() or "\u4e00" <= ch <= "\u9fff"
+def _params(raw):
+    value = raw if isinstance(raw, dict) else safe_json_loads(raw, {})
+    return value if isinstance(value, dict) else {}
 
 
 def _normalize_text(text):
-    return "".join(ch for ch in str(text or "") if _is_word_char(ch)).lower()
+    return "".join(ch for ch in unicodedata.normalize("NFKC", str(text or "")) if ch.isalnum()).casefold()
 
 
-def _target_matches(target, item_text):
-    """Allow explicit fragments and tolerate one-character OCR mistakes."""
-    target = _normalize_text(target)
-    item_text = _normalize_text(item_text)
-    item_text = item_text.rstrip("0123456789")
-    if not target or not item_text:
-        return False
-
-    shorter = min(len(target), len(item_text))
-    if shorter >= 2 and (target in item_text or item_text in target):
-        return True
-    if shorter < 3:
-        return False
-
-    matcher = SequenceMatcher(None, target, item_text)
-    longest = matcher.find_longest_match(0, len(target), 0, len(item_text)).size
-    ratio = matcher.ratio()
-    one_substitution = abs(len(target) - len(item_text)) <= 1 and ratio >= 0.66
-    return one_substitution or (ratio >= 0.62 and longest >= 2)
-
-
-def _split_targets(raw_targets):
-    if isinstance(raw_targets, list):
-        return raw_targets
-    if not isinstance(raw_targets, str):
-        return []
-
-    targets = []
-    current = []
-    for ch in raw_targets:
-        if _is_word_char(ch):
-            current.append(ch)
-        elif current:
-            targets.append("".join(current))
-            current = []
-    if current:
-        targets.append("".join(current))
-    return targets
-
-
-def _parse_targets(raw_targets):
-    targets = []
-    seen = set()
-    for candidate in _split_targets(raw_targets):
-        normalized = _normalize_text(candidate)
-        if normalized and normalized not in seen:
-            seen.add(normalized)
-            targets.append({"raw": str(candidate), "normalized": normalized})
-    return targets
-
-
-def _ocr_results(context, image, roi, expected=None, threshold=0.3, *, only_rec=True):
-    detail = context.run_recognition_direct(
-        "OCR",
-        JOCR(expected=expected or [], roi=tuple(roi), threshold=threshold, only_rec=only_rec),
-        image,
-    )
-    return list(getattr(detail, "all_results", []) or [])
-
-
-def _text_results(results):
-    texts = []
-    for result in results:
-        text = getattr(result, "text", "")
-        if text:
-            texts.append(text)
-    return texts
-
-
-def _sold_out_texts(texts):
-    # Card artwork also contains English (for example ROLE HIRE). Prefer
-    # trying the detail page unless the OCR contains a known sold-out banner.
-    normalized = _normalize_text("".join(texts))
-    if "soldout" not in normalized and "currently" not in normalized:
-        return []
-
-    markers = [text for text in texts if any(marker in _normalize_text(text) for marker in ("soldout", "currently"))]
-    return markers or texts
-
-
-def _slot_texts(context, image, slot):
-    # One detection pass reads the item name and any sold-out banner from the
-    # whole card. The ROI includes the 13-15 px shift between list endpoints.
-    return _text_results(
-        _ocr_results(context, image, slot["card_roi"], threshold=0.2, only_rec=False)
-    )
-
-
-def _read_visible_items(context, image, targets):
-    visible = []
-    for slot in SHOP_SLOTS:
-        texts = _slot_texts(context, image, slot)
-        normalized = _normalize_text("".join(texts))
-        sold_out_texts = _sold_out_texts(texts)
-        if not normalized:
+def _parse_targets(raw, shop):
+    if isinstance(raw, str):
+        raw = re.findall(r"!?[^\W_]+", unicodedata.normalize("NFKC", raw))
+    if not isinstance(raw, list):
+        return ()
+    targets = {}
+    for entry in raw:
+        entry = unicodedata.normalize("NFKC", str(entry)).strip()
+        name = _normalize_text(entry)
+        if len(name) < 2:
             continue
-        visible.append(
-            {
-                "slot": slot["name"],
-                "texts": texts,
-                "text": "".join(texts),
-                "normalized": normalized,
-                "normalized_texts": [_normalize_text(text) for text in texts],
-                "sold_out": bool(sold_out_texts),
-                "sold_out_texts": sold_out_texts,
-                "box": slot["click_box"],
-            }
-        )
-    return visible
+        priority = entry.startswith("!") or name in PRIORITY_ITEMS.get(shop, ())
+        targets[name] = targets.get(name, False) or priority
+    return tuple(Target(name, priority) for name, priority in targets.items())
 
 
-def _item_key(shop_id, target, item):
-    return (shop_id, target["normalized"], _SCAN_POSITION, item["slot"])
-
-
-def _pending_detail_matches(context, image):
-    if not _PENDING_TARGET:
-        return CustomRecognition.AnalyzeResult(box=None, detail={"reason": "no_pending_item"})
-
-    shop_id, target_name, position, slot_name = _PENDING_TARGET
-    results = _ocr_results(context, image, (70, 400, 580, 85), threshold=0.3, only_rec=False)
-    texts = _text_results(results)
-    matched_result = next(
-        (
-            result
-            for result in results
-            if _target_matches(target_name, getattr(result, "text", ""))
-        ),
-        None,
+def _ocr(context, image, roi, *, only_rec=True):
+    detail = context.run_recognition_direct(
+        "OCR", JOCR(roi=roi, threshold=0.3, only_rec=only_rec), image
     )
+    return [result for result in (getattr(detail, "all_results", None) or []) if getattr(result, "text", "")]
+
+
+def _list_state(image, shop):
+    if not isinstance(image, np.ndarray) or image.shape != (1280, 720, 3):
+        return None
+    # The selected tab is cyan, and the light thumb spans ~388 px on the four-row list.
+    # Reject shifted/longer layouts rather than using endpoint slot IDs on the wrong cards.
+    x = 124 if shop == "exchange" else 482
+    tab = image[195:222, x:x + 10].astype(np.int16)
+    if not (np.median(tab[:, :, 0] - tab[:, :, 2]) > 45 and np.median(tab[:, :, 1]) > 100):
+        return None
+    rail = image[280:1048, 692:700]
+    rows = np.flatnonzero(np.count_nonzero(np.min(rail, axis=2) >= 195, axis=1) >= 6) + 280
+    if not (365 <= len(rows) <= 410 and rows[-1] - rows[0] + 1 <= len(rows) + 3):
+        return None
+    if rows[0] <= 291:
+        return "top"
+    if rows[-1] >= 1037:
+        return "bottom"
+    return "middle"
+
+
+def _stock(context, image, x, y):
+    node = "__DailyShopSoldOutBanner"
+    roi = [x, y + 118, 170, 101]
+    result = context.run_recognition(node, image, {node: {"recognition": {"param": {"roi": roi}}}})
+    if result and result.hit:
+        return SOLD_OUT
+    if result is None or any(match.score >= 0.55 for match in (result.all_results or [])):
+        return UNCERTAIN
+    return NO_BANNER
+
+
+def _slots(position):
+    for row, y in enumerate((304, 675) if position == "top" else (291, 662)):
+        for col, x in enumerate((78, 259, 440)):
+            yield row * 3 + col, x, y
+
+
+def _read_slot(context, image, slot, x, y):
+    strip = image[y + 305:y + 327, x + 61:x + 102].astype(np.int16)
+    if np.median(strip[:, :, 0] - strip[:, :, 2]) < 45:
+        return None
+    roi = (x, y + 264, 170, 33)
+    results = _ocr(context, image, roi)
+    title = _normalize_text(results[0].text) if results else ""
+    if len(title) < 2:
+        results = _ocr(context, image, roi, only_rec=False)
+        title = _normalize_text(results[0].text) if results else ""
+    return Card(slot, title, (x + 40, y + 74, 90, 140), _stock(context, image, x, y))
+
+
+def _read_shelf(context, image, shop, position):
+    shelf = _SHELVES.setdefault((shop, position), {})
+    reads = 0
+    for slot, x, y in _slots(position):
+        # Title and price are stable; only the artwork and surrounding background animate.
+        signature = image[y + 268:y + 328, x + 5:x + 166:2]
+        if slot in shelf and np.mean(np.abs(shelf[slot][1] - signature)) < 3:
+            continue
+        shelf[slot] = (_read_slot(context, image, slot, x, y), signature.astype(np.int16))
+        reads += 1
+    return reads
+
+
+def _one_edit(left, right):
+    if min(len(left), len(right)) < 3 or abs(len(left) - len(right)) > 1:
+        return False
+    if len(left) == len(right):
+        return len(left) >= 4 and sum(a != b for a, b in zip(left, right)) == 1
+    short, long = sorted((left, right), key=len)
+    return any(short == long[:i] + long[i + 1:] for i in range(len(long)))
+
+
+def _cards(shop, position):
+    return [card for card, _ in _SHELVES.get((shop, position), {}).values() if card is not None]
+
+
+def _match(card, target):
+    if card.title == target.name:
+        return "exact"
+    if not target.priority and target.name in card.title:
+        return "fragment"
+    if _one_edit(card.title, target.name):
+        return "weak"
+    return None
+
+
+def _unresolved_priority(shop, targets):
+    sold = {c.title for pos in ("top", "bottom") for c in _cards(shop, pos) if c.stock == SOLD_OUT}
+    checked = {title for key, (state, title) in _OUTCOMES.items() if key[0] == shop
+               and state in ("purchased", "attempted")}
+    return [t for t in targets if t.priority and t.name not in sold | checked]
+
+
+def _select_card(shop, position, targets, *, priority):
+    cards = [c for c in _cards(shop, position)
+             if c.stock != SOLD_OUT and (shop, position, c.slot) not in _OUTCOMES]
+    relevant = [t for t in targets if t.priority == priority]
+    for rank in ("exact", "fragment", "weak"):
+        for target in relevant:
+            for card in cards:
+                if _match(card, target) != rank:
+                    continue
+                if rank == "weak" and (
+                    any(t.name == card.title for t in targets)
+                    or sum(_match(card, t) == "weak" for t in relevant) != 1
+                ):
+                    continue
+                return Pending(shop, position, card, target, rank)
+    if priority and _UNREAD_PROBES.get(shop, 0) < MAX_UNREAD_PROBES:
+        unresolved = _unresolved_priority(shop, targets)
+        if len(unresolved) == 1:
+            for card in cards:
+                if len(card.title) < 2:
+                    return Pending(shop, position, card, unresolved[0], "unread")
+    return None
+
+
+def _number(context, image, roi, *, only_rec=True):
+    values = []
+    for result in _ocr(context, image, roi, only_rec=only_rec):
+        text = unicodedata.normalize("NFKC", result.text).replace(",", "").strip()
+        match = re.fullmatch(r"[x×]?\s*([0-9]+)", text, flags=re.IGNORECASE)
+        if match:
+            values.append(int(match[1]))
+    return values[0] if len(values) == 1 and values[0] > 0 else None
+
+
+def _card_terms(context, image, card):
+    x, y = card.origin
+    price = _number(context, image, (x + 60, y + 302, 103, 33))
+    quantity = _number(context, image, (x + 80, y + 188, 88, 33))
+    return (price, quantity) if price and quantity else None
+
+
+def _detail_terms_match(context, image, shop, terms):
+    icon = image[752:776, 484:528].astype(np.int16)
+    b, g, r = icon.transpose(2, 0, 1)
+    color = (r - g > 65) & (r - b > 45) if shop == "exchange" else (g - r > 30) & (g - b > 20)
+    if np.count_nonzero(color) < 20:
+        return False
+    price = _number(context, image, (529, 747, 98, 37))
+    quantity = _number(context, image, (145, 609, 108, 46), only_rec=False)
+    return (price, quantity) == terms
+
+
+def _analyze_target_item(context, argv, shop):
+    global _PENDING, _VERIFIED_TITLE, _DONE_SHOP
+    _PENDING = None
+    _VERIFIED_TITLE = ""
+    _DONE_SHOP = None
+    position = _SCAN_POSITION
+    if _list_state(argv.image, shop) != position:
+        return CustomRecognition.AnalyzeResult(box=None, detail={"reason": "unexpected_list_position"})
+
+    params = _params(argv.custom_recognition_param)
+    targets = _parse_targets(params.get("target_names", ""), shop)
+    other = "bottom" if position == "top" else "top"
+    reads = _read_shelf(context, argv.image, shop, position) if targets else 0
+    other_scanned = (shop, other) in _SHELVES
+    other_priority = _select_card(shop, other, targets, priority=True)
+    while True:
+        candidate = _select_card(shop, position, targets, priority=True)
+        waiting_for_other = not other_scanned and bool(_unresolved_priority(shop, targets))
+        if not candidate and not other_priority and not waiting_for_other:
+            candidate = _select_card(shop, position, targets, priority=False)
+        if not candidate:
+            break
+        card = candidate.card
+        # Validate only the next candidate; a banner may have changed after a purchase.
+        if _stock(context, argv.image, *card.origin) == SOLD_OUT:
+            _, signature = _SHELVES[(shop, position)][card.slot]
+            _SHELVES[(shop, position)][card.slot] = (Card(card.slot, card.title, card.box, SOLD_OUT), signature)
+            continue
+        duplicate = bool(card.title) and sum(
+            c.title == card.title for pos in ("top", "bottom") for c in _cards(shop, pos)
+        ) > 1
+        terms = _card_terms(context, argv.image, card) if duplicate else None
+        if duplicate and not terms:
+            _OUTCOMES[candidate.key] = ("terms_unread", card.title)
+            continue
+        _PENDING = Pending(shop, position, card, candidate.target, candidate.match, terms)
+        break
+    if not _PENDING and (not targets or (
+        other_scanned and not other_priority and not _select_card(shop, other, targets, priority=False)
+    )):
+        _DONE_SHOP = shop
+
     return CustomRecognition.AnalyzeResult(
-        box=getattr(matched_result, "box", None),
+        box=_PENDING.card.box if _PENDING else None,
         detail={
-            "shop_id": shop_id,
-            "slot": slot_name,
+            "shop": shop,
             "position": position,
-            "target": target_name,
-            "texts": texts,
-            "matched": matched_result is not None,
+            "slot_reads": reads,
+            "cards": [{"slot": c.slot, "title": c.title, "stock": c.stock} for c in _cards(shop, position)],
+            "slot": _PENDING.card.slot if _PENDING else None,
+            "candidate": _PENDING.target.name if _PENDING else None,
+            "match": _PENDING.match if _PENDING else None,
+            "terms": _PENDING.terms if _PENDING else None,
+            "priority_unresolved": [t.name for t in _unresolved_priority(shop, targets)],
+            "outcomes": [{"position": key[1], "slot": key[2], "status": status, "title": title}
+                         for key, (status, title) in _OUTCOMES.items() if key[0] == shop],
+            "done": _DONE_SHOP == shop,
         },
     )
 
 
-def _analyze_target_item(context, argv, default_shop_id):
-    global _PENDING_TARGET
-
-    raw_param = argv.custom_recognition_param
-    param = raw_param if isinstance(raw_param, dict) else safe_json_loads(raw_param, {})
-    targets = _parse_targets(param.get("target_names", param.get("targets", "")))
-    shop_id = str(param.get("shop_id", default_shop_id))
-    raw_targets = [target["raw"] for target in targets]
-    visible = _read_visible_items(context, argv.image, targets)
-    skipped = []
-
-    for target in targets:
-        normalized_target = target["normalized"]
-        for item in visible:
-            texts = item["normalized_texts"]
-            if not texts:
-                continue
-            if any(_target_matches(normalized_target, text) for text in texts):
-                if item["sold_out"]:
-                    skipped.append(
-                        {
-                            "target": target["raw"],
-                            "slot": item["slot"],
-                            "reason": "sold_out",
-                            "texts": item["texts"],
-                            "sold_out_texts": item["sold_out_texts"],
-                        }
-                    )
-                    continue
-
-                key = _item_key(shop_id, target, item)
-                slot_key = (shop_id, _SCAN_POSITION, item["slot"])
-                if slot_key in _PURCHASE_ATTEMPT_SLOTS:
-                    skipped.append(
-                        {"target": target["raw"], "slot": item["slot"], "reason": "purchase_limit_reached"}
-                    )
-                    continue
-                if key in _HANDLED_ITEM_KEYS or slot_key in _PURCHASED_SLOTS:
-                    skipped.append(
-                        {
-                            "target": target["raw"],
-                            "slot": item["slot"],
-                            "reason": "already_handled",
-                            "texts": item["texts"],
-                        }
-                    )
-                    continue
-
-                _PENDING_TARGET = key
-                return CustomRecognition.AnalyzeResult(
-                    box=item["box"],
-                    detail={
-                        "target": target["raw"],
-                        "shop_id": shop_id,
-                        "slot": item["slot"],
-                        "position": _SCAN_POSITION,
-                        "visible": [entry["text"] for entry in visible],
-                        "items": [
-                            {
-                                "slot": entry["slot"],
-                                "text": entry["text"],
-                                "sold_out": entry["sold_out"],
-                                "sold_out_texts": entry["sold_out_texts"],
-                            }
-                            for entry in visible
-                        ],
-                        "targets": raw_targets,
-                        "skipped": skipped,
-                    },
-                )
-
-    return CustomRecognition.AnalyzeResult(
-        box=None,
-        detail={
-            "reason": "no_target_visible",
-            "shop_id": shop_id,
-            "visible": [entry["text"] for entry in visible],
-            "items": [
-                {
-                    "slot": entry["slot"],
-                    "text": entry["text"],
-                    "sold_out": entry["sold_out"],
-                    "sold_out_texts": entry["sold_out_texts"],
-                }
-                for entry in visible
-            ],
-            "targets": raw_targets,
-            "skipped": skipped,
-        },
-    )
+def _detail_matches(pending, title):
+    if pending.match == "fragment":
+        return title == pending.card.title and pending.target.name in title
+    return title == pending.target.name
 
 
 @AgentServer.custom_action("DailyShopResetExchangeSession")
 class DailyShopResetExchangeSession(CustomAction):
     def run(self, context, argv):
-        global _HANDLED_ITEM_KEYS, _PENDING_TARGET, _VERIFICATION_PASSES, _SCAN_POSITION
-        _HANDLED_ITEM_KEYS = set()
-        _PURCHASE_ATTEMPT_SLOTS.clear()
-        _PURCHASED_SLOTS.clear()
-        _PENDING_TARGET = None
-        _VERIFICATION_PASSES = 0
+        global _PENDING, _VERIFIED_TITLE, _DONE_SHOP, _SCAN_POSITION
+        _SHELVES.clear()
+        _OUTCOMES.clear()
+        _UNREAD_PROBES.clear()
+        _PENDING = None
+        _VERIFIED_TITLE = ""
+        _DONE_SHOP = None
         _SCAN_POSITION = "top"
         return True
 
@@ -312,60 +330,76 @@ class DailyShopResetExchangeSession(CustomAction):
 @AgentServer.custom_action("DailyShopSetScanPosition")
 class DailyShopSetScanPosition(CustomAction):
     def run(self, context, argv):
-        global _SCAN_POSITION
-        raw_param = argv.custom_action_param
-        if isinstance(raw_param, dict):
-            param = raw_param
-        elif isinstance(raw_param, str):
-            param = safe_json_loads(raw_param, {})
-        else:
-            param = {}
-        if not isinstance(param, dict):
-            return False
-        position = param.get("position")
+        global _SCAN_POSITION, _PENDING, _VERIFIED_TITLE
+        position = _params(argv.custom_action_param).get("position")
         if position not in ("top", "bottom"):
             return False
         _SCAN_POSITION = position
+        _PENDING = None
+        _VERIFIED_TITLE = ""
         return True
 
 
-@AgentServer.custom_action("DailyShopMarkVerificationPass")
-class DailyShopMarkVerificationPass(CustomAction):
-    def run(self, context, argv):
-        global _VERIFICATION_PASSES
-        if _VERIFICATION_PASSES == 0:
-            _PURCHASE_ATTEMPT_SLOTS.clear()
-        _VERIFICATION_PASSES += 1
-        return True
-
-
-@AgentServer.custom_recognition("DailyShopNeedsSecondPass")
-class DailyShopNeedsSecondPass(CustomRecognition):
+@AgentServer.custom_recognition("DailyShopListReady")
+class DailyShopListReady(CustomRecognition):
     def analyze(self, context, argv):
-        return CustomRecognition.AnalyzeResult(
-            box=(0, 0, 1, 1) if _VERIFICATION_PASSES == 0 else None,
-            detail={"verification_passes": _VERIFICATION_PASSES},
-        )
+        param = _params(argv.custom_recognition_param)
+        shop = param.get("shop")
+        position = _list_state(argv.image, shop) if shop in PRIORITY_ITEMS else None
+        matched = position is not None and param.get("position", position) == position
+        return CustomRecognition.AnalyzeResult(box=_MIDDLE if matched else None, detail={"position": position})
+
+
+@AgentServer.custom_recognition("DailyShopShelfDone")
+class DailyShopShelfDone(CustomRecognition):
+    def analyze(self, context, argv):
+        shop = _params(argv.custom_recognition_param).get("shop")
+        matched = shop in PRIORITY_ITEMS and shop == _DONE_SHOP and _list_state(argv.image, shop) == _SCAN_POSITION
+        return CustomRecognition.AnalyzeResult(box=_MIDDLE if matched else None, detail={"shop": shop, "done": matched})
+
+
+@AgentServer.custom_action("DailyShopOpenTargetDetail")
+class DailyShopOpenTargetDetail(CustomAction):
+    def run(self, context, argv):
+        if not _PENDING or _PENDING.key in _OUTCOMES or tuple(argv.box) != _PENDING.card.box:
+            return False
+        _OUTCOMES[_PENDING.key] = ("opened_unverified", _PENDING.card.title)
+        if _PENDING.match == "unread":
+            _UNREAD_PROBES[_PENDING.shop] = _UNREAD_PROBES.get(_PENDING.shop, 0) + 1
+        result = context.run_action("__DailyShopPurchaseClick", box=argv.box)
+        return bool(result and result.success)
 
 
 @AgentServer.custom_recognition("DailyShopVerifyPurchaseDetail")
 class DailyShopVerifyPurchaseDetail(CustomRecognition):
     def analyze(self, context, argv):
-        return _pending_detail_matches(context, argv.image)
+        global _VERIFIED_TITLE
+        _VERIFIED_TITLE = ""
+        if not _PENDING or _OUTCOMES.get(_PENDING.key, (None,))[0] != "opened_unverified":
+            return CustomRecognition.AnalyzeResult(box=None, detail={"reason": "no_opened_candidate"})
+
+        results = _ocr(context, argv.image, TITLE_ROI, only_rec=False)
+        titles = {_normalize_text(r.text) for r in results if _normalize_text(r.text)}
+        if _PENDING.target.priority and not titles:
+            results += _ocr(context, argv.image, TITLE_ROI)
+            titles = {_normalize_text(r.text) for r in results if _normalize_text(r.text)}
+        if len(titles) == 1 and _detail_matches(_PENDING, next(iter(titles))):
+            if not _PENDING.terms or _detail_terms_match(context, argv.image, _PENDING.shop, _PENDING.terms):
+                _VERIFIED_TITLE = next(iter(titles))
+        match = next((r for r in results if _VERIFIED_TITLE and _normalize_text(r.text) == _VERIFIED_TITLE), None)
+        return CustomRecognition.AnalyzeResult(
+            box=getattr(match, "box", None),
+            detail={"matched": _VERIFIED_TITLE, "texts": [r.text for r in results]},
+        )
 
 
 @AgentServer.custom_action("DailyShopPurchaseOnce")
 class DailyShopPurchaseOnce(CustomAction):
     def run(self, context, argv):
-        if not _PENDING_TARGET:
+        if not _PENDING or not _VERIFIED_TITLE or _OUTCOMES.get(_PENDING.key, (None,))[0] != "opened_unverified":
             return False
-        shop_id, _, position, slot = _PENDING_TARGET
-        slot_key = (shop_id, position, slot)
-        if slot_key in _PURCHASE_ATTEMPT_SLOTS or slot_key in _PURCHASED_SLOTS:
-            return False
-        # Reserve before dispatch: a failed/uncertain click must not be retried
-        # in this pass, even when reward recognition never records a purchase.
-        _PURCHASE_ATTEMPT_SLOTS.add(slot_key)
+        # Reserve before dispatch. An unconfirmed outcome never authorizes another click.
+        _OUTCOMES[_PENDING.key] = ("attempted", _VERIFIED_TITLE)
         result = context.run_action("__DailyShopPurchaseClick", box=argv.box)
         return bool(result and result.success)
 
@@ -373,12 +407,8 @@ class DailyShopPurchaseOnce(CustomAction):
 @AgentServer.custom_action("DailyShopMarkTargetPurchased")
 class DailyShopMarkTargetPurchased(CustomAction):
     def run(self, context, argv):
-        global _PENDING_TARGET
-        if _PENDING_TARGET:
-            _HANDLED_ITEM_KEYS.add(_PENDING_TARGET)
-            shop_id, _, position, slot = _PENDING_TARGET
-            _PURCHASED_SLOTS.add((shop_id, position, slot))
-            _PENDING_TARGET = None
+        if _PENDING and _OUTCOMES.get(_PENDING.key, (None,))[0] == "attempted" and _VERIFIED_TITLE:
+            _OUTCOMES[_PENDING.key] = ("purchased", _VERIFIED_TITLE)
         return True
 
 
