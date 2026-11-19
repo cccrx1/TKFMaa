@@ -9,7 +9,7 @@ import re
 import subprocess
 import sys
 
-from package_resources import ROOT, digest
+from frontend_build import ROOT
 
 
 TARGETS = tuple(f"{os_name}-{arch}" for os_name in ("win", "osx", "linux") for arch in ("x64", "arm64"))
@@ -26,7 +26,8 @@ def write_json(path: Path, value: dict) -> None:
 
 def compatibility_fingerprint(policy: dict) -> str:
     contract = {key: policy[key] for key in ("id", "python", "maafw", "frontend", "dependencies")}
-    return digest(json.dumps(contract, sort_keys=True, separators=(",", ":")).encode())
+    encoded = json.dumps(contract, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def version_key(version: str) -> tuple:

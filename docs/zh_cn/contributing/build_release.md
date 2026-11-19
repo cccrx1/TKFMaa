@@ -51,7 +51,7 @@
 
 ## 发布产物与失败续发
 
-发布流程将下载的附件放在 `build/full-release-assets/`，生成的 ZIP 放在 `build/full-release-zips/`。如果八个目标均已构建成功、原发布流程已通过验包，随后在上传前失败，可在该版本已获发布授权时手工运行 `finalize_full_release.yml`，提供原版本和运行编号。该流程核对标签提交和原运行，重新验包后发布同一批附件。只有 Release 尚未创建时才能续发。两个发布入口共用 `tkfmaa-full-release-publish` 并发组。
+发布流程将下载的附件放在 `build/full-release-assets/`，生成的 ZIP 放在 `build/full-release-zips/`。如果八个目标均已构建成功、原发布任务已执行验包步骤，但整次运行失败且 Release 尚未创建，可在该版本已获发布授权时手工运行 `finalize_full_release.yml`，提供原版本和运行编号。该流程核对标签提交和原运行，重新验包成功后发布同一批附件。预发布标签会创建预发布 Release。两个发布入口共用 `tkfmaa-full-release-publish` 并发组。
 
 ## 源码与产物隔离
 
