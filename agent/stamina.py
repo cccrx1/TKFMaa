@@ -8,7 +8,7 @@ configure_runtime()
 from maa.agent.agent_server import AgentServer
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
-from maa.pipeline import JOCR
+from maa.pipeline import JClick, JOCR
 
 from common import safe_json_loads
 
@@ -120,11 +120,13 @@ class DailyStaminaConfigureCustom(CustomAction):
         return context.override_pipeline(override)
 
 
-def _parse_stamina_text(text):
-    normalized = text.replace(" ", "").replace("\\", "/").replace("|", "/")
-    match = re.search(r"(\d{1,4})/(\d{1,4})", normalized)
+def _parse_stamina_text(text, *, require_ratio=False):
+    normalized = re.sub(r"\s+", "", text).replace("\\", "/").replace("|", "/").replace("／", "/")
+    match = (re.fullmatch if require_ratio else re.search)(r"(\d{1,4})/(\d{1,4})", normalized)
     if match:
         return int(match.group(1))
+    if require_ratio:
+        return None
 
     numbers = re.findall(r"\d+", normalized)
     if not numbers:
@@ -136,6 +138,42 @@ def _parse_stamina_text(text):
                 return int(compact[: -len(capacity)])
         return int(compact)
     return int(numbers[0])
+
+
+@AgentServer.custom_action("DailyStaminaOpenPotionRefill")
+class DailyStaminaOpenPotionRefill(CustomAction):
+    def run(self, context, argv):
+        reading = next(
+            (
+                part for part in (argv.reco_detail.raw_detail or [])
+                if part.get("name") == "DailyStaminaPresetStaminaLow"
+            ),
+            {},
+        )
+        texts = reading.get("detail", {}).get("best", {}).get("detail", {}).get("texts", [])
+        stamina = _parse_stamina_text(" ".join(texts), require_ratio=True)
+        if stamina is None:
+            logging.getLogger(__name__).warning("用药前未读到完整体力数值，停止补充")
+            return False
+
+        if not context.override_pipeline({
+            "__DailyStaminaPotionStaminaIncreased": {
+                "recognition": {
+                    "type": "Custom",
+                    "param": {
+                        "custom_recognition": "DailyStaminaCompare",
+                        "custom_recognition_param": {
+                            "cost": stamina + 1,
+                            "require_ratio": True,
+                            "stamina_roi": reading["box"],
+                        },
+                    },
+                },
+            },
+        }):
+            return False
+        action = context.run_action_direct("Click", JClick(), box=argv.box)
+        return bool(action and action.success)
 
 
 @AgentServer.custom_recognition("DailyStaminaCompare")
@@ -164,7 +202,7 @@ class DailyStaminaCompare(CustomRecognition):
                 if text:
                     texts.append(text)
 
-        stamina = _parse_stamina_text(" ".join(texts))
+        stamina = _parse_stamina_text(" ".join(texts), require_ratio=param.get("require_ratio", False))
         if stamina is None:
             return CustomRecognition.AnalyzeResult(
                 box=None,

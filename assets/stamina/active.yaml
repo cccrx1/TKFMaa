@@ -63,7 +63,17 @@ activities:
         expected: ["Lv.10", "Lv.15", "Lv.20", "Lv.30", "Lv.45", "Lv.60"]
         roi: [70, 80, 120, 1080]
     stamina:
-      cost: 4
+      cost: 1
+    extra_overrides:
+      DailyStaminaReturnMainWhenNoEntryTicket:
+        enabled: true
+      DailyStaminaPresetEntryTicketReady:
+        recognition:
+          type: OCR
+          param:
+            expected: ['^[1-3]\s*[/／|]\s*3$']
+            roi: [366, 5, 78, 35]
+            only_rec: true
 
 activity_groups:
   new_world_adventure:

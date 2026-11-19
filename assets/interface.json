@@ -76,8 +76,8 @@
                 "扫荡不足时手动补刷@2"
             ],
             "doc": [
-                "从主界面进入限时活动，按所选关卡配置寻找活动、入口图标和关卡名。",
-                "进入关卡详情后优先使用军团扫荡最大次数；扫荡券不足时可选是否手动补刷（没测试过）。"
+                "从主界面按所选配置进入活动和关卡，检查体力与适用的入场券。",
+                "优先军团扫荡；开启手动补刷后，仍能开战时可继续刷同一关卡。"
             ]
         },
         {
@@ -1498,7 +1498,7 @@
                                     "custom_recognition": "DailyStaminaCompare",
                                     "custom_recognition_param": {
                                         "mode": "enough",
-                                        "cost": 4,
+                                        "cost": 1,
                                         "reserve": 0,
                                         "stamina_roi": [
                                             500,
@@ -1517,7 +1517,7 @@
                                     "custom_recognition": "DailyStaminaCompare",
                                     "custom_recognition_param": {
                                         "mode": "low",
-                                        "cost": 4,
+                                        "cost": 1,
                                         "reserve": 0,
                                         "stamina_roi": [
                                             500,
@@ -1575,6 +1575,26 @@
                                     "all_of": [
                                         "DailyStaminaPresetStageListAnySelectable"
                                     ]
+                                }
+                            }
+                        },
+                        "DailyStaminaReturnMainWhenNoEntryTicket": {
+                            "enabled": true
+                        },
+                        "DailyStaminaPresetEntryTicketReady": {
+                            "recognition": {
+                                "type": "OCR",
+                                "param": {
+                                    "expected": [
+                                        "^[1-3]\\s*[/／|]\\s*3$"
+                                    ],
+                                    "roi": [
+                                        366,
+                                        5,
+                                        78,
+                                        35
+                                    ],
+                                    "only_rec": true
                                 }
                             }
                         }
@@ -1770,7 +1790,7 @@
                 },
                 {
                     "name": "开启",
-                    "description": "扫荡券不足或扫荡后仍有足够体力时，继续使用开始/再次挑战手动补刷。",
+                    "description": "明确缺扫荡券或扫荡后还有足够体力时，检查入场条件并继续刷同一关卡。",
                     "pipeline_override": {
                         "DailyStaminaManualStart": {
                             "enabled": true
