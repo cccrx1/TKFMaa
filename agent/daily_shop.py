@@ -24,7 +24,6 @@ TITLE_ROI = (78, 432, 375, 44)
 SOLD_OUT = "sold_out"
 UNCERTAIN = "uncertain"
 NO_BANNER = "no_banner"
-MAX_UNREAD_PROBES = 2
 _MIDDLE = (0, 0, 1, 1)
 
 
@@ -63,7 +62,6 @@ class Pending:
 
 _SHELVES = {}
 _OUTCOMES = {}
-_UNREAD_PROBES = {}
 _PENDING = None
 _VERIFIED_TITLE = ""
 _DONE_SHOP = None
@@ -130,7 +128,12 @@ def _stock(context, image, x, y):
         # The saved shelf screenshots place the banner at (x + 10, y + 150/151).
         box = result.box
         if box and abs(box[0] - x - 10) <= 4 and abs(box[1] - y - 151) <= 8:
-            return SOLD_OUT
+            left, top, width, height = box
+            banner = image[top:top + height, left:left + width].astype(np.int16)
+            b, g, r = banner.transpose(2, 0, 1)
+            red_background = (r - g > 25) & (r - b > 10)
+            if np.count_nonzero(red_background) >= 0.12 * width * height:
+                return SOLD_OUT
         return UNCERTAIN
     if result is None or any(match.score >= 0.55 for match in (result.all_results or [])):
         return UNCERTAIN
@@ -186,6 +189,13 @@ def _cards(shop, position):
     return [card for card, _ in _SHELVES.get((shop, position), {}).values() if card is not None]
 
 
+def _available_cards(shop, position):
+    return [
+        card for card in _cards(shop, position)
+        if card.stock != SOLD_OUT and (shop, position, card.slot) not in _OUTCOMES
+    ]
+
+
 def _match(title, target):
     if title == target.name:
         return "exact"
@@ -212,8 +222,7 @@ def _unresolved_priority(shop, targets):
 
 
 def _select_card(shop, position, targets, *, priority):
-    cards = [c for c in _cards(shop, position)
-             if c.stock != SOLD_OUT and (shop, position, c.slot) not in _OUTCOMES]
+    cards = _available_cards(shop, position)
     relevant = [t for t in targets if t.priority == priority]
     for rank in ("exact", "fragment", "weak"):
         for target in relevant:
@@ -224,12 +233,14 @@ def _select_card(shop, position, targets, *, priority):
                 if rank == "weak" and _has_competing_match(card.title, other_targets, priority=priority):
                     continue
                 return Pending(shop, position, card, (target,), rank, other_targets=other_targets)
-    if priority and _UNREAD_PROBES.get(shop, 0) < MAX_UNREAD_PROBES:
-        unresolved = tuple(_unresolved_priority(shop, targets))
-        if unresolved:
-            for card in cards:
-                if len(card.title) < 2:
-                    return Pending(shop, position, card, unresolved, "unread")
+    return None
+
+
+def _select_unread_card(shop, position, unresolved):
+    if unresolved:
+        for card in _available_cards(shop, position):
+            if len(card.title) < 2:
+                return Pending(shop, position, card, unresolved, "unread")
     return None
 
 
@@ -279,11 +290,15 @@ def _analyze_target_item(context, argv, shop):
     reads = _read_shelf(context, argv.image, shop, position) if targets else 0
     other_scanned = (shop, other) in _SHELVES
     other_priority = _select_card(shop, other, targets, priority=True)
+    unresolved = tuple(_unresolved_priority(shop, targets))
+    other_unread = _select_unread_card(shop, other, unresolved)
     while True:
         candidate = _select_card(shop, position, targets, priority=True)
-        waiting_for_other = not other_scanned and bool(_unresolved_priority(shop, targets))
-        if not candidate and not other_priority and not waiting_for_other:
-            candidate = _select_card(shop, position, targets, priority=False)
+        if not candidate and not other_priority:
+            if other_scanned:
+                candidate = _select_unread_card(shop, position, unresolved)
+            if not candidate and not other_unread and (other_scanned or not unresolved):
+                candidate = _select_card(shop, position, targets, priority=False)
         if not candidate:
             break
         card = candidate.card
@@ -303,7 +318,8 @@ def _analyze_target_item(context, argv, shop):
         _PENDING = replace(candidate, terms=terms)
         break
     if not _PENDING and (not targets or (
-        other_scanned and not other_priority and not _select_card(shop, other, targets, priority=False)
+        other_scanned and not other_priority and not other_unread
+        and not _select_card(shop, other, targets, priority=False)
     )):
         _DONE_SHOP = shop
 
@@ -319,7 +335,7 @@ def _analyze_target_item(context, argv, shop):
             "candidate_names": [t.name for t in _PENDING.targets] if _PENDING else [],
             "match": _PENDING.match if _PENDING else None,
             "terms": _PENDING.terms if _PENDING else None,
-            "priority_unresolved": [t.name for t in _unresolved_priority(shop, targets)],
+            "priority_unresolved": [t.name for t in unresolved],
             "outcomes": [{"position": key[1], "slot": key[2], "status": status, "title": title}
                          for key, (status, title) in _OUTCOMES.items() if key[0] == shop],
             "done": _DONE_SHOP == shop,
@@ -351,7 +367,6 @@ class DailyShopResetExchangeSession(CustomAction):
         global _PENDING, _VERIFIED_TITLE, _DONE_SHOP, _SCAN_POSITION
         _SHELVES.clear()
         _OUTCOMES.clear()
-        _UNREAD_PROBES.clear()
         _PENDING = None
         _VERIFIED_TITLE = ""
         _DONE_SHOP = None
@@ -396,8 +411,6 @@ class DailyShopOpenTargetDetail(CustomAction):
         if not _PENDING or _PENDING.key in _OUTCOMES or tuple(argv.box) != _PENDING.card.box:
             return False
         _OUTCOMES[_PENDING.key] = ("opened_unverified", _PENDING.card.title)
-        if _PENDING.match == "unread":
-            _UNREAD_PROBES[_PENDING.shop] = _UNREAD_PROBES.get(_PENDING.shop, 0) + 1
         result = context.run_action("__DailyShopPurchaseClick", box=argv.box)
         return bool(result and result.success)
 
