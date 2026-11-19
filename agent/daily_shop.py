@@ -1,6 +1,6 @@
 import re
 import unicodedata
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 
@@ -51,9 +51,10 @@ class Pending:
     shop: str
     position: str
     card: Card
-    target: Target
+    targets: tuple[Target, ...]
     match: str
     terms: tuple[int, int] | None = None
+    other_targets: tuple[Target, ...] = ()
 
     @property
     def key(self):
@@ -126,7 +127,11 @@ def _stock(context, image, x, y):
     roi = [x, y + 118, 170, 101]
     result = context.run_recognition(node, image, {node: {"recognition": {"param": {"roi": roi}}}})
     if result and result.hit:
-        return SOLD_OUT
+        # The saved shelf screenshots place the banner at (x + 10, y + 150/151).
+        box = result.box
+        if box and abs(box[0] - x - 10) <= 4 and abs(box[1] - y - 151) <= 8:
+            return SOLD_OUT
+        return UNCERTAIN
     if result is None or any(match.score >= 0.55 for match in (result.all_results or [])):
         return UNCERTAIN
     return NO_BANNER
@@ -158,6 +163,10 @@ def _read_shelf(context, image, shop, position):
         # Title and price are stable; only the artwork and surrounding background animate.
         signature = image[y + 268:y + 328, x + 5:x + 166:2]
         if slot in shelf and np.mean(np.abs(shelf[slot][1] - signature)) < 3:
+            card, previous_signature = shelf[slot]
+            if card is not None and card.stock == SOLD_OUT:
+                # Title and price may stay the same when the banner changes.
+                shelf[slot] = (replace(card, stock=_stock(context, image, x, y)), previous_signature)
             continue
         shelf[slot] = (_read_slot(context, image, slot, x, y), signature.astype(np.int16))
         reads += 1
@@ -177,21 +186,29 @@ def _cards(shop, position):
     return [card for card, _ in _SHELVES.get((shop, position), {}).values() if card is not None]
 
 
-def _match(card, target):
-    if card.title == target.name:
+def _match(title, target):
+    if title == target.name:
         return "exact"
-    if not target.priority and target.name in card.title:
+    if not target.priority and target.name in title:
         return "fragment"
-    if _one_edit(card.title, target.name):
+    if target.priority and len(title) >= 3 and 2 * len(title) >= len(target.name) and title in target.name:
+        return "weak"
+    if _one_edit(title, target.name):
         return "weak"
     return None
 
 
+def _has_competing_match(title, other_targets, *, priority):
+    return any(
+        title == target.name or (target.priority == priority and _match(title, target) == "weak")
+        for target in other_targets
+    )
+
+
 def _unresolved_priority(shop, targets):
-    sold = {c.title for pos in ("top", "bottom") for c in _cards(shop, pos) if c.stock == SOLD_OUT}
     checked = {title for key, (state, title) in _OUTCOMES.items() if key[0] == shop
                and state in ("purchased", "attempted")}
-    return [t for t in targets if t.priority and t.name not in sold | checked]
+    return [t for t in targets if t.priority and t.name not in checked]
 
 
 def _select_card(shop, position, targets, *, priority):
@@ -200,21 +217,19 @@ def _select_card(shop, position, targets, *, priority):
     relevant = [t for t in targets if t.priority == priority]
     for rank in ("exact", "fragment", "weak"):
         for target in relevant:
+            other_targets = tuple(t for t in targets if t != target)
             for card in cards:
-                if _match(card, target) != rank:
+                if _match(card.title, target) != rank:
                     continue
-                if rank == "weak" and (
-                    any(t.name == card.title for t in targets)
-                    or sum(_match(card, t) == "weak" for t in relevant) != 1
-                ):
+                if rank == "weak" and _has_competing_match(card.title, other_targets, priority=priority):
                     continue
-                return Pending(shop, position, card, target, rank)
+                return Pending(shop, position, card, (target,), rank, other_targets=other_targets)
     if priority and _UNREAD_PROBES.get(shop, 0) < MAX_UNREAD_PROBES:
-        unresolved = _unresolved_priority(shop, targets)
-        if len(unresolved) == 1:
+        unresolved = tuple(_unresolved_priority(shop, targets))
+        if unresolved:
             for card in cards:
                 if len(card.title) < 2:
-                    return Pending(shop, position, card, unresolved[0], "unread")
+                    return Pending(shop, position, card, unresolved, "unread")
     return None
 
 
@@ -243,6 +258,9 @@ def _detail_terms_match(context, image, shop, terms):
         return False
     price = _number(context, image, (529, 747, 98, 37))
     quantity = _number(context, image, (145, 609, 108, 46), only_rec=False)
+    if quantity is None:
+        # Keep the full badge width and omit the artwork above the quantity.
+        quantity = _number(context, image, (145, 619, 104, 31), only_rec=False)
     return (price, quantity) == terms
 
 
@@ -272,16 +290,17 @@ def _analyze_target_item(context, argv, shop):
         # Validate only the next candidate; a banner may have changed after a purchase.
         if _stock(context, argv.image, *card.origin) == SOLD_OUT:
             _, signature = _SHELVES[(shop, position)][card.slot]
-            _SHELVES[(shop, position)][card.slot] = (Card(card.slot, card.title, card.box, SOLD_OUT), signature)
+            _SHELVES[(shop, position)][card.slot] = (replace(card, stock=SOLD_OUT), signature)
             continue
         duplicate = bool(card.title) and sum(
             c.title == card.title for pos in ("top", "bottom") for c in _cards(shop, pos)
         ) > 1
-        terms = _card_terms(context, argv.image, card) if duplicate else None
-        if duplicate and not terms:
+        check_terms = duplicate or candidate.match == "unread"
+        terms = _card_terms(context, argv.image, card) if check_terms else None
+        if check_terms and not terms:
             _OUTCOMES[candidate.key] = ("terms_unread", card.title)
             continue
-        _PENDING = Pending(shop, position, card, candidate.target, candidate.match, terms)
+        _PENDING = replace(candidate, terms=terms)
         break
     if not _PENDING and (not targets or (
         other_scanned and not other_priority and not _select_card(shop, other, targets, priority=False)
@@ -296,7 +315,8 @@ def _analyze_target_item(context, argv, shop):
             "slot_reads": reads,
             "cards": [{"slot": c.slot, "title": c.title, "stock": c.stock} for c in _cards(shop, position)],
             "slot": _PENDING.card.slot if _PENDING else None,
-            "candidate": _PENDING.target.name if _PENDING else None,
+            "candidate": _PENDING.targets[0].name if _PENDING and len(_PENDING.targets) == 1 else None,
+            "candidate_names": [t.name for t in _PENDING.targets] if _PENDING else [],
             "match": _PENDING.match if _PENDING else None,
             "terms": _PENDING.terms if _PENDING else None,
             "priority_unresolved": [t.name for t in _unresolved_priority(shop, targets)],
@@ -307,10 +327,22 @@ def _analyze_target_item(context, argv, shop):
     )
 
 
-def _detail_matches(pending, title):
+def _detail_target_name(pending, title):
+    if pending.match == "unread":
+        return next((t.name for t in pending.targets if title == t.name), "")
+    target = pending.targets[0]
     if pending.match == "fragment":
-        return title == pending.card.title and pending.target.name in title
-    return title == pending.target.name
+        return title if title == pending.card.title and target.name in title else ""
+    if title == target.name:
+        return target.name
+    if (
+        target.priority
+        and _match(title, target) == "weak"
+        and not _has_competing_match(title, pending.other_targets, priority=True)
+        and pending.card.title in (target.name, title)
+    ):
+        return target.name
+    return ""
 
 
 @AgentServer.custom_action("DailyShopResetExchangeSession")
@@ -380,13 +412,16 @@ class DailyShopVerifyPurchaseDetail(CustomRecognition):
 
         results = _ocr(context, argv.image, TITLE_ROI, only_rec=False)
         titles = {_normalize_text(r.text) for r in results if _normalize_text(r.text)}
-        if _PENDING.target.priority and not titles:
+        if not titles and any(t.priority for t in _PENDING.targets):
             results += _ocr(context, argv.image, TITLE_ROI)
             titles = {_normalize_text(r.text) for r in results if _normalize_text(r.text)}
-        if len(titles) == 1 and _detail_matches(_PENDING, next(iter(titles))):
-            if not _PENDING.terms or _detail_terms_match(context, argv.image, _PENDING.shop, _PENDING.terms):
-                _VERIFIED_TITLE = next(iter(titles))
-        match = next((r for r in results if _VERIFIED_TITLE and _normalize_text(r.text) == _VERIFIED_TITLE), None)
+        title = next(iter(titles)) if len(titles) == 1 else ""
+        target_name = _detail_target_name(_PENDING, title) if title else ""
+        if target_name and (
+            not _PENDING.terms or _detail_terms_match(context, argv.image, _PENDING.shop, _PENDING.terms)
+        ):
+            _VERIFIED_TITLE = target_name
+        match = next((r for r in results if _VERIFIED_TITLE and _normalize_text(r.text) == title), None)
         return CustomRecognition.AnalyzeResult(
             box=getattr(match, "box", None),
             detail={"matched": _VERIFIED_TITLE, "texts": [r.text for r in results]},
