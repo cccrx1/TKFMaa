@@ -268,7 +268,7 @@ jobs:
           repository: MaaXYZ/MaaFramework
           fileName: "MAA-${{ matrix.os }}-${{ matrix.arch }}-${{ needs.meta.outputs.maafw_tag }}.zip"
           tag: ${{ needs.meta.outputs.maafw_tag }}
-          out-file-path: "deps"
+          out-file-path: "build/maafw-runtime"
           extract: true
 
       - name: Verify downloaded MaaFramework release
@@ -280,7 +280,8 @@ jobs:
             echo "MaaFramework download reported '$DOWNLOADED_TAG', expected '$SELECTED_TAG'."
             exit 1
           fi
-          test -d deps/bin
+          test -d build/maafw-runtime/bin
+          test -d build/maafw-runtime/share/MaaAgentBinary
 
       - name: Set up frontend SDK
         if: matrix.os != 'android'
@@ -348,7 +349,7 @@ jobs:
           cd tools/
           python -m pip install -r ./requirements-tooling.txt
           python ./configure.py --download
-          args=()
+          args=(--maafw-dir "$GITHUB_WORKSPACE/build/maafw-runtime")
           if [[ -n "$UPDATE_REPOSITORY" ]]; then
             args+=(--update-repository "$UPDATE_REPOSITORY")
           fi

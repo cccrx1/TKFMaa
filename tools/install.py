@@ -22,6 +22,7 @@ os_name = sys.argv[2]
 arch = sys.argv[3]
 parser = argparse.ArgumentParser()
 parser.add_argument("--update-repository")
+parser.add_argument("--maafw-dir", type=Path, default=working_dir / "deps")
 options = parser.parse_args(sys.argv[4:])
 
 
@@ -51,25 +52,26 @@ def get_dotnet_platform_tag():
 
 
 def install_deps():
-    if not (working_dir / "deps" / "bin").exists():
-        print('Please download the MaaFramework to "deps" first.')
-        print('请先下载 MaaFramework 到 "deps"。')
+    runtime_dir = options.maafw_dir
+    if not (runtime_dir / "bin").is_dir():
+        print(f"Please extract MaaFramework to {runtime_dir} first.")
+        print(f"请先将 MaaFramework 解压到 {runtime_dir}。")
         sys.exit(1)
 
     if os_name == "android":
         shutil.copytree(
-            working_dir / "deps" / "bin",
+            runtime_dir / "bin",
             install_path,
             dirs_exist_ok=True,
         )
         shutil.copytree(
-            working_dir / "deps" / "share" / "MaaAgentBinary",
+            runtime_dir / "share" / "MaaAgentBinary",
             install_path / "MaaAgentBinary",
             dirs_exist_ok=True,
         )
     else:
         shutil.copytree(
-            working_dir / "deps" / "bin",
+            runtime_dir / "bin",
             install_path / "runtimes" / get_dotnet_platform_tag() / "native",
             ignore=shutil.ignore_patterns(
                 "*MaaDbgControlUnit*",
@@ -83,12 +85,12 @@ def install_deps():
             dirs_exist_ok=True,
         )
         shutil.copytree(
-            working_dir / "deps" / "share" / "MaaAgentBinary",
+            runtime_dir / "share" / "MaaAgentBinary",
             install_path / "libs" / "MaaAgentBinary",
             dirs_exist_ok=True,
         )
         shutil.copytree(
-            working_dir / "deps" / "bin" / "plugins",
+            runtime_dir / "bin" / "plugins",
             install_path / "plugins" / get_dotnet_platform_tag(),
             dirs_exist_ok=True,
         )

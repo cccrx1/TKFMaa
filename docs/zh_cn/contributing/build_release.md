@@ -59,7 +59,7 @@
 
 ## 源码与产物隔离
 
-完整构建下载目录 `/MFA/`、`/python-runtime/` 以及 Python 字节码由 `.gitignore` 排除，不能纳入源码提交；完整包 CI 禁止生成字节码。来源检查仍拒绝真实源码改动，并输出有限的脏路径供定位，不使用 `--allow-dirty` 绕过云端发布来源检查。
+完整构建下载目录 `/MFA/`、`/python-runtime/` 和 `/build/maafw-runtime/` 由 `.gitignore` 排除。完整包 CI 用 `install.py --maafw-dir` 从独立目录组装运行时，以保留 `deps/tools/` 的资源通道 Schema。完整包 CI 禁止生成 Python 字节码。来源检查拒绝脏工作区，并输出相关路径供定位。
 
 ## 正式版本号
 
