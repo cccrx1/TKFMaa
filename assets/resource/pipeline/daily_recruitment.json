@@ -519,8 +519,58 @@
             }
         }
     },
+    "__DailyRecruitmentRefreshExhaustedMessage": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    105,
+                    575,
+                    510,
+                    57
+                ],
+                "expected": [
+                    "^本日刷新次数已耗尽[。.]?$"
+                ]
+            }
+        }
+    },
+    "__DailyRecruitmentRefreshExhaustedConfirm": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    285,
+                    680,
+                    150,
+                    80
+                ],
+                "expected": [
+                    "^确定$"
+                ]
+            }
+        }
+    },
+    "__DailyRecruitmentCloseRefreshExhausted": {
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__DailyRecruitmentRefreshExhaustedMessage",
+                    "__DailyRecruitmentRefreshExhaustedConfirm"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "pre_wait_freezes": 300,
+        "max_hit": 2
+    },
     "DailyRecruitmentSlot1Decision": {
         "next": [
+            "[JumpBack]__DailyRecruitmentCloseRefreshExhausted",
             "DailyRecruitmentSlot1SkipLeader",
             "DailyRecruitmentSlot1RecruitGuaranteed",
             "DailyRecruitmentSlot1Refresh",
@@ -849,6 +899,7 @@
     },
     "DailyRecruitmentSlot2Decision": {
         "next": [
+            "[JumpBack]__DailyRecruitmentCloseRefreshExhausted",
             "DailyRecruitmentSlot2SkipLeader",
             "DailyRecruitmentSlot2RecruitGuaranteed",
             "DailyRecruitmentSlot2Refresh",
@@ -1177,6 +1228,7 @@
     },
     "DailyRecruitmentSlot3Decision": {
         "next": [
+            "[JumpBack]__DailyRecruitmentCloseRefreshExhausted",
             "DailyRecruitmentSlot3SkipLeader",
             "DailyRecruitmentSlot3RecruitGuaranteed",
             "DailyRecruitmentSlot3Refresh",
@@ -1505,6 +1557,7 @@
     },
     "DailyRecruitmentSlot4Decision": {
         "next": [
+            "[JumpBack]__DailyRecruitmentCloseRefreshExhausted",
             "DailyRecruitmentSlot4SkipLeader",
             "DailyRecruitmentSlot4RecruitGuaranteed",
             "DailyRecruitmentSlot4Refresh",

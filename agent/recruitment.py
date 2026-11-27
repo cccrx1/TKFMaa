@@ -302,6 +302,10 @@ class DailyRecruitDecision(CustomRecognition):
         raw_param = argv.custom_recognition_param
         param = raw_param if isinstance(raw_param, dict) else safe_json_loads(raw_param, {})
         mode = param.get("mode", "ready")
+        if mode == "refresh" and context.get_hit_count("__DailyRecruitmentCloseRefreshExhausted") > 0:
+            _LAST_RECRUIT_DECISION = None
+            return CustomRecognition.AnalyzeResult(box=None, detail={"action": "refresh_exhausted"})
+
         decision = _decision(context, argv.image) if mode != "select_tag" else _LAST_RECRUIT_DECISION
         if not decision:
             decision = _decision(context, argv.image)
