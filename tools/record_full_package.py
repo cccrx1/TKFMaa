@@ -12,9 +12,9 @@ from release_support import full_package_baseline, source_identity, version_key,
 
 
 def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allow_dirty: bool = False,
-           rehearsal: bool = False, require_frontend_build: bool = False) -> dict:
+           rehearsal: bool = False, require_frontend_build: bool = False, *, maafw: str | None = None) -> dict:
     version_key(version)
-    policy = full_package_baseline()
+    policy = full_package_baseline(maafw=maafw)
     source = source_identity(ROOT, commit, allow_dirty)
     if rehearsal:
         source = {**source, "rehearsal": True}
@@ -72,7 +72,7 @@ def record(stage: Path, version: str, os_name: str, arch: str, commit: str, allo
     value = {"schema_version": 1, "kind": "full", "version": version, "platform": platform,
              "source": source, "baseline": policy, "update_source": update_source,
              "installed_distributions": inventory, "distribution_metadata_versions": raw_versions, "files": files,
-             "runtime_evidence": "dependency METADATA and file inventory; framework/frontend versions declared by pinned build workflow"}
+             "runtime_evidence": "dependency METADATA and file inventory; MaaFramework selected by the build and frontend pinned"}
     if frontend_build is not None:
         value["frontend_build"] = frontend_build
     write_json(stage / "package-provenance.json", value)
@@ -89,9 +89,10 @@ def main() -> None:
     parser.add_argument("--allow-dirty", action="store_true")
     parser.add_argument("--rehearsal", action="store_true", help="Mark an otherwise clean preview build as non-release")
     parser.add_argument("--require-frontend-build", action="store_true")
+    parser.add_argument("--maafw-tag", help="Stable MaaFramework tag selected for this build")
     args = parser.parse_args()
     record(args.stage, args.version, args.os, args.arch, args.source_sha, args.allow_dirty,
-           args.rehearsal, args.require_frontend_build)
+           args.rehearsal, args.require_frontend_build, maafw=args.maafw_tag)
     print("Full package provenance recorded; target execution not tested")
 
 

@@ -1,0 +1,4 @@
+json-with-comments
+PyYAML
+jsonschema==4.26.0
+referencing==0.37.0

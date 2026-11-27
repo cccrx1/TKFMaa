@@ -2,7 +2,7 @@ import type {FullConfig} from "@nekosu/maa-tools";
 
 const config: FullConfig = {
     cwd: import.meta.dirname,
-    maaVersion: "5.14.3",
+    maaVersion: process.env.TKFMAA_MAAFW_VERSION ?? "5.14.3",
     interfacePath: "assets/interface.json",
     check: {
         override: {

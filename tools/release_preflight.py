@@ -8,7 +8,8 @@ import re
 
 from frontend_build import PLATFORMS, ROOT, read_json, release_profile, verify_proof
 from clean_package_stage import clean
-from release_support import full_package_baseline
+from maafw_release import read_selection, stable_version
+from release_support import full_package_baseline, planned_maafw
 
 
 def checksum(path: Path) -> str:
@@ -20,7 +21,7 @@ def checksum(path: Path) -> str:
 
 
 def preflight(version: str, artifacts: Path | None = None, commit: str | None = None,
-              rehearsal: bool = False) -> dict:
+              rehearsal: bool = False, *, maafw: str | None = None) -> dict:
     if not re.fullmatch(r"v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?", version):
         raise ValueError("Release preview requires an explicit canonical version")
     if "-" in version and any(part.isdigit() and len(part) > 1 and part.startswith("0") for part in version.split("-", 1)[1].split(".")):
@@ -28,6 +29,7 @@ def preflight(version: str, artifacts: Path | None = None, commit: str | None = 
     plan = read_json(ROOT / f"tools/releases/{version}.json")
     profile = release_profile()
     policy = full_package_baseline(ROOT)
+    approved = planned_maafw(version, ROOT)
     if (plan.get("schema_version") != 1 or plan.get("version") != version or plan.get("kind") != "full"
             or plan.get("update_repository") != policy["source_repository"]
             or plan.get("frontend_profile") != profile["id"]
@@ -46,6 +48,20 @@ def preflight(version: str, artifacts: Path | None = None, commit: str | None = 
         return result
     if not commit or not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise ValueError("Require the exact artifact source commit")
+    selection = artifacts / "maafw-build/selection.json"
+    if selection.is_file():
+        selected = read_selection(selection, commit)
+        if maafw is not None and stable_version(maafw) != selected:
+            raise ValueError("MaaFramework selection differs from the build output")
+        if not rehearsal and approved != selected:
+            raise ValueError(f"MaaFramework v{selected} needs a matching, rehearsed release plan (maafw field)")
+        policy = full_package_baseline(ROOT, maafw=selected)
+        for arch in ("x86_64", "aarch64"):
+            marker = artifacts / f"TKFMaa-android-{arch}/maafw-version.txt"
+            if marker.read_text(encoding="utf-8").strip() != f"v{selected}":
+                raise ValueError(f"Android MaaFramework version differs: {arch}")
+    elif maafw is not None or approved is not None:
+        raise ValueError("Missing MaaFramework selection from the original build")
     targets = {}
     for platform in PLATFORMS:
         os_name, arch = platform.split("-")
@@ -67,7 +83,8 @@ def preflight(version: str, artifacts: Path | None = None, commit: str | None = 
         if any(proof["installed_distributions"].get(name) != value for name, value in policy["dependencies"].items()):
             raise ValueError(f"Artifact dependency differs: {platform}")
         targets[platform] = len(actual)
-    result.update(artifact_validation="passed", platforms=targets, source_commit=commit, rehearsal=rehearsal)
+    result.update(artifact_validation="passed", platforms=targets, source_commit=commit,
+                  rehearsal=rehearsal, maafw=policy["maafw"])
     return result
 
 
@@ -78,8 +95,9 @@ if __name__ == "__main__":
     parser.add_argument("--source-sha")
     parser.add_argument("--expect-rehearsal", action="store_true")
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--maafw-tag")
     args = parser.parse_args()
-    result = preflight(args.version, args.artifacts, args.source_sha, args.expect_rehearsal)
+    result = preflight(args.version, args.artifacts, args.source_sha, args.expect_rehearsal, maafw=args.maafw_tag)
     text = json.dumps(result, ensure_ascii=False, indent=4) + "\n"
     if args.output:
         with args.output.open("x", encoding="utf-8", newline="\n") as stream:

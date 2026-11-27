@@ -12,7 +12,7 @@ import zipfile
 from package_resources import ROOT, collect_resources, digest
 from frontend_build import verify_proof
 from release_github import GitHub
-from release_support import TARGETS, check_selection, file_entry, full_package_baseline, source_identity, version_key, write_json
+from release_support import TARGETS, check_selection, file_entry, full_package_baseline, planned_maafw, source_identity, version_key, write_json
 
 
 def verify_full_archive(path: Path, version: str, target: str, source: dict, policy: dict, repository: str) -> dict:
@@ -70,7 +70,7 @@ def verify_full_archive(path: Path, version: str, target: str, source: dict, pol
 
 def mirror(output: Path, version: str, repository: str, commit: str, client=None) -> dict:
     version_key(version)
-    policy = full_package_baseline()
+    policy = full_package_baseline(maafw=planned_maafw(version))
     source = source_identity(ROOT, commit)
     if repository not in policy["allowed_update_repositories"] or output.exists():
         raise ValueError("Unapproved destination or existing output")

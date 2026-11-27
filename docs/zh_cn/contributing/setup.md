@@ -25,11 +25,29 @@ node --version
 npm ci
 ```
 
-`tools/requirements.txt` 已包含固定的 maafw 及配置、Schema 工具依赖。用项目环境的 pip 安装即可。
+`tools/requirements.txt` 安装资源通道基线的 maafw 及配置、Schema 工具依赖。用项目环境的 pip 安装即可。
 安装成功不等于版本及 native 库均可用，下一步仍须检查。
 
 这些命令直接指定环境内的解释器。`npm ci` 通过 `package-lock.json` 安装锁定的工具依赖。
 使用 VS Code 时，在环境创建后选择 `.venv312` 中的解释器；新终端中确认 `PYTHONUTF8=1` 和 Python 路径符合预期。
+
+## 复现完整包框架版本
+
+从运行的 `maafw-build` Artifact 中读取 `selection.json` 的标签，或从桌面包的 `package-provenance.json` 读取 `baseline.maafw`。以下示例使用独立环境验证 `v5.16.1`，复现其他构建时替换版本号。先按下节确认 OCR 模型完整。
+
+```powershell
+py -3.12 -m venv build/maafw-verify
+$env:TKFMAA_MAAFW_VERSION = "5.16.1"
+try {
+    .\build\maafw-verify\Scripts\python.exe -m pip install -r tools/requirements-tooling.txt "maafw==$env:TKFMAA_MAAFW_VERSION"
+    .\build\maafw-verify\Scripts\python.exe tools/check_environment.py --load-resource
+    .\build\maafw-verify\Scripts\python.exe tools/sync_schemas.py --maafw-tag $env:TKFMAA_MAAFW_VERSION --output-dir build/maafw-schemas
+    .\build\maafw-verify\Scripts\python.exe tools/validate_schema.py --schema-dir build/maafw-schemas --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json
+    npx @nekosu/maa-tools check
+} finally {
+    Remove-Item Env:TKFMAA_MAAFW_VERSION
+}
+```
 
 ## 验证安装
 

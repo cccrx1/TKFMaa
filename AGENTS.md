@@ -18,7 +18,7 @@
 - `agent/`：Python 自定义逻辑；新增模块须由 `agent/main.py` 导入以触发注册。
 - `assets/resource/pipeline/`：Pipeline v2；`assets/resource/image/`：识别模板，统一 720x1280 竖屏基准。
 - `assets/interface.json`：任务与选项；体力活动生成字段只能通过 `assets/stamina/active.yaml` 和 `tools/build_stamina_activities.py` 修改。
-- `tools/`：构建、生成与校验脚本；`deps/tools/`：固定版本 Schema。
+- `tools/`：构建、生成与校验脚本；`deps/tools/`：资源通道基线的 Schema。完整包按本次选定的 MaaFramework 标签获取 Schema。
 - `docs/zh_cn/`：公开入口；`contributing/` 为通用规范，`tasks/` 为行为说明，`templates/` 为空白模板。
 - `docs/zh_cn/develop/`、`docs/zh_cn/records/`、`tools/test_*.py`：被忽略的本地资料；新检出可不存在，不得强制暂存。
 - `basic_info.md`：本地扫描缓存；存在时先看接力章节，路径、节点和状态仍须与当前源码核对，不自动覆盖旧缓存。

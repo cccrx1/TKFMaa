@@ -1,6 +1,3 @@
-# Maa Agent runtime and Python tooling
+# Resource channel runtime and Python tooling
 maafw==5.14.3
-json-with-comments
-PyYAML
-jsonschema==4.26.0
-referencing==0.37.0
+-r requirements-tooling.txt

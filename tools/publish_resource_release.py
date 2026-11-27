@@ -12,7 +12,7 @@ from urllib.parse import quote
 
 from package_resources import ROOT, collect_resources, digest, verify_archive
 from release_github import GitHub
-from release_support import (check_selection, compatibility_fingerprint, file_entry, full_package_baseline, read_json,
+from release_support import (check_selection, compatibility_fingerprint, file_entry, full_package_baseline, planned_maafw, read_json,
                              resource_release_baseline, source_identity, version_key)
 from mirror_full_release import verify_full_archive
 
@@ -22,7 +22,7 @@ def validate_bundle(folder: Path) -> tuple[dict, list[dict]]:
     kind = manifest["kind"]
     if manifest["schema_version"] != 1 or kind not in {"resource", "full"}:
         raise ValueError("Unapproved release identity or baseline")
-    policy = full_package_baseline() if kind == "full" else resource_release_baseline()
+    policy = full_package_baseline(maafw=planned_maafw(manifest["version"])) if kind == "full" else resource_release_baseline()
     if manifest["baseline"] != policy or manifest["repository"] not in policy["allowed_update_repositories"]:
         raise ValueError("Unapproved release identity or baseline")
     version_key(manifest["version"])

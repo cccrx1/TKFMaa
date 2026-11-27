@@ -3,10 +3,6 @@ name: install
 env:
   PYTHONDONTWRITEBYTECODE: "1"
   PYTHONUTF8: "1"
-  # 版本控制：
-  # - 设置 VERSION 为空字符串时，下载 latest 版本
-  # - 设置 VERSION 为具体版本号时（如 v1.2.3），下载指定版本
-  MAAFW_VERSION: "v5.14.3"
   MFAA_VERSION: "v2.16.2"
   PYTHON_VERSION: "3.12"
   PYTHON_ABI: "cp312"
@@ -20,6 +16,11 @@ on:
     paths:
       - ".github/workflows/install.yml"
       - "tools/install.py"
+      - "tools/maafw_release.py"
+      - "tools/sync_schemas.py"
+      - "tools/validate_schema.py"
+      - "tools/requirements-tooling.txt"
+      - "package*.json"
       - "tools/package_resources.py"
       - "tools/release_support.py"
       - "tools/release_baseline.json"
@@ -46,6 +47,11 @@ on:
     paths:
       - ".github/workflows/install.yml"
       - "tools/install.py"
+      - "tools/maafw_release.py"
+      - "tools/sync_schemas.py"
+      - "tools/validate_schema.py"
+      - "tools/requirements-tooling.txt"
+      - "package*.json"
       - "tools/package_resources.py"
       - "tools/release_support.py"
       - "tools/release_baseline.json"
@@ -85,6 +91,9 @@ permissions:
 jobs:
   meta:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -133,13 +142,68 @@ jobs:
           echo tag=$tag | tee -a $GITHUB_OUTPUT
           echo is_release=$is_release | tee -a $GITHUB_OUTPUT
           echo is_prerelease=$is_prerelease | tee -a $GITHUB_OUTPUT
+      - name: Select the stable MaaFramework release for this run
+        id: maafw
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "$GITHUB_RUN_ATTEMPT" != "1" ]]; then
+            count=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=maafw-build" --jq '.total_count')
+            if [[ "$count" != "0" ]]; then
+              gh run download "$GITHUB_RUN_ID" --name maafw-build --dir build/maafw-build
+            fi
+          fi
+          selection=build/maafw-build/selection.json
+          if [[ ! -f "$selection" ]]; then
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          fi
+          tag=$(python tools/maafw_release.py --selection "$selection" --source-sha "$GITHUB_SHA")
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+          echo "Selected MaaFramework $tag"
+      - uses: actions/upload-artifact@v4
+        if: steps.maafw.outputs.new == 'true'
+        with:
+          name: maafw-build
+          path: build/maafw-build/selection.json
+          if-no-files-found: error
     outputs:
       tag: ${{ steps.set_tag.outputs.tag }}
       is_release: ${{ steps.set_tag.outputs.is_release }}
       is_prerelease: ${{ steps.set_tag.outputs.is_prerelease }}
+      maafw_tag: ${{ steps.maafw.outputs.tag }}
+      maafw_version: ${{ steps.maafw.outputs.version }}
+
+  validate-maafw:
+    needs: meta
+    runs-on: ubuntu-latest
+    env:
+      TKFMAA_MAAFW_VERSION: ${{ needs.meta.outputs.maafw_version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check resources and Agent against the selected MaaFramework release
+        run: |
+          python -m pip install -r tools/requirements-tooling.txt --only-binary=maafw \
+            "maafw==$TKFMAA_MAAFW_VERSION" \
+            "$(python tools/release_support.py --runtime-requirement numpy)" \
+            "$(python tools/release_support.py --runtime-requirement maaagentbinary)" \
+            "$(python tools/release_support.py --runtime-requirement strenum)"
+          python tools/sync_schemas.py --maafw-tag "$TKFMAA_MAAFW_VERSION" --output-dir build/maafw-schemas
+          python tools/validate_schema.py --schema-dir build/maafw-schemas --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json
+          python tools/configure.py --download
+          python tools/check_environment.py --load-resource
+          python -c "import sys; sys.path.insert(0, 'agent'); import main; print('Agent imports OK')"
+          npm ci
+          npx --no-install @nekosu/maa-tools check
 
   install:
-    needs: meta
+    needs: [meta, validate-maafw]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -202,11 +266,21 @@ jobs:
         uses: robinraju/release-downloader@v1
         with:
           repository: MaaXYZ/MaaFramework
-          fileName: "MAA-${{ matrix.os }}-${{ matrix.arch }}*"
-          latest: ${{ env.MAAFW_VERSION == '' }}
-          tag: ${{ env.MAAFW_VERSION }}
+          fileName: "MAA-${{ matrix.os }}-${{ matrix.arch }}-${{ needs.meta.outputs.maafw_tag }}.zip"
+          tag: ${{ needs.meta.outputs.maafw_tag }}
           out-file-path: "deps"
           extract: true
+
+      - name: Verify downloaded MaaFramework release
+        env:
+          DOWNLOADED_TAG: ${{ steps.download_maafw.outputs.tag_name }}
+          SELECTED_TAG: ${{ needs.meta.outputs.maafw_tag }}
+        run: |
+          if [[ "$DOWNLOADED_TAG" != "$SELECTED_TAG" ]]; then
+            echo "MaaFramework download reported '$DOWNLOADED_TAG', expected '$SELECTED_TAG'."
+            exit 1
+          fi
+          test -d deps/bin
 
       - name: Set up frontend SDK
         if: matrix.os != 'android'
@@ -272,8 +346,7 @@ jobs:
           fi
 
           cd tools/
-          python -m pip install -r ./requirements.txt
-          python ./check_environment.py
+          python -m pip install -r ./requirements-tooling.txt
           python ./configure.py --download
           args=()
           if [[ -n "$UPDATE_REPOSITORY" ]]; then
@@ -281,18 +354,14 @@ jobs:
           fi
           python ./install.py ${{ needs.meta.outputs.tag }} ${{ matrix.os }} ${{ matrix.arch }} "${args[@]}"
           cd ..
+          if [[ "${{ matrix.os }}" == "android" ]]; then
+            printf '%s\n' "${{ needs.meta.outputs.maafw_tag }}" > install/maafw-version.txt
+          fi
 
       - name: Bundle Python dependencies
         if: matrix.os != 'android'
         shell: bash
         run: |
-          MAAFW_VERSION="${{ steps.download_maafw.outputs.tag_name }}"
-          MAAFW_VERSION="${MAAFW_VERSION#v}"
-          if [[ -z "${MAAFW_VERSION}" ]]; then
-            echo "The downloaded MaaFramework release did not provide a version tag."
-            exit 1
-          fi
-
           # MaaFw wheels contain another copy of the native runtime. The Agent
           # uses MAAFW_BINARY_PATH to share the runtime already bundled for MFA.
           python -m pip install \
@@ -303,7 +372,7 @@ jobs:
             --python-version "${{ env.PYTHON_VERSION }}" \
             --implementation cp \
             --abi "${{ env.PYTHON_ABI }}" \
-            "maafw==${MAAFW_VERSION}"
+            "maafw==${{ needs.meta.outputs.maafw_version }}"
 
           python -m pip install \
             --target "${{ matrix.python_site_packages }}" \
@@ -333,6 +402,8 @@ jobs:
       - name: Verify packaged runtime
         if: matrix.os != 'android'
         shell: bash
+        env:
+          TKFMAA_MAAFW_VERSION: ${{ needs.meta.outputs.maafw_version }}
         run: |
           test -f "${{ matrix.python_executable }}"
           test -f "${{ matrix.python_site_packages }}/maa/__init__.py"
@@ -340,6 +411,29 @@ jobs:
           test ! -d "${{ matrix.python_site_packages }}/maa/bin"
           test -d "install/runtimes/${{ (matrix.os == 'win' && 'win') || (matrix.os == 'macos' && 'osx') || 'linux' }}-${{ (matrix.arch == 'x86_64' && 'x64') || 'arm64' }}/native"
           grep -Fq '"child_exec": "./python/' install/interface.json
+          if [[ "${{ matrix.os }}-${{ matrix.arch }}" == "linux-x86_64" ]]; then
+            install/python/bin/python3 - <<'PY'
+          import os
+          import sys
+          from importlib.metadata import version
+          from pathlib import Path
+
+          sys.path.insert(0, "install/agent")
+          from bootstrap import configure_runtime
+
+          configure_runtime()
+          from maa.library import Library
+
+          expected = os.environ["TKFMAA_MAAFW_VERSION"]
+          native = Path("install/runtimes/linux-x64/native").resolve()
+          if not Path(Library.framework_libpath).resolve().is_relative_to(native):
+              raise RuntimeError(f"Packaged Python loaded MaaFramework outside {native}")
+          installed, loaded = version("maafw").removeprefix("v"), Library.version().removeprefix("v")
+          if installed != expected or loaded != expected:
+              raise RuntimeError(f"Expected MaaFramework {expected}; package metadata {installed}, native library {loaded}")
+          print(f"Packaged Python loaded its own MaaFramework {loaded}")
+          PY
+          fi
 
       - name: Record full package provenance
         if: matrix.os != 'android'
@@ -348,6 +442,7 @@ jobs:
           --version ${{ needs.meta.outputs.tag }}
           --os ${{ matrix.os }} --arch ${{ matrix.arch }}
           --source-sha ${{ github.sha }} --require-frontend-build
+          --maafw-tag ${{ needs.meta.outputs.maafw_tag }}
           ${{ needs.meta.outputs.is_release != 'true' && '--rehearsal' || '' }}
 
       - uses: actions/upload-artifact@v4
@@ -355,6 +450,8 @@ jobs:
           name: TKFMaa-${{ matrix.os }}-${{ matrix.arch }}
           path: "install"
           include-hidden-files: true
+          overwrite: true
+          if-no-files-found: error
 
   changelog:
     name: Generate changelog
@@ -398,11 +495,13 @@ jobs:
         run: >-
           python tools/release_preflight.py --version ${{ needs.meta.outputs.tag }}
           --artifacts build/release-preview --source-sha ${{ github.sha }}
+          --maafw-tag ${{ needs.meta.outputs.maafw_tag }}
           --expect-rehearsal --output build/release-preview-verification.json
       - uses: actions/upload-artifact@v4
         with:
           name: release-preflight-${{ needs.meta.outputs.tag }}
           path: build/release-preview-verification.json
+          overwrite: true
 
   release:
     if: ${{ needs.meta.outputs.is_release == 'true' }}
@@ -426,6 +525,7 @@ jobs:
         run: >-
           python tools/release_preflight.py --version ${{ needs.meta.outputs.tag }}
           --artifacts build/full-release-assets --source-sha ${{ github.sha }}
+          --maafw-tag ${{ needs.meta.outputs.maafw_tag }}
 
       - run: |
           destination="$PWD/build/full-release-zips"

@@ -10,6 +10,7 @@ import subprocess
 import sys
 
 from frontend_build import ROOT
+from maafw_release import stable_version
 
 
 TARGETS = tuple(f"{os_name}-{arch}" for os_name in ("win", "osx", "linux") for arch in ("x64", "arm64"))
@@ -54,29 +55,47 @@ def baseline(root: Path = ROOT) -> dict:
     return _load_baseline(root / "tools/release_baseline.json")
 
 
-def full_package_baseline(root: Path = ROOT) -> dict:
+def full_package_baseline(root: Path = ROOT, *, maafw: str | None = None) -> dict:
     value = _load_baseline(root / "tools/full_package_baseline.json")
     if (root / ".python-version").read_text().strip() != value["python"]:
         raise ValueError(".python-version differs from the full-package baseline")
     if f"{sys.version_info.major}.{sys.version_info.minor}" != value["python"]:
         raise ValueError(f"Full-package verification requires Python {value['python']}")
-    requirements = (root / "tools/requirements.txt").read_text(encoding="utf-8")
-    if not re.search(r"^maafw==" + re.escape(value["maafw"]) + r"\s*$", requirements, re.M):
-        raise ValueError("MaaFramework requirement differs from the full-package baseline")
     workflow = (root / ".github/workflows/install.yml").read_text(encoding="utf-8")
-    for key, expected in (("MAAFW_VERSION", "v" + value["maafw"]), ("MFAA_VERSION", "v" + value["frontend"]), ("PYTHON_VERSION", value["python"])):
+    for key, expected in (("MFAA_VERSION", "v" + value["frontend"]), ("PYTHON_VERSION", value["python"])):
         if not re.search(r"^  " + key + r': "' + re.escape(expected) + r'"$', workflow, re.M):
             raise ValueError(f"{key} differs from the full-package baseline")
     channel = baseline(root)
+    if maafw is not None:
+        version = stable_version(maafw)
+        if version != value["maafw"]:
+            value.update(id=f"desktop-py{value['python']}-maafw{version}-mfa{value['frontend']}",
+                         maafw=version, evidence="Build inventory; target runtime acceptance recorded separately")
+            value["dependencies"]["maafw"] = version
     return {**value, "source_repository": channel["source_repository"],
             "allowed_update_repositories": channel["allowed_update_repositories"]}
+
+
+def planned_maafw(version: str, root: Path = ROOT) -> str | None:
+    version_key(version)
+    path = root / f"tools/releases/{version}.json"
+    if not path.exists():
+        return None
+    selected = read_json(path).get("maafw")
+    return stable_version(selected) if selected is not None else None
 
 
 def resource_release_baseline(root: Path = ROOT) -> dict:
     channel = baseline(root)
     current = full_package_baseline(root)
-    runtime_keys = ("python", "maafw", "frontend", "frontend_revision", "dependencies")
+    requirements = (root / "tools/requirements.txt").read_text(encoding="utf-8")
+    if not re.search(r"^maafw==" + re.escape(channel["maafw"]) + r"\s*$", requirements, re.M):
+        raise ValueError("MaaFramework requirement differs from the resource channel baseline")
+    runtime_keys = ("python", "frontend", "frontend_revision")
     differences = [key for key in runtime_keys if current[key] != channel[key]]
+    if any(version != current["dependencies"].get(name) for name, version in channel["dependencies"].items()
+           if name != "maafw") or current["dependencies"].keys() != channel["dependencies"].keys():
+        differences.append("dependencies")
     if differences:
         fields = ", ".join(differences)
         raise ValueError(f"Resource release requires a channel migration review. Full-package runtime differs in: {fields}")
@@ -170,7 +189,7 @@ def main() -> None:
     if args.runtime_requirement:
         print(f"{args.runtime_requirement}=={full['dependencies'][args.runtime_requirement]}")
     else:
-        policy = baseline()
+        policy = resource_release_baseline()
         print(json.dumps({"baseline": policy["id"], "channel_baseline_sha256": compatibility_fingerprint(policy), "passed": True}))
 
 

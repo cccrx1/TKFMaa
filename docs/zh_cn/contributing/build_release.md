@@ -11,7 +11,7 @@
 - `python tools/configure.py --download`：下载固定修订的 OCR 缺失文件，逐文件校验大小和 SHA256，不覆盖不匹配的已有文件。
 - `python tools/configure.py --check`：只读检查 OCR 模型完整性与来源一致性。
 - `python tools/check_environment.py --load-resource`：核对 Python、maafw、native runtime、构建和 maa-tools 版本，并在不连接设备的情况下加载项目资源。Agent 导入注册须在另一个独立进程检查。
-- `python tools/sync_schemas.py`：按 requirements 固定的 MaaFramework 版本同步六份 Schema，不跟随上游 main。
+- `python tools/sync_schemas.py`：按资源通道版本同步六份 Schema。完整包 CI 用 `--maafw-tag <标签> --output-dir build/maafw-schemas` 将所选框架的 Schema 下载到独立目录。
 - `npm ci`：安装 CI 使用的锁定版本 Node.js 工具。
 - `npx @nekosu/maa-tools check`：校验 Maa Pipeline 与 Interface 资源。
 - 本地默认 GPU 资源加载崩溃时，先保留日志，再运行 `node --require ./tools/maa_check_cpu.cjs node_modules/@nekosu/maa-tools/bin/maa-tools check`；它使用同一固定版本缓存和原版校验器，仅把资源加载改为 CPU，不跳过结构诊断或资源加载。须记录默认命令失败与 CPU 模式结果，不据此宣称 GPU 验收通过。
@@ -43,11 +43,15 @@
 
 ## 兼容基线与升级边界
 
-`tools/full_package_baseline.json` 固定完整包的 Python、MaaFramework、前端及桌面依赖。桌面完整包通过 `tools/record_full_package.py` 生成来源和逐文件哈希记录。实际运行验收单独记录。正式更新源使用主仓库，变更更新地址须明确授权并核对已有客户端的升级路径。
+`tools/full_package_baseline.json` 提供完整包的 Python、前端和其他桌面依赖约束，并保留历史完整包的框架基线供验包。新的 install 运行从 MaaFramework GitHub Latest Release 解析稳定标签，保存到 `maafw-build` Artifact。所有目标、Python wheel、Schema 和发布验包都使用这次选择。同一运行重试沿用已保存的选择。框架附件、wheel 或 Schema 缺失时构建失败。桌面包记录来源和逐文件哈希，实际运行验收单独记录。正式更新源使用主仓库，变更更新地址须明确授权并核对已有客户端的升级路径。
+
+资源包 CI 使用 `tools/release_baseline.json` 的客户端兼容版本校验，不随完整包选到的新版本变化。涉及资源通道迁移时核对现存客户端的升级路径。
 
 ## 完整包构建与版本计划
 
 完整包前端构建配置位于 `tools/frontend_release.json`。[v1.0.8 发布计划](../../../tools/releases/v1.0.8.json)使用主仓库更新源。手工运行 `install` 时，输入 `preview_version: v1.0.8` 可生成指定版本的预演包，源码须干净且匹配 SHA。手工构建只上传 Artifact，并记录为 rehearsal。正式标签需要对应的 `tools/releases/<版本>.json` 和 `docs/zh_cn/releases/<版本>.md`。发布 job 在上传前核对六个桌面完整包的版本、更新源、来源、前端及全部文件摘要。完整包保留 `licenses/MFAAvalonia-LICENSE.txt` 和绑定源码提交的来源说明。编译与依赖恢复可能联网，前端要求系统 .NET 10。
+
+新版本先用 `preview_version` 打包并验收，将预演实际通过的 MaaFramework 版本写入发布计划的 `maafw` 字段，例如 `"maafw": "5.16.1"`，发布说明填写同一版本。正式构建仍会选取当时的最新稳定版。所选版本与计划不同时发布验包失败。按新框架重新预演和验收后，使用包含新发布计划的提交准备新标签。后续验包及失败续发读取原运行的 `maafw-build`，并核对两份 Android 包的标签。
 
 ## 发布产物与失败续发
 

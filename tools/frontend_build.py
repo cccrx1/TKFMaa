@@ -31,7 +31,7 @@ def release_profile() -> dict:
     if (profile.get("schema_version") != 1 or profile.get("platforms") != list(PLATFORMS)
             or profile.get("manifest_sha256") != hashlib.sha256(MANIFEST.read_bytes()).hexdigest()
             or profile.get("license_sha256") != hashlib.sha256((MANIFEST.parent / "LICENSE").read_bytes()).hexdigest()
-            or any(profile.get(key) != baseline[key] for key in ("python", "maafw", "frontend"))
+            or any(profile.get(key) != baseline[key] for key in ("python", "frontend"))
             or manifest["revision"] != baseline["frontend_revision"]
             or manifest["frontend"] != profile["frontend"] or manifest["maafw"] != profile["maafw"]):
         raise ValueError("Frontend release profile differs from pinned source or runtime baseline")

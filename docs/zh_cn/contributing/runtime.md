@@ -17,8 +17,8 @@ Android 有独立的构建流程。以上 Python 与前端的捆绑方式适用�
 | 对象                             | 当前约束               | 固定程度与来源                                                                                     |
 | -------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------- |
 | Python                           | 3.12，ABI cp312        | 仅固定系列；完整包从 python-build-standalone 的最新 Release 匹配 3.12.\*，补丁版本与构建批次未固定 |
-| MaaFramework native runtime      | 5.14.3                 | install 工作流按 v5.14.3 标签下载                                                                  |
-| Python maafw                     | 5.14.3                 | requirements 精确固定；包内绑定下载到的 native 版本                                                |
+| MaaFramework native runtime      | 最新稳定 Release       | 每次新 install 运行解析一个具体标签，桌面和 Android 共用。同一运行重试沿用已记录的标签             |
+| Python maafw                     | 与 native 同版本       | 桌面包精确安装本次选定版本的 wheel。完整包校验也使用该标签的 Schema                                |
 | MFAAvalonia 前端                 | 2.16.2 加本项目补丁    | 固定上游提交、源码 ZIP、补丁及文件摘要，编译后校验来源                                             |
 | 前端构建 .NET SDK                | 10.0.403               | 工作流与前端清单固定 SDK 版本                                                                      |
 | 用户系统 .NET                    | 10.0 系列              | 系统运行条件，不作为包内运行时捆绑                                                                 |
@@ -26,7 +26,9 @@ Android 有独立的构建流程。以上 Python 与前端的捆绑方式适用�
 
 来源：[完整包工作流](../../../.github/workflows/install.yml)、[Python 依赖](../../../tools/requirements.txt)、[完整包基线](../../../tools/full_package_baseline.json)、[前端构建配置](../../../tools/frontend_release.json)、[前端源码与补丁清单](../../../tools/frontend_candidate/manifest.json)。
 
-框架和前端输入按表中约束锁定，便携 Python 的补丁版本与构建批次、构建机镜像及部分构建工具依赖仍会变化。桌面完整包的 `package-provenance.json` 记录该次构建的源码、实际安装的依赖和包内文件 SHA256。
+桌面完整包的 `package-provenance.json` 记录源码、该次构建选定的框架版本、实际安装的依赖和包内文件 SHA256。Android 包在 `maafw-version.txt` 记录框架标签。便携 Python 的补丁版本与构建批次、构建机镜像及部分构建工具依赖仍会变化。
+
+资源包面向已安装的客户端，资源通道和默认本地开发校验使用 `tools/release_baseline.json` 声明的 MaaFramework 5.14.3、`tools/requirements.txt` 和 `deps/tools/` 的对应 Schema。完整包的框架升级不会自动迁移资源通道；依赖新版框架的资源随完整包交付，待资源通道完成兼容迁移后再单独发布。
 
 ## 本地开发
 

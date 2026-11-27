@@ -2,11 +2,14 @@
 
 import argparse
 from importlib.metadata import version
+import os
 from pathlib import Path
 import re
 import sys
 
 import yaml
+
+from maafw_release import stable_version
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -18,20 +21,22 @@ def check_environment(*, load_resource: bool = False) -> None:
     workflow = yaml.safe_load((ROOT / ".github/workflows/install.yml").read_text(encoding="utf-8"))
     build = workflow["env"]
     maa_tools = re.search(
-        r'maaVersion:\s*"([\d.]+)"', (ROOT / "maatools.config.mts").read_text(encoding="utf-8")
+        r'maaVersion:\s*process\.env\.TKFMAA_MAAFW_VERSION\s*\?\?\s*"([\d.]+)"',
+        (ROOT / "maatools.config.mts").read_text(encoding="utf-8"),
     ).group(1)
+    selected = os.environ.get("TKFMAA_MAAFW_VERSION")
+    expected = stable_version(selected) if selected is not None else pinned
     python_version = (ROOT / ".python-version").read_text().strip()
     checks = {
-        "build MaaFramework": (str(build["MAAFW_VERSION"]).removeprefix("v"), pinned),
-        "maa-tools MaaFramework": (maa_tools, pinned),
-        "installed maafw": (version("maafw").removeprefix("v"), pinned),
+        "maa-tools resource channel fallback": (maa_tools, pinned),
+        "installed maafw": (version("maafw").removeprefix("v"), expected),
         "build Python": (str(build["PYTHON_VERSION"]), python_version),
         "Python interpreter": (f"{sys.version_info.major}.{sys.version_info.minor}", python_version),
         "build Python ABI": (str(build["PYTHON_ABI"]), f"cp{python_version.replace('.', '')}"),
     }
     from maa.library import Library
 
-    checks["loaded native runtime"] = (Library.version().removeprefix("v"), pinned)
+    checks["loaded native runtime"] = (Library.version().removeprefix("v"), expected)
     failures = []
     for name, (actual, expected) in checks.items():
         print(f"{name}: {actual} (expected {expected})")

@@ -9,12 +9,14 @@ if (process.argv[2] !== "check") {
 
 const root = path.resolve(__dirname, "..");
 const requirements = fs.readFileSync(path.join(root, "tools", "requirements.txt"), "utf8");
-const version = requirements.match(/^maafw==([\d.]+)$/m)?.[1];
-if (!version) throw new Error("Missing pinned maafw version in tools/requirements.txt");
+const baseline = requirements.match(/^maafw==([\d.]+)$/m)?.[1];
+if (!baseline) throw new Error("Missing pinned maafw version in tools/requirements.txt");
 const config = fs.readFileSync(path.join(root, "maatools.config.mts"), "utf8");
-if (config.match(/maaVersion:\s*"([\d.]+)"/)?.[1] !== version) {
+if (config.match(/maaVersion:\s*(?:process\.env\.TKFMAA_MAAFW_VERSION\s*\?\?\s*)?"([\d.]+)"/)?.[1] !== baseline) {
     throw new Error("maa-tools version differs from tools/requirements.txt");
 }
+const version = process.env.TKFMAA_MAAFW_VERSION ?? baseline;
+if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error(`Invalid MaaFramework version: ${version}`);
 
 // maa-tools prepares this cache on its first normal check. Do not install or
 // replace packages here, and use the same pinned native binding as the CLI.
