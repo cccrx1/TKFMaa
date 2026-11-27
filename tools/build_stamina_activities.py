@@ -237,8 +237,10 @@ def validate_config(config):
     activities = config.get("activities")
     if not isinstance(templates, dict) or not templates:
         raise ValueError("templates must be a non-empty object")
-    if not isinstance(activities, list) or not activities:
-        raise ValueError("activities must be a non-empty list")
+    if not isinstance(activities, list):
+        raise ValueError("activities must be a list")
+    if not activities and not config.get("custom_selection"):
+        raise ValueError("at least one preset activity or custom_selection is required")
 
     names = set()
     for activity in activities:
@@ -510,7 +512,10 @@ def build_custom_options(config):
     cases = []
     for item in custom["templates"]:
         template = item["template"]
-        if template not in ("normal_list", "regular_paged_list", "rerun_activity_map"):
+        if template not in (
+            "normal_list", "regular_paged_list", "rerun_activity_map",
+            "large_activity_stage_icon", "large_activity_direct_stage",
+        ):
             raise ValueError(f"Unsupported custom template: {template}")
         case = {
             "name": item["name"],
@@ -544,7 +549,8 @@ def build_custom_options(config):
             "name": "stage", "label": "目标关卡名称", "default": "",
             "verify": r".*\S.*", "pattern_msg": "请填写游戏中显示的完整关卡名称",
         },
-        {"name": "list_marker", "label": "列表或地图标题（留空使用活动名称）", "default": ""},
+        {"name": "list_marker", "label": "活动内页标题（留空使用活动名称）", "default": ""},
+        {"name": "stage_entry", "label": "关卡入口文字（仅大型活动关卡图标页）", "default": ""},
         {
             "name": "cost", "label": "每次体力消耗", "default": "30",
             "pipeline_type": "int", "verify": r"^[1-9][0-9]*$", "pattern_msg": "请输入正整数",

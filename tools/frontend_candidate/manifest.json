@@ -5,7 +5,7 @@
     "revision": "1080d3e1500f3439ac896ab2eca9aeb8e885f1f4",
     "source_archive_sha256": "351ecf655c7bfeb2b70e3285f727d7bb44061a136a215df095eeefd3bab5eb64",
     "patch": "tkfmaa-mfa-2.16.2.patch",
-    "patch_sha256": "355660d1c839be97f84f9e624f8b1dbcf13d4fc363c9db947159c13311576f4c",
+    "patch_sha256": "e820dddbf08d54bd3351f01a760d4f08e15fb60b4dd489c113f20e29dd557dce",
     "sdk": "10.0.403",
     "frontend": "2.16.2",
     "maafw": "5.14.3",
@@ -40,11 +40,11 @@
         },
         "MFAAvalonia/Helper/TkfmStaminaCatalog.cs": {
             "before_sha256": null,
-            "after_sha256": "98519c178c95fd653e6f41fd7e7952c10dd08772d49dfc93adaaa814ecf5d106"
+            "after_sha256": "e4a9006fad2f6fc69cf2b27061e2d8fe278061cb517a97fefd307cdac78f6598"
         },
         "MFAAvalonia/Helper/TkfmStaminaEditor.cs": {
             "before_sha256": null,
-            "after_sha256": "b8094f29a4464ebac56e458889f8610549af7dd209d64b863195756685bbcd9e"
+            "after_sha256": "185aa3dcf0110b437c87762b5170807e4ccd7b2fd8c2d2bdf37bb40f665b4d67"
         },
         "MFAAvalonia/Helper/UniversalExtractor.cs": {
             "before_sha256": "d5f2f8656b03f7a2846a2e20b88ae36b63dd1ccf2c5ba6fd4a4d6729833c9b88",

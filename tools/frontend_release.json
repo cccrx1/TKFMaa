@@ -1,7 +1,7 @@
 {
     "schema_version": 1,
     "id": "tkfmaa-mfa2162-patch1",
-    "manifest_sha256": "fb600f024ffa44653215150edf6e670d53e452c1cd6000566893b82832077b14",
+    "manifest_sha256": "bb2cd3266d214772c3f18d804a90cbc01427017e0fe7a7fb29f73dcd3eb5eaf3",
     "license_sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
     "python": "3.12",
     "maafw": "5.14.3",

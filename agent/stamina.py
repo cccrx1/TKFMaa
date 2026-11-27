@@ -13,23 +13,58 @@ from maa.pipeline import JClick, JOCR
 from common import safe_json_loads
 
 
+_SUPERSCRIPT_DIGITS = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+_SUBSCRIPT_DIGITS = "₀₁₂₃₄₅₆₇₈₉"
+_DECORATED_DIGITS = _SUPERSCRIPT_DIGITS + _SUBSCRIPT_DIGITS
+_DECORATED_DIGIT_PATTERNS = {
+    form: f"[{digit}{fullwidth}{superscript}{subscript}]"
+    for digit, (fullwidth, superscript, subscript) in enumerate(
+        zip("０１２３４５６７８９", _SUPERSCRIPT_DIGITS, _SUBSCRIPT_DIGITS)
+    )
+    for form in (superscript, subscript)
+}
+_NAME_VARIANT = re.compile(
+    rf"\s*(?:½|(?<![\d{_DECORATED_DIGITS}])[1１¹₁]\s*[/／⁄∕]\s*[2２²₂]"
+    rf"(?![\d{_DECORATED_DIGITS}])|(?P<digits>[{_DECORATED_DIGITS}]+))\s*"
+)
+_HALF_OCR = r"(?:[1１¹₁]?\s*½(?:\s*[/／⁄∕]?\s*[2２²₂])?|[1１¹₁]\s*[/／⁄∕]?\s*[2２²₂])"
+
+
+def _stamina_name_pattern(name):
+    parts = []
+    cursor = 0
+    for match in _NAME_VARIANT.finditer(name):
+        parts.append(re.escape(name[cursor:match.start()]))
+        variant = _HALF_OCR
+        if digits := match.group("digits"):
+            variant = r"\s*".join(_DECORATED_DIGIT_PATTERNS[digit] for digit in digits)
+        parts.extend((r"\s*", variant, r"\s*"))
+        cursor = match.end()
+    parts.append(re.escape(name[cursor:]))
+    return "".join(parts)
+
+
 def build_custom_stamina_override(param):
     routes = {
         "normal_list": "DailyStaminaRouteInnerNormalListStart",
         "regular_paged_list": "DailyStaminaRouteRegularPagedFirstPageStart",
         "rerun_activity_map": "DailyStaminaRouteInnerRerunUiStart",
+        "large_activity_stage_icon": "DailyStaminaRouteInnerSpecialUiStart",
+        "large_activity_direct_stage": "DailyStaminaRouteInnerChallengeUiStart",
     }
     template = param.get("route", param.get("template"))
     if template not in routes:
         raise ValueError("请选择支持的自定义关卡模板")
     names = {}
-    for field in ("activity", "stage", "list_marker"):
+    for field in ("activity", "stage", "list_marker", "stage_entry"):
         value = param.get(field, "")
         if not isinstance(value, str):
             raise ValueError(f"{field} 必须是文本")
         names[field] = value.strip()
     if not names["activity"] or not names["stage"]:
         raise ValueError("活动名称和关卡名称不能为空")
+    if template == "large_activity_stage_icon" and not names["stage_entry"]:
+        raise ValueError("大型活动关卡图标页需要填写关卡入口文字")
     if re.search(r"协会共斗|協會共鬥|挑战活动|挑戰活動|活动挑战|活動挑戰", names["activity"]):
         raise ValueError("请选择活动本体")
     cost = param.get("cost")
@@ -39,31 +74,33 @@ def build_custom_stamina_override(param):
     def ocr(expected, roi):
         return {"type": "OCR", "param": {"expected": [expected], "roi": roi}}
 
-    def title_pattern(title):
-        fraction = re.search(r"(?:1[/／]2|½)$", title)
-        if fraction and template == "rerun_activity_map":
-            prefix = re.escape(title[:fraction.start()].rstrip())
-            return rf"{prefix} *(?:1?½(?:[/／]?2)?|1[/／]?2)"
-        return re.escape(title)
-
-    marker = title_pattern(names["list_marker"] or names["activity"])
-    stage = re.escape(names["stage"])
+    marker_text = names["list_marker"] or names["activity"]
+    marker = _stamina_name_pattern(marker_text)
+    marker_roi = [0, 90, 720, 180]
+    stage = _stamina_name_pattern(names["stage"])
+    stage_roi = [0, 160, 720, 1000]
     route_marker = "DailyStaminaPresetStageListAnySelectable"
     if template == "rerun_activity_map":
         route_marker = "DailyStaminaPresetRerunMapMarker"
+        # The fixed header excludes animated map tiles that can distort the fraction OCR.
+        marker_roi = [0, 116, 245, 55]
         # Map OCR can read the stamina badge as part of the stage label.
         stage += rf"(?: *[⚡ϟ4]? *{cost})?"
+    elif template in ("large_activity_stage_icon", "large_activity_direct_stage"):
+        route_marker = "DailyStaminaPresetInnerUiTitle"
+    if route_marker == "DailyStaminaPresetInnerUiTitle" or _NAME_VARIANT.search(marker_text):
+        marker = f"^{marker}$"
     marker_recognition = {"type": "And", "param": {"all_of": [route_marker]}}
     override = {
         "DailyStaminaPresetActivityName": {
-            "recognition": ocr(f"^{title_pattern(names['activity'])}$", [70, 765, 580, 86])
+            "recognition": ocr(f"^{_stamina_name_pattern(names['activity'])}$", [70, 765, 580, 86])
         },
         "DailyStaminaPresetStageListTarget": {
-            "recognition": ocr(f"^{stage}$", [0, 160, 720, 1000])
+            "recognition": ocr(f"^{stage}$", stage_roi)
         },
         route_marker: {
             "enabled": True,
-            "recognition": ocr(marker, [0, 90, 720, 180]),
+            "recognition": ocr(marker, marker_roi),
         },
         "DailyStaminaPresetInnerRouteStart": {
             "recognition": marker_recognition,
@@ -71,6 +108,11 @@ def build_custom_stamina_override(param):
         },
         "CommonReturnMainFromStaminaStageList": {"recognition": marker_recognition},
     }
+    if template == "large_activity_stage_icon":
+        override["DailyStaminaPresetStageEntry"] = {
+            "enabled": True,
+            "recognition": ocr(f"^{_stamina_name_pattern(names['stage_entry'])}$", stage_roi),
+        }
     for mode, node in (
         ("enough", "DailyStaminaPresetStaminaEnough"),
         ("low", "DailyStaminaPresetStaminaLow"),

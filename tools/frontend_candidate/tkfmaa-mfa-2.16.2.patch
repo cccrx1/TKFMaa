@@ -675,7 +675,7 @@
          return selectOption;
 --- /dev/null
 +++ b/MFAAvalonia/Helper/TkfmStaminaCatalog.cs
-@@ -0,0 +1,240 @@
+@@ -0,0 +1,258 @@
 +using MFAAvalonia.Extensions.MaaFW;
 +using Newtonsoft.Json;
 +using Newtonsoft.Json.Linq;
@@ -704,11 +704,20 @@
 +    private const string ColumnOption = "自定义体力复刻地图区域";
 +    private static string CatalogPath => Path.Combine(AppPaths.ConfigDirectory, "stamina-activities.json");
 +
-+    public static readonly string[] Templates = ["普通列表活动", "常规分页活动", "复刻地图活动"];
++    public const string RerunTemplate = "复刻地图活动";
++    public const string IconTemplate = "大型活动（关卡图标页）";
++    private static readonly string[] Templates =
++        ["普通列表活动", "常规分页活动", RerunTemplate, IconTemplate, "大型活动（直接关卡页）"];
++
++    public static string[] GetTemplates(MaaInterface project) =>
++        project.Option?.GetValueOrDefault(TemplateOption)?.Cases is { } cases
++            ? Templates.Where(template => cases.Any(item => item.Name == template && item.PipelineOverride != null)).ToArray()
++            : [];
 +    public static readonly string[] Sections = ["限时活动", "目前活动"];
 +    public static readonly string[] Columns = ["中路", "左路", "右路"];
 +
-+    internal sealed record Stage(Guid Id, string Name, int Cost);
++    internal sealed record Stage(Guid Id, string Name, int Cost,
++        [property: JsonProperty(NullValueHandling = NullValueHandling.Ignore)] string? Entry = null);
 +    internal sealed record Activity(Guid Id, string Name, string Template, string Section, string Marker,
 +        string Column, List<Stage> Stages)
 +    {
@@ -812,6 +821,8 @@
 +    {
 +        Validate(activity);
 +        var selector = FindSelector(project) ?? throw new InvalidDataException("当前资源包不支持自定义活动。");
++        if (!GetTemplates(project).Contains(activity.Template))
++            throw new InvalidDataException("当前资源包缺少所选活动类型。");
 +        Directory.CreateDirectory(AppPaths.ConfigDirectory);
 +        using var fileLock = File.Open(CatalogPath + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
 +        var activities = Read();
@@ -852,6 +863,8 @@
 +        if (activity.Stages.Any(stage => stage == null || stage.Id == Guid.Empty ||
 +            string.IsNullOrWhiteSpace(stage.Name) || stage.Cost <= 0))
 +            throw new InvalidDataException("每个关卡都需要名称和正整数体力消耗。");
++        if (activity.Template == IconTemplate && activity.Stages.Any(stage => string.IsNullOrWhiteSpace(stage.Entry)))
++            throw new InvalidDataException("关卡图标页的每个关卡都需要填写入口文字。");
 +        if (activity.Stages.Select(stage => stage.Id).Distinct().Count() != activity.Stages.Count ||
 +            activity.Stages.Select(stage => stage.Name).Distinct(StringComparer.Ordinal).Count() != activity.Stages.Count)
 +            throw new InvalidDataException("同一活动内的关卡名称不能重复。");
@@ -864,7 +877,8 @@
 +        var builtIns = selector.Cases!.Where(item => !IsLocalCase(item.Name)).ToList();
 +        var legacy = builtIns.Single(item => item.Name == LegacyCase);
 +        var generated = new Dictionary<string, Option>();
-+        foreach (var activity in activities)
++        var templates = GetTemplates(project);
++        foreach (var activity in activities.Where(item => templates.Contains(item.Template)))
 +        {
 +            var stageOptionName = StagePrefix + activity.Id.ToString("N");
 +            var stages = activity.Stages.Select(stage => new Case
@@ -903,7 +917,7 @@
 +        foreach (var (option, name) in new[] { (TemplateOption, activity.Template), (SectionOption, activity.Section),
 +                     (ColumnOption, activity.Column) })
 +        {
-+            if (option == ColumnOption && activity.Template != Templates[2])
++            if (option == ColumnOption && activity.Template != RerunTemplate)
 +                continue;
 +            var patch = options[option].Cases?.FirstOrDefault(item => item.Name == name)?.PipelineOverride
 +                ?? throw new InvalidDataException($"资源包缺少活动配置选项：{name}。");
@@ -911,14 +925,18 @@
 +        }
 +        result["DailyStaminaCustomInput"] = JObject.FromObject(new
 +        {
-+            attach = new { activity = activity.Name, stage = stage.Name, list_marker = activity.Marker, cost = stage.Cost }
++            attach = new
++            {
++                activity = activity.Name, stage = stage.Name, list_marker = activity.Marker,
++                stage_entry = stage.Entry ?? "", cost = stage.Cost
++            }
 +        });
 +        return result.ToObject<Dictionary<string, JToken>>()!;
 +    }
 +}
 --- /dev/null
 +++ b/MFAAvalonia/Helper/TkfmStaminaEditor.cs
-@@ -0,0 +1,136 @@
+@@ -0,0 +1,150 @@
 +using Avalonia;
 +using Avalonia.Controls;
 +using Avalonia.Layout;
@@ -939,7 +957,8 @@
 +{
 +    private readonly List<StageRow> _stages = [];
 +    private readonly StackPanel _stageRows = new() { Spacing = 8 };
-+    private sealed record StageRow(Guid Id, TextBox Name, TextBox Cost, Grid Control);
++    private sealed record StageRow(Guid Id, TextBox Name, TextBox Cost, TextBox Entry,
++        StackPanel EntryField, StackPanel Control);
 +
 +    public TkfmStaminaEditor(MaaInterface project, Activity? original)
 +    {
@@ -950,21 +969,28 @@
 +        MinHeight = 420;
 +        WindowStartupLocation = WindowStartupLocation.CenterOwner;
 +
-+        var name = new TextBox { Text = original?.Name, Watermark = "游戏活动卡上的完整标题" };
-+        var template = Choices(TkfmStaminaCatalog.Templates, original?.Template);
++        var name = new TextBox { Text = original?.Name, Watermark = "完整标题，小角标 ½ 可输入 1/2" };
++        var template = Choices(TkfmStaminaCatalog.GetTemplates(project), original?.Template);
 +        var section = Choices(TkfmStaminaCatalog.Sections, original?.Section);
 +        var marker = new TextBox { Text = original?.Marker, Watermark = "留空时使用活动名称" };
 +        var column = Choices(TkfmStaminaCatalog.Columns, original?.Column);
 +        var columnField = Field("地图搜索区域", column);
-+        columnField.IsVisible = template.SelectedIndex == 2;
-+        template.SelectionChanged += (_, _) => columnField.IsVisible = template.SelectedIndex == 2;
++        bool UsesStageEntry() => Equals(template.SelectedItem, TkfmStaminaCatalog.IconTemplate);
++        void UpdateFields()
++        {
++            columnField.IsVisible = Equals(template.SelectedItem, TkfmStaminaCatalog.RerunTemplate);
++            foreach (var row in _stages)
++                row.EntryField.IsVisible = UsesStageEntry();
++        }
 +
 +        var addStage = new Button { Content = "添加关卡" };
-+        addStage.Click += (_, _) => AddStage(null).Name.Focus();
++        addStage.Click += (_, _) => AddStage(null, UsesStageEntry()).Name.Focus();
 +        foreach (var stage in original?.Stages ?? [])
-+            AddStage(stage);
++            AddStage(stage, UsesStageEntry());
 +        if (_stages.Count == 0)
-+            AddStage(null);
++            AddStage(null, UsesStageEntry());
++        UpdateFields();
++        template.SelectionChanged += (_, _) => UpdateFields();
 +
 +        var error = new TextBlock { Foreground = Brushes.IndianRed, TextWrapping = TextWrapping.Wrap };
 +        var cancel = new Button { Content = "取消", IsCancel = true };
@@ -978,7 +1004,9 @@
 +                {
 +                    if (!int.TryParse(row.Cost.Text?.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var cost) || cost <= 0)
 +                        throw new InvalidDataException("每个关卡的体力消耗都必须为正整数。");
-+                    return new Stage(row.Id, row.Name.Text?.Trim() ?? "", cost);
++                    var entry = row.Entry.Text?.Trim();
++                    return new Stage(row.Id, row.Name.Text?.Trim() ?? "", cost,
++                        string.IsNullOrEmpty(entry) ? null : entry);
 +                }).ToList();
 +                var activity = new Activity(original?.Id ?? Guid.NewGuid(), name.Text?.Trim() ?? "",
 +                    (string)template.SelectedItem!, (string)section.SelectedItem!, marker.Text?.Trim() ?? "",
@@ -1006,7 +1034,7 @@
 +            Children =
 +            {
 +                Field("活动名称", name), Field("活动类型", template), Field("活动分区", section),
-+                Field("列表或地图标题（可选）", marker), columnField,
++                Field("活动内页标题（可选）", marker), columnField,
 +                new TextBlock { Text = "关卡", FontWeight = FontWeight.SemiBold, Margin = new Thickness(0, 8, 0, 0) },
 +                _stageRows, addStage
 +            }
@@ -1017,7 +1045,7 @@
 +        Opened += (_, _) => name.Focus();
 +    }
 +
-+    private StageRow AddStage(Stage? stage)
++    private StageRow AddStage(Stage? stage, bool showEntry)
 +    {
 +        var name = new TextBox { Text = stage?.Name, Watermark = "完整关卡名称" };
 +        var cost = new TextBox { Text = stage?.Cost.ToString(CultureInfo.InvariantCulture) ?? "30", Watermark = "体力" };
@@ -1030,16 +1058,20 @@
 +        grid.Children.Add(nameField);
 +        grid.Children.Add(costField);
 +        grid.Children.Add(remove);
-+        var row = new StageRow(stage?.Id ?? Guid.NewGuid(), name, cost, grid);
++        var entry = new TextBox { Text = stage?.Entry, Watermark = "图标旁可识别的完整文字" };
++        var entryField = Field("关卡入口文字", entry);
++        entryField.IsVisible = showEntry;
++        var control = new StackPanel { Spacing = 4, Children = { grid, entryField } };
++        var row = new StageRow(stage?.Id ?? Guid.NewGuid(), name, cost, entry, entryField, control);
 +        _stages.Add(row);
-+        _stageRows.Children.Add(grid);
++        _stageRows.Children.Add(control);
 +
 +        remove.Click += (_, _) =>
 +        {
 +            _stageRows.Children.Remove(row.Control);
 +            _stages.Remove(row);
 +            if (_stages.Count == 0)
-+                AddStage(null).Name.Focus();
++                AddStage(null, row.EntryField.IsVisible).Name.Focus();
 +        };
 +        return row;
 +    }
