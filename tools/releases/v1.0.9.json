@@ -2,6 +2,7 @@
     "schema_version": 1,
     "version": "v1.0.9",
     "kind": "full",
+    "maafw": "5.16.1",
     "update_repository": "cccrx1/TKFMaa",
     "frontend_profile": "tkfmaa-mfa2162-patch1",
     "release_notes": "docs/zh_cn/releases/v1.0.9.md",
